@@ -1,0 +1,23 @@
+@(userFrom:Form[User])
+@import helper._
+<html>
+    <head>
+        <title>Create Users</title>
+    </head>
+    <body>
+        <p>Create Users</p>
+        <form action="@routes.UserController.saveUser()" method="post" >
+            <div>
+                <label><b>ID:</b></label>
+                <input type="text" placeholder="Enter ID" name="id" required>
+                <label><b>Username:</b></label>
+                <input type="text" placeholder="Enter Username" name="name" required>
+
+                <label><b>Surname:</b></label>
+                <input type="text" placeholder="Enter Surname" name="surname" required>
+                <br><br>
+                <button type="submit">Create User</button>
+            </div>
+        </form>
+    </body>
+</html>

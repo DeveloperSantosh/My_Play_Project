@@ -1,0 +1,35 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                           controllers.HomeController.index()
+
+# A controller for user page
+GET     /users                                controllers.UserController.index()
+GET     /users/create                         controllers.UserController.createUser()
+GET     /users/:id                            controllers.UserController.showUser(id: Integer)
+GET     /users/edit/:id                       controllers.UserController.editUser(id: Integer)
++nocsrf
+POST    /users/edit                           controllers.UserController.updateUser(request: Request)
++nocsrf
+POST    /users/create                         controllers.UserController.saveUser(request: Request)
+GET     /users/delete/:id                     controllers.UserController.deleteUser(id: Integer)
+
+# A controller for blog page
+GET     /blogs                                controllers.BlogController.home()
+GET     /blogs/create                         controllers.BlogController.createBlog()
+GET     /blogs/:title                         controllers.BlogController.showBlog(title: String)
++nocsrf
+POST    /blogs/create                         controllers.BlogController.saveBlog(request: Request)
+GET     /blogs/delete/:title                  controllers.BlogController.deleteBlog(title: String)
+
+# A controller for blog page
+GET     /blogs/comments/:blogTitle            controllers.CommentController.showComment(blogTitle:String)
+GET     /blogs/comments/add/:blogTitle        controllers.CommentController.addComment(blogTitle:String, request: Request)
++nocsrf
+POST    /blogs/comments/add/                  controllers.CommentController.saveComment(blogTitle: String, request: Request)
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

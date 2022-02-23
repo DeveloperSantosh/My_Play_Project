@@ -1,0 +1,20 @@
+@(form: play.data.Form[Blog])
+@import helper._
+<html>
+    <head>
+        <title>Create Blog</title>
+    </head>
+    <body>
+        <form action="@routes.BlogController.saveBlog()" method="post">
+            <div>
+                <label><b>Title:</b></label>
+                <input type="text" placeholder="Enter Blog Title" name="title" required>
+
+                <label><b>Content:</b></label>
+                <input type="text" placeholder="Enter Blog Content" name="content" required>
+                <br><br>
+                <button type="submit">Create Blog</button>
+            </div>
+        </form>
+    </body>
+</html>

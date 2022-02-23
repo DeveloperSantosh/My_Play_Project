@@ -1,0 +1,17 @@
+@(blog: Blog)
+
+<html>
+    <head>
+        <title>@blog.title</title>
+    </head>
+    <body>
+        <p><b>@blog.timestamp</b></p>
+        <br><br>
+        <p> @blog.content</p>
+        <br><br>
+        <a href="@routes.BlogController.deleteBlog(blog.title)">Delete Blog</a>
+        <a href="@routes.CommentController.showComment(blog.title)">View Comment</a>
+        <a href="@routes.CommentController.addComment(blog.title)">Add Comment</a>
+        <br>
+    </body>
+</html>

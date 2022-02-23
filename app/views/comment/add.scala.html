@@ -1,0 +1,17 @@
+@import helper._
+@import play.mvc.Http.Request
+
+@(blogTitle:String, commentForm: Form[Comment])(implicit request: Request, messages: play.i18n.Messages)
+
+<html>
+    <head>
+        <title>Add Comment for @blogTitle</title>
+    </head>
+    <body>
+        @helper.form(action = routes.CommentController.saveComment(blogTitle)){
+            @helper.inputText(commentForm("username"))
+            @helper.inputText(commentForm("comment"))
+            <button type="submit">Add Comment</button>
+        }
+    </body>
+</html>

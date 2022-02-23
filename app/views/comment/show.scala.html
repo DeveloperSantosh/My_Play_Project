@@ -1,0 +1,16 @@
+@(blogTitle:String, comments: List[Comment])
+
+<html>
+    <head>
+        <title>blogTitle</title>
+    </head>
+    <body>
+        @for(comment <- comments){
+            <p><b>Name: @comment.username</b></p>
+            <p><b>@comment.timestamp</b></p>
+            <p>Comment: @comment.comment</p>
+            <br><br>
+        }
+        <p>Go To blog <a href="@routes.BlogController.showBlog(blogTitle)">@blogTitle </a>Page</p>
+    </body>
+</html>

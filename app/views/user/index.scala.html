@@ -1,0 +1,21 @@
+@(users: Set[User])
+<html>
+    <head>
+        <title>All Users</title>
+    </head>
+    <body>
+        <hi>All Users</hi>
+        <br><br>
+        @for(user <- users){
+            <a href="@routes.UserController.showUser(user.id)">ID: @user.id</a>
+            <p>Name: @user.name</p>
+            <p>Surname: @user.surname</p>
+            <a href="@routes.UserController.editUser(user.id)">Edit User</a>
+
+            <a href="@routes.UserController.deleteUser(user.id)">Delete User</a>
+            <br>
+        }
+        <br><br>
+        <a href="@routes.UserController.createUser()">Click here to create User</a>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+@(blogs: List[Blog])
+<html>
+    <head>
+        <title>All Users</title>
+    </head>
+    <body>
+        <hi>All Blogs Title</hi>
+        <br><br>
+        @for(blog <- blogs){
+            <a href="@routes.BlogController.showBlog(blog.title)">Title: @blog.title</a>
+            <p>@blog.timestamp</p>
+            <br><br>
+        }
+        <br>
+        <a href="@routes.BlogController.createBlog()">Click here to create Blog</a>
+    </body>
+</html>
