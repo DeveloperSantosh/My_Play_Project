@@ -18,7 +18,7 @@ public class UserSQLController {
             System.out.println("Connected.");
             Statement stmt = dbConn.createStatement();
             String query = "Create Table user (" +
-                    "id Integer NOT NULL," +
+                    "id INTEGER NOT NULL," +
                     "name VARCHAR(100) NOT NULL, " +
                     "surname VARCHAR(100) NOT NULL," +
                     "PRIMARY KEY(id));";
@@ -33,7 +33,7 @@ public class UserSQLController {
     public boolean insertUser(User user) {
         try {
             Statement stmt = dbConn.createStatement();
-            return stmt.execute("Insert into User(id, name, surname) values ("+
+            return stmt.execute("INSERT INTO user VALUES ("+
                     user.getId() + ", '" + user.getName() + "' , '" + user.getSurname()+"'");
         }catch (Exception e){
             e.printStackTrace();

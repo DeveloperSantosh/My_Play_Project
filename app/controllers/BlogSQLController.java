@@ -24,8 +24,8 @@ public class BlogSQLController {
                     "content VARCHAR(500) NOT NULL, " +
                     "timestamp VARCHAR(100) NOT NULL,"+
                     "FK_user_id INTEGER NOT NULL," +
-                    "PRIMARY KEY(title)" +
-                    ")";
+                    "PRIMARY KEY(title)," +
+                    "FOREIGN KEY(FK_user_id))";
             boolean r = stmt.execute(query);
             if(r) System.out.println("Blog Table Created Successfully");
             else System.out.println("could not create blog table");
