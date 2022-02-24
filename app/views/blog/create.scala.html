@@ -1,11 +1,11 @@
-@(form: play.data.Form[Blog])
+@(form: play.data.Form[Blog], user: Integer)
 @import helper._
 <html>
     <head>
         <title>Create Blog</title>
     </head>
     <body>
-        <form action="@routes.BlogController.saveBlog()" method="post">
+        <form action="@routes.BlogController.saveBlog(user)" method="post">
             <div>
                 <label><b>Title:</b></label>
                 <input type="text" placeholder="Enter Blog Title" name="title" required>

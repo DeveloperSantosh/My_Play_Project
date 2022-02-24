@@ -19,7 +19,6 @@ public class Blog{
 
     private String timestamp;
 
-    @Constraints.Required
     @ManyToOne
     private User author;
 

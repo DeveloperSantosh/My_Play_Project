@@ -20,12 +20,13 @@ public class BlogSQLController {
             System.out.println("Connected.");
             Statement stmt = dbConn.createStatement();
             String query = "CREATE TABLE blog (" +
-                    "title VARCHAR(200) NOT NULL," +
+                    "title VARCHAR(200) NOT NULL, " +
                     "content VARCHAR(500) NOT NULL, " +
-                    "timestamp VARCHAR(100) NOT NULL,"+
-                    "FK_user_id INTEGER NOT NULL," +
-                    "PRIMARY KEY(title)," +
-                    "FOREIGN KEY(FK_user_id))";
+                    "timestamp VARCHAR(100) NOT NULL, "+
+                    "FK_user_id INTEGER NOT NULL, " +
+                    "PRIMARY KEY(title), " +
+                    "FOREIGN KEY(FK_user_id) REFERENCES user(id)" +
+                    ")";
             boolean r = stmt.execute(query);
             if(r) System.out.println("Blog Table Created Successfully");
             else System.out.println("could not create blog table");
@@ -38,9 +39,12 @@ public class BlogSQLController {
     public void insertBlog(Blog blog) {
         try {
             Statement stmt = dbConn.createStatement();
-            int count = stmt.executeUpdate("Insert into blog(title, content, timestamp, FK_author_id) values ('"+
-                    blog.getTitle() + "','" + blog.getContent() + "','" +
-                    blog.getTimestamp()+"','"+ blog.getAuthor().getId()+"');");
+            String query = "Insert into blog (title, content, timestamp, FK_user_id) values ('"+
+                    blog.getTitle() + "','" +
+                    blog.getContent() + "','" +
+                    blog.getTimestamp()+ "'," +
+                    blog.getAuthor().getId()+ ")";
+            int count = stmt.executeUpdate(query);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -49,7 +53,7 @@ public class BlogSQLController {
     public void deleteBlog(Blog blog) {
         try {
             Statement stmt = dbConn.createStatement();
-            stmt.executeUpdate("delete from blog where title ='"+blog.getTitle()+"';");
+            stmt.executeUpdate("delete from blog where title ='"+blog.getTitle()+"'");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -58,12 +62,12 @@ public class BlogSQLController {
     public void updateBlog(String title, Blog newBlog) {
         try {
             Statement stmt = dbConn.createStatement();
-            stmt.executeUpdate("update blog set"+
+            stmt.executeUpdate("UPDATE blog SET "+
                     "title ='" + newBlog.getTitle()+"','"+
                     "content ='" + newBlog.getContent()+"','"+
                     "timestamp ='" + newBlog.getTimestamp()+"','"+
-                    "FK_user_id ='"+ newBlog.getAuthor().getId()+
-                    "where title ='"+title+"';");
+                    "FK_user_id ="+ newBlog.getAuthor().getId()+
+                    "WHERE title ='"+title+"';");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -82,7 +86,10 @@ public class BlogSQLController {
                 int author_id = r.getInt("FK_user_id");
                 ResultSet authorResultSet = stmt.executeQuery("Select * from user where id ="+author_id);
                 while(authorResultSet.next()){
-                    User author = authorResultSet.getObject(1,User.class);
+                    User author = new User();
+                    author.setId(author_id);
+                    author.setName(authorResultSet.getString("name"));
+                    author.setSurname(authorResultSet.getString("surname"));
                     dbBlog.setAuthor(author);
                 }
                 userList.add(dbBlog);

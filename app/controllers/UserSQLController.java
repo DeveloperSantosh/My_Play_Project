@@ -18,7 +18,7 @@ public class UserSQLController {
             System.out.println("Connected.");
             Statement stmt = dbConn.createStatement();
             String query = "Create Table user (" +
-                    "id INTEGER NOT NULL," +
+                    "id INTEGER NOT NULL ," +
                     "name VARCHAR(100) NOT NULL, " +
                     "surname VARCHAR(100) NOT NULL," +
                     "PRIMARY KEY(id));";
@@ -30,39 +30,38 @@ public class UserSQLController {
         }
     }
 
-    public boolean insertUser(User user) {
+    public void insertUser(User user) {
         try {
             Statement stmt = dbConn.createStatement();
-            return stmt.execute("INSERT INTO user VALUES ("+
-                    user.getId() + ", '" + user.getName() + "' , '" + user.getSurname()+"'");
+            String query = "INSERT INTO user (id, name, surname) VALUES ("+
+                    user.getId() + ", '" +
+                    user.getName() + "', '" +
+                    user.getSurname()+"')";
+            stmt.executeUpdate(query);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return false;
     }
 
-    public boolean deleteUser(User user) {
+    public void deleteUser(User user) {
         try {
             Statement stmt = dbConn.createStatement();
-            return stmt.execute("delete from User where id ="+user.getId()+";");
+            stmt.executeUpdate("delete from user where id ="+user.getId()+";");
         }catch (Exception e){
             e.printStackTrace();
         }
-        return false;
     }
 
-    public boolean updateUser(int id, User newUser) {
+    public void updateUser(int id, User newUser) {
         try {
             Statement stmt = dbConn.createStatement();
-            return stmt.execute("update user set"+
-                    "id =" + newUser.getId()+","+
+            stmt.executeUpdate("update user set "+
                     "name ='" + newUser.getName()+"',"+
-                    "surname ='" + newUser.getSurname()+"',"+
+                    "surname ='" + newUser.getSurname()+"' "+
                     "where id ="+id+";");
         }catch (Exception e){
             e.printStackTrace();
         }
-        return false;
     }
 
     public List<User> retrieveUsers() {
@@ -72,7 +71,11 @@ public class UserSQLController {
             ResultSet r = stmt.executeQuery("Select * from user");
             int i=1;
             while(r.next()){
-                User dbUser = r.getObject(i, User.class);
+                User dbUser = new User();
+//                User dbUser = r.getObject(i, User.class);
+                dbUser.setId(r.getInt("id"));
+                dbUser.setName(r.getString("name"));
+                dbUser.setSurname(r.getString("surname"));
                 userList.add(dbUser);
             }
         }catch (Exception e){
@@ -87,7 +90,9 @@ public class UserSQLController {
             Statement stmt = dbConn.createStatement();
             ResultSet r = stmt.executeQuery("Select * from user where id = "+id+";");
             while(r.next()){
-                user = r.getObject(1, User.class);
+                user.setId(r.getInt("id"));
+                user.setName(r.getString("name"));
+                user.setSurname(r.getString("surname"));
             }
             return user;
         }catch (Exception e){

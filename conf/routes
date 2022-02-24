@@ -1,7 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
@@ -18,10 +17,10 @@ GET     /users/delete/:id                     controllers.UserController.deleteU
 
 # A controller for blog page
 GET     /blogs                                controllers.BlogController.home()
-GET     /blogs/create                         controllers.BlogController.createBlog()
+GET     /blogs/create                         controllers.BlogController.createBlog(id: Integer)
 GET     /blogs/:title                         controllers.BlogController.showBlog(title: String)
 +nocsrf
-POST    /blogs/create                         controllers.BlogController.saveBlog(request: Request)
+POST    /blogs/create                         controllers.BlogController.saveBlog(id: Integer, request: Request)
 GET     /blogs/delete/:title                  controllers.BlogController.deleteBlog(title: String)
 
 # A controller for blog page

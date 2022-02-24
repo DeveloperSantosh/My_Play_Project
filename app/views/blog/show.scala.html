@@ -5,8 +5,9 @@
         <title>@blog.getTitle()</title>
     </head>
     <body>
-        <p><b>@blog.getTimestamp()</b></p>
-        <br><br>
+        <p><b>@blog.getTitle()
+            <br>@blog.getTimestamp()
+        </b></p>
         <p> @blog.getContent()</p>
         <br><br>
         <a href="@routes.BlogController.deleteBlog(blog.getTitle())">Delete Blog</a>
