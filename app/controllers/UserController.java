@@ -3,27 +3,28 @@ package controllers;
 import models.User;
 import play.data.Form;
 import play.data.FormFactory;
-import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.inject.Inject;
-import java.util.Set;
+import java.util.List;
 
 public class UserController  extends Controller {
 
     private final FormFactory formFactory;
-    private final HttpExecutionContext ec;
+    UserSQLController userSQLController;
+    List<User> users;
 
     @Inject
-    public UserController(FormFactory formFactory, HttpExecutionContext ec){
+    public UserController(FormFactory formFactory){
         this.formFactory = formFactory;
-        this.ec = ec;
+        userSQLController = new UserSQLController();
+
     }
 
     public Result index(){
-        Set<User> users = User.allUsers();
+//        Set<User> users = User.allUsers();
+        users = userSQLController.retrieveUsers();
         return ok(views.html.user.index.render(users));
     }
 
@@ -35,34 +36,29 @@ public class UserController  extends Controller {
     public Result saveUser(Http.Request request){
         Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
         User user = userForm.get();
-        User.add(user);
+        userSQLController.insertUser(user);
+        users = userSQLController.retrieveUsers();
         return redirect(routes.UserController.index());
     }
 
     public Result editUser(Integer id){
-        User user = User.findById(id);
+        User user = userSQLController.retrieveUserById(id);
         if(user == null){
             return notFound("Sorry! User not found");
         }
         Form <User> userForm = formFactory.form(User.class).fill(user);
-
         return ok(views.html.user.edit.render(userForm));
     }
 
     public Result updateUser(Http.Request request){
         Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
-        User user = userForm.get();
-        User oldUser = User.findById(user.id);
-        if(oldUser == null){
-            return notFound("Sorry! User Not Found");
-        }
-        oldUser.name = user.name;
-        oldUser.surname = user.surname;
+        User newUser = userForm.get();
+        userSQLController.updateUser(newUser.getId(), newUser);
         return redirect(routes.UserController.index());
     }
 
     public Result showUser(Integer id){
-        User user = User.findById(id);
+        User user = userSQLController.retrieveUserById(id);
         if(user == null){
             return notFound("Sorry! User Not Found.");
         }
@@ -70,11 +66,11 @@ public class UserController  extends Controller {
     }
 
     public Result deleteUser(Integer id){
-        User user = User.findById(id);
+        User user = userSQLController.retrieveUserById(id);
         if(user == null){
             return notFound("Sorry! user not found");
         }
-        User.remove(user);
+        userSQLController.deleteUser(user);
         return redirect(routes.UserController.index());
     }
 }

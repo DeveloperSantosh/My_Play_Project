@@ -2,16 +2,16 @@
 
 <html>
     <head>
-        <title>@blog.title</title>
+        <title>@blog.getTitle()</title>
     </head>
     <body>
-        <p><b>@blog.timestamp</b></p>
+        <p><b>@blog.getTimestamp()</b></p>
         <br><br>
-        <p> @blog.content</p>
+        <p> @blog.getContent()</p>
         <br><br>
-        <a href="@routes.BlogController.deleteBlog(blog.title)">Delete Blog</a>
-        <a href="@routes.CommentController.showComment(blog.title)">View Comment</a>
-        <a href="@routes.CommentController.addComment(blog.title)">Add Comment</a>
+        <a href="@routes.BlogController.deleteBlog(blog.getTitle())">Delete Blog</a>
+        <a href="@routes.CommentController.showComment(blog.getTitle())">View Comment</a>
+        <a href="@routes.CommentController.addComment(blog.getTitle())">Add Comment</a>
         <br>
     </body>
 </html>

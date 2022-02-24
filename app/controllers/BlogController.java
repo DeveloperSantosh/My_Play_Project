@@ -6,22 +6,20 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BlogController extends Controller {
 
     List<Blog> blogs;
+    BlogSQLController blogSQLController;
 
     @Inject
     FormFactory formFactory;
 
     public BlogController() {
-        blogs = new ArrayList<>();
-        blogs.add(new Blog("My First Blog", "This is content of my first blog."));
-        blogs.add(new Blog("My Second Blog", "This is content of my second blog."));
+        blogSQLController = new BlogSQLController();
+        blogs = blogSQLController.retrieveBlogs();
     }
 
     public Result home(){
@@ -30,7 +28,7 @@ public class BlogController extends Controller {
 
     public Result showBlog(String title){
         for(Blog blog: blogs){
-            if(blog.title.equals(title)){
+            if(blog.getTitle().equals(title)){
                 return ok(views.html.blog.show.render(blog));
             }
         }
@@ -45,14 +43,16 @@ public class BlogController extends Controller {
     public Result saveBlog(Http.Request request){
         Form <Blog> blogForm = formFactory.form(Blog.class).bindFromRequest(request);
         Blog blog = blogForm.get();
-        blogs.add(blog);
+        blogSQLController.insertBlog(blog);
+        blogs = blogSQLController.retrieveBlogs();
         return redirect(routes.BlogController.home());
     }
 
     public Result deleteBlog(String title){
         for(Blog blog : blogs){
-            if(blog.title.equals(title)){
-                blogs.remove(blog);
+            if(blog.getTitle().equals(title)){
+                blogSQLController.deleteBlog(blog);
+                blogs = blogSQLController.retrieveBlogs();
                 return redirect(routes.BlogController.home());
             }
         }

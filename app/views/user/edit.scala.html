@@ -10,12 +10,12 @@
         <form action="@routes.UserController.updateUser()" method="post" >
             <div>
                 <label><b>ID:</b></label>
-                <input type="text" value="@userForm.get().id" readonly name="id" id="id" required>
+                <input type="text" value="@userForm.get().getId()" readonly name="id" id="id" required>
                 <label><b>Username:</b></label>
-                <input type="text" value="@userForm.get().name" name="name" id="name" required>
+                <input type="text" value="@userForm.get().getName()" name="name" id="name" required>
 
                 <label><b>Surname:</b></label>
-                <input type="text" value="@userForm.get().surname" name="surname" id="surname" required>
+                <input type="text" value="@userForm.get().getSurname()" name="surname" id="surname" required>
                 <br><br>
                 <button type="submit">Edit</button>
             </div>

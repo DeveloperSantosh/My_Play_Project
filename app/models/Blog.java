@@ -3,20 +3,25 @@ package models;
 import play.data.validation.Constraints;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
-public class Blog {
+public class Blog{
 
     @Constraints.Required
     @Id
-    public String title;
+    private String title;
 
     @Constraints.Required
-    public String content;
+    private String content;
 
-    public String timestamp;
+    private String timestamp;
+
+    @Constraints.Required
+    @ManyToOne
+    private User author;
 
     public Blog(){
         LocalDateTime dateTime = LocalDateTime.now();
@@ -57,5 +62,11 @@ public class Blog {
         this.timestamp = timestamp;
     }
 
+    public User getAuthor() {
+        return author;
+    }
 
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 }

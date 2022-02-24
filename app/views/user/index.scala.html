@@ -1,4 +1,4 @@
-@(users: Set[User])
+@(users: List[User])
 <html>
     <head>
         <title>All Users</title>
@@ -7,12 +7,12 @@
         <hi>All Users</hi>
         <br><br>
         @for(user <- users){
-            <a href="@routes.UserController.showUser(user.id)">ID: @user.id</a>
-            <p>Name: @user.name</p>
-            <p>Surname: @user.surname</p>
-            <a href="@routes.UserController.editUser(user.id)">Edit User</a>
+            <a href="@routes.UserController.showUser(user.getId())">ID: @user.getId()</a>
+            <p>Name: @user.getName</p>
+            <p>Surname: @user.getSurname</p>
+            <a href="@routes.UserController.editUser(user.getId())">Edit User</a>
 
-            <a href="@routes.UserController.deleteUser(user.id)">Delete User</a>
+            <a href="@routes.UserController.deleteUser(user.getId())">Delete User</a>
             <br>
         }
         <br><br>

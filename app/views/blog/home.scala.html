@@ -7,8 +7,8 @@
         <hi>All Blogs Title</hi>
         <br><br>
         @for(blog <- blogs){
-            <a href="@routes.BlogController.showBlog(blog.title)">Title: @blog.title</a>
-            <p>@blog.timestamp</p>
+            <a href="@routes.BlogController.showBlog(blog.getTitle())">Title: @blog.getTitle()</a>
+            <p>@blog.getTimestamp()</p>
             <br><br>
         }
         <br>

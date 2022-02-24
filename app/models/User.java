@@ -4,19 +4,19 @@ import play.data.validation.Constraints;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 public class User{
 
     @Id
     @Constraints.Required
-    public Integer id;
+    private int id;
     @Constraints.Required
-    public String name;
+    private String name;
     @Constraints.Required
-    public String surname;
+    private String surname;
 
     public User() {
     }
@@ -27,40 +27,11 @@ public class User{
         this.surname = surname;
     }
 
-    private static Set<User> users;
-
-    static {
-        users = new HashSet<>();
-        users.add(new User(1,"Santosh", "Mahato"));
-        users.add(new User(2,"ABC", "XYZ"));
-        users.add(new User(3,"MVC", "aws"));
-    }
-
-    public static Set<User> allUsers(){
-        return users;
-    }
-
-    public static User findById(Integer id){
-        for(User user:users){
-            if(id.equals(user.id))
-                return user;
-        }
-        return null;
-    }
-
-    public static void add(User user){
-        users.add(user);
-    }
-
-    public static boolean remove(User user){
-        return users.remove(user);
-    }
-
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -34,11 +34,6 @@ public class HomeControllerTest extends WithApplication {
         assertEquals(OK, result.status());
     }
 
-    @Test
-    public void testBlogCreation(){
-        Blog blog = new Blog("My blog","This is a test blog.");
-        assert blog != null;
-    }
 
     @Test
     public void testUserCreation(){
