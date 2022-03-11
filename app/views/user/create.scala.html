@@ -9,12 +9,16 @@
         <form action="@routes.UserController.saveUser()" method="post" >
             <div>
                 <label><b>ID:</b></label>
-                <input type="text" placeholder="Enter ID" name="id" required>
+                <input type="number" placeholder="Enter ID" name="id" required>
                 <label><b>Username:</b></label>
-                <input type="text" placeholder="Enter Username" name="name" required>
-
+                <br>
+                <input type="text" placeholder="Enter Username" name="username" required>
                 <label><b>Surname:</b></label>
-                <input type="text" placeholder="Enter Surname" name="surname" required>
+                <br>
+                <input type="text" placeholder="Enter Password" name="password" required>
+                <label><b>Email:</b></label>
+                <br>
+                <input type="email" placeholder="Enter Email-ID" name="email" required>
                 <br><br>
                 <button type="submit">Create User</button>
             </div>

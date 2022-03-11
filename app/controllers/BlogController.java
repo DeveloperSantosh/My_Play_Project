@@ -1,68 +1,68 @@
 package controllers;
 
-import models.Blog;
-import models.User;
-import play.data.DynamicForm;
+import model.Blog;
+import model.User;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import repository.BlogRepository;
+import repository.UserRepository;
+
 import javax.inject.Inject;
-import java.util.HashMap;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BlogController extends Controller {
 
+
+    private final FormFactory formFactory;
+    private final BlogRepository blogRepository;
     List<Blog> blogs;
-    BlogSQLController blogSQLController;
 
     @Inject
-    FormFactory formFactory;
-
-    public BlogController() {
-        blogSQLController = new BlogSQLController();
-        blogs = blogSQLController.retrieveBlogs();
+    public BlogController(FormFactory formFactory) {
+        this.formFactory = formFactory;
+        blogRepository = BlogRepository.getInstance();
+        blogs = new ArrayList<>();
     }
 
-    public Result home(){
-        return ok(views.html.blog.home.render(blogs));
+    public Result home(Integer userId) throws SQLException {
+        blogs = blogRepository.findAllBlogs();
+        return ok(views.html.blog.home.render(blogs, userId));
     }
 
-    public Result showBlog(String title){
-        for(Blog blog: blogs){
-            if(blog.getTitle().equals(title)){
-                return ok(views.html.blog.show.render(blog));
-            }
+    public Result showBlog(String title, Integer userId){
+        try {
+            Blog blog = blogRepository.findBlogByTitle(title);
+            return ok(views.html.blog.show.render(blog, userId));
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return notFound("Sorry! blog not found");
     }
 
-    public Result createBlog(int userId){
+    public Result createBlog(Integer userId){
         Form<Blog> form = formFactory.form(Blog.class);
         return ok(views.html.blog.create.render(form, userId));
     }
 
-    public Result saveBlog(int userId, Http.Request request){
+    public Result saveBlog(Integer userId, Http.Request request) {
         Form<Blog> blogForm = formFactory.form(Blog.class).bindFromRequest(request);
         Blog blog = blogForm.get();
-        User user = new UserSQLController().retrieveUserById(userId);
-        blog.setAuthor(user);
-        blogSQLController.insertBlog(blog);
-        blogs = blogSQLController.retrieveBlogs();
-        return redirect(routes.BlogController.home());
+        try {
+            User user = UserRepository.getInstance().findUserByID(userId);
+            blog.setAuthor(user);
+            blogRepository.save(blog);
+            blogs = blogRepository.findAllBlogs();
+            return redirect(routes.BlogController.home(userId));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notFound();
     }
 
-    public Result deleteBlog(String title){
-        for(Blog blog : blogs){
-            if(blog.getTitle().equals(title)){
-                blogSQLController.deleteBlog(blog);
-                blogs = blogSQLController.retrieveBlogs();
-                return redirect(routes.BlogController.home());
-            }
-        }
-        return notFound("Sorry! blog not found");
-    }
 
 }

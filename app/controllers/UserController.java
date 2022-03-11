@@ -1,76 +1,64 @@
 package controllers;
 
-import models.User;
+import model.LoginForm;
+import model.User;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import repository.BlogRepository;
+import repository.UserRepository;
 import javax.inject.Inject;
-import java.util.List;
+import java.sql.SQLException;
 
 public class UserController  extends Controller {
 
     private final FormFactory formFactory;
-    UserSQLController userSQLController;
-    List<User> users;
+    UserRepository userRepository;
+    BlogRepository blogRepository;
 
     @Inject
     public UserController(FormFactory formFactory){
         this.formFactory = formFactory;
-        userSQLController = new UserSQLController();
-
+        userRepository = UserRepository.getInstance();
+        blogRepository = BlogRepository.getInstance();
     }
 
     public Result index(){
-//        Set<User> users = User.allUsers();
-        users = userSQLController.retrieveUsers();
-        return ok(views.html.user.index.render(users));
+        Form<LoginForm> userForm = formFactory.form(LoginForm.class);
+        return ok(views.html.index.render(userForm));
     }
 
-    public Result createUser(){
-        Form <User> userForm = formFactory.form(User.class);
-        return ok(views.html.user.create.render(userForm));
+    public Result register() {
+        Form<User> form = formFactory.form(User.class);
+        return ok(views.html.user.create.render(form));
     }
 
-    public Result saveUser(Http.Request request){
+    public Result login(Http.Request request){
+        Form <LoginForm> userForm = formFactory.form(LoginForm.class).bindFromRequest(request);
+        LoginForm userRequest = userForm.get();
+
+        User user = null;
+        try {
+            user = userRepository.findUserByEmail(userRequest.getEmail());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return notFound();
+        }
+        if(!user.getPassword().equals(userRequest.getPassword())){
+            return redirect(routes.UserController.index());
+        }
+        return redirect(routes.BlogController.home(user.getId()));
+    }
+
+    public Result saveUser(Http.Request request) throws SQLException {
         Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
         User user = userForm.get();
-        userSQLController.insertUser(user);
-        users = userSQLController.retrieveUsers();
-        return redirect(routes.UserController.index());
+        if (userRepository.save(user))
+            redirect(routes.UserController.index());
+        return ok();
     }
 
-    public Result editUser(Integer id){
-        User user = userSQLController.retrieveUserById(id);
-        if(user == null){
-            return notFound("Sorry! User not found");
-        }
-        Form <User> userForm = formFactory.form(User.class).fill(user);
-        return ok(views.html.user.edit.render(userForm));
-    }
 
-    public Result updateUser(Http.Request request){
-        Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
-        User newUser = userForm.get();
-        userSQLController.updateUser(newUser.getId(), newUser);
-        return redirect(routes.UserController.index());
-    }
-
-    public Result showUser(Integer id){
-        User user = userSQLController.retrieveUserById(id);
-        if(user == null){
-            return notFound("Sorry! User Not Found.");
-        }
-        return ok(views.html.user.show.render(user));
-    }
-
-    public Result deleteUser(Integer id){
-        User user = userSQLController.retrieveUserById(id);
-        if(user == null){
-            return notFound("Sorry! user not found");
-        }
-        userSQLController.deleteUser(user);
-        return redirect(routes.UserController.index());
-    }
 }

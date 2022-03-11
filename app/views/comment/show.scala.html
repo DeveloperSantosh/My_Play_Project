@@ -1,16 +1,21 @@
-@(blogTitle:String, comments: List[Comment])
+@(blogId:Integer, userId: Integer, comments: List[Comment])
 
 <html>
     <head>
-        <title>blogTitle</title>
+        <title>Comments</title>
     </head>
     <body>
+        <label><b>Total Comment Found: @comments.size()</b></label><br>
+        <ol>
         @for(comment <- comments){
-            <p><b>Name: @comment.username</b></p>
-            <p><b>@comment.timestamp</b></p>
-            <p>Comment: @comment.comment</p>
-            <br><br>
+            <li>
+            @comment.getComment()<br>
+            <b>@comment.getTimestamp()</b>
+            </li>
         }
-        <p>Go To blog <a href="@routes.BlogController.showBlog(blogTitle)">@blogTitle </a>Page</p>
+        </ol>
+        <br>
+        <p>Go To blog <a href="@routes.BlogController.showBlog(comments.get(0).getBlog().getTitle(), userId)">
+            @comments.get(0).getBlog().getTitle() </a>Page</p>
     </body>
 </html>

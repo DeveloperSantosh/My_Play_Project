@@ -1,18 +1,13 @@
-package models;
+package model;
 
-import play.data.validation.Constraints;
-
-import javax.persistence.Entity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Entity
 public class Comment{
-    @Constraints.Required
-    public String username;
-    @Constraints.Required
+    private int commentId;
     public String comment;
     public String timestamp;
+    private Blog blog;
 
     public Comment() {
         LocalDateTime dateTime = LocalDateTime.now();
@@ -21,19 +16,10 @@ public class Comment{
     }
 
     public Comment(String username, String comment) {
-        this.username = username;
         this.comment = comment;
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         timestamp = dateTime.format(myFormatObj);
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getComment() {
@@ -50,5 +36,21 @@ public class Comment{
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public int getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
+    }
+
+    public Blog getBlog() {
+        return blog;
+    }
+
+    public void setBlog(Blog blog) {
+        this.blog = blog;
     }
 }

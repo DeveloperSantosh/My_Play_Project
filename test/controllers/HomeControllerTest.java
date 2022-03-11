@@ -1,15 +1,11 @@
 package controllers;
 
-import models.Blog;
-import models.User;
 import org.junit.Test;
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,11 +30,5 @@ public class HomeControllerTest extends WithApplication {
         assertEquals(OK, result.status());
     }
 
-
-    @Test
-    public void testUserCreation(){
-        User user = new User(1, "Santosh", "Mahato");
-        assert user != null;
-    }
 
 }

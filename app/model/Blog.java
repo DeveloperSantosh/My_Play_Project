@@ -1,40 +1,38 @@
-package models;
+package model;
 
-import play.data.validation.Constraints;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Entity
 public class Blog{
 
-    @Constraints.Required
-    @Id
+    private int blogId;
     private String title;
-
-    @Constraints.Required
     private String content;
-
     private String timestamp;
-
-    @ManyToOne
     private User author;
 
-    public Blog(){
+    public Blog() {
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         timestamp = dateTime.format(myFormatObj);
     }
 
-
-    public Blog(String title, String content) {
+    public Blog(int blogId, String title, String content, User author) {
+        this.blogId = blogId;
         this.title = title;
         this.content = content;
+        this.author = author;
         LocalDateTime dateTime = LocalDateTime.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         timestamp = dateTime.format(myFormatObj);
+    }
+
+    public int getBlogId() {
+        return blogId;
+    }
+
+    public void setBlogId(int blogId) {
+        this.blogId = blogId;
     }
 
     public String getTitle() {

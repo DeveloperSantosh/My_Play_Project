@@ -1,18 +1,22 @@
-@(blog: Blog)
+@(blog: Blog, userId: Integer)
 
 <html>
     <head>
         <title>@blog.getTitle()</title>
     </head>
     <body>
-        <p><b>@blog.getTitle()
-            <br>@blog.getTimestamp()
-        </b></p>
+        <a target="_blank" href="#">
+            <img src="@routes.Assets.versioned("images/img.png")">
+        </a><br>
+        <b>
+            @blog.getTitle()<br>
+            @blog.getTimestamp()
+        </b><br><b>Content:</b><br>
         <p> @blog.getContent()</p>
         <br><br>
-        <a href="@routes.BlogController.deleteBlog(blog.getTitle())">Delete Blog</a>
-        <a href="@routes.CommentController.showComment(blog.getTitle())">View Comment</a>
-        <a href="@routes.CommentController.addComment(blog.getTitle())">Add Comment</a>
+        <a href="@routes.CommentController.showComment(blog.getBlogId(), userId)">View Comment</a><br>
+        <a href="@routes.CommentController.addComment(blog.getBlogId(), userId)">Add Comment</a><br>
+        <a href="@routes.BlogController.home(userId)">Go To Blogs Page</a>
         <br>
     </body>
 </html>
