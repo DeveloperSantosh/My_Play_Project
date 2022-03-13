@@ -1,7 +1,9 @@
 package controllers;
 
-import model.Blog;
-import model.User;
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import models.Blog;
+import models.User;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -34,6 +36,7 @@ public class BlogController extends Controller {
         return ok(views.html.blog.home.render(blogs, userId));
     }
 
+    @Restrict(@Group({"ADMIN"}))
     public Result showBlog(String title, Integer userId){
         try {
             Blog blog = blogRepository.findBlogByTitle(title);
@@ -44,11 +47,13 @@ public class BlogController extends Controller {
         return notFound("Sorry! blog not found");
     }
 
+    @Restrict(@Group({"USER"}))
     public Result createBlog(Integer userId){
         Form<Blog> form = formFactory.form(Blog.class);
         return ok(views.html.blog.create.render(form, userId));
     }
 
+    @Restrict(@Group({"USER"}))
     public Result saveBlog(Integer userId, Http.Request request) {
         Form<Blog> blogForm = formFactory.form(Blog.class).bindFromRequest(request);
         Blog blog = blogForm.get();

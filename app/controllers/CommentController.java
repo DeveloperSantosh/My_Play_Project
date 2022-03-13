@@ -1,6 +1,8 @@
 package controllers;
 
-import model.Comment;
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import models.Comment;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -28,6 +30,7 @@ public class CommentController extends Controller {
         commentRepository = CommentRepository.getInstance();
     }
 
+    @Restrict(@Group({"USER"}))
     public Result showComment(Integer blogId, Integer userId) throws SQLException {
         List<Comment> blogComment = new ArrayList<>();
         List<Comment> allComments = commentRepository.findAllComments();
@@ -39,11 +42,13 @@ public class CommentController extends Controller {
         return ok(views.html.comment.show.render(blogId, userId, blogComment));
     }
 
+    @Restrict(@Group({"USER"}))
     public Result addComment(Integer blogId, Integer userId, Http.Request request){
         Form<Comment> commentForm = formFactory.form(Comment.class);
         return ok(views.html.comment.add.render(blogId, userId,commentForm, request, messagesApi.preferred(request)));
     }
 
+    @Restrict(@Group({"USER"}))
     public Result saveComment(Integer blogId, Integer userId, Http.Request request) throws SQLException {
         Form<Comment> commentForm = formFactory.form(Comment.class).bindFromRequest(request);
         Comment newComment = commentForm.get();

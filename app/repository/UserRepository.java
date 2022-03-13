@@ -1,7 +1,9 @@
 package repository;
 
-import model.User;
+import models.User;
+import play.db.Database;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
-    String TABLE_NAME = "MY_USER";
-    String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+    private static final String TABLE_NAME = "MY_USER";
+    private static final String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
             "USER_ID INTEGER AUTO_INCREMENT, "+
             "USERNAME varchar(200) NOT NULL, "+
             "PASSWORD varchar(200) NOT NULL, "+
@@ -41,7 +43,7 @@ public class UserRepository {
                 user.getEmail()+"');";
         int count = statement.executeUpdate(saveQuery);
         System.out.println(saveQuery);
-        return (count == 1);
+        return (count == 1 && UserRoleRepository.getInstance().save(user));
     }
 
     public User findUserByID(Integer id) throws SQLException {
@@ -54,6 +56,7 @@ public class UserRepository {
             user.setUsername(resultSet.getString("USERNAME"));
             user.setPassword(resultSet.getString("PASSWORD"));
             user.setEmail(resultSet.getString("EMAIL"));
+            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
             return user;
         }
         return null;
@@ -69,6 +72,7 @@ public class UserRepository {
             user.setUsername(resultSet.getString("USERNAME"));
             user.setPassword(resultSet.getString("PASSWORD"));
             user.setEmail(resultSet.getString("EMAIL"));
+            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
             return user;
         }
         return null;
@@ -84,6 +88,7 @@ public class UserRepository {
             user.setUsername(resultSet.getString("USERNAME"));
             user.setPassword(resultSet.getString("PASSWORD"));
             user.setEmail(resultSet.getString("EMAIL"));
+            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
             return user;
         }
         return null;
@@ -100,6 +105,7 @@ public class UserRepository {
             user.setUsername(resultSet.getString("USERNAME"));
             user.setPassword(resultSet.getString("PASSWORD"));
             user.setEmail(resultSet.getString("EMAIL"));
+            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
             users.add(user);
         }
         return users;
@@ -111,6 +117,7 @@ public class UserRepository {
                 "PASSWORD = '"+newUser.getPassword()+"',"+
                 "EMAIL = '"+newUser.getEmail()+"' " +
                 "WHERE USER_ID="+oldUser.getId();
+        UserRoleRepository.getInstance().updateUserRole(oldUser, newUser);
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);
@@ -118,6 +125,7 @@ public class UserRepository {
 
     public boolean delete(User user) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID="+user.getId();
+        UserRoleRepository.getInstance().deleteUserAllRoles(user);
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);

@@ -1,7 +1,8 @@
 package controllers;
 
-import model.LoginForm;
-import model.User;
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import models.User;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
@@ -26,7 +27,7 @@ public class UserController  extends Controller {
     }
 
     public Result index(){
-        Form<LoginForm> userForm = formFactory.form(LoginForm.class);
+        Form<User> userForm = formFactory.form(User.class);
         return ok(views.html.index.render(userForm));
     }
 
@@ -36,9 +37,9 @@ public class UserController  extends Controller {
     }
 
     public Result login(Http.Request request){
-        Form <LoginForm> userForm = formFactory.form(LoginForm.class).bindFromRequest(request);
-        LoginForm userRequest = userForm.get();
-
+        Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
+        User userRequest = userForm.get();
+        request.session().adding("email",userRequest.getEmail());
         User user = null;
         try {
             user = userRepository.findUserByEmail(userRequest.getEmail());

@@ -1,7 +1,7 @@
 package repository;
 
-import model.Blog;
-import model.User;
+import models.Blog;
+import models.User;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;

@@ -11,10 +11,8 @@ libraryDependencies += guice
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  javaWs,
-  javaForms,
-  ehcache,
   "mysql" % "mysql-connector-java" % "8.0.28",
+  "be.objectify" %% "deadbolt-java" % "2.8.1"
 )
 
-
+//routesGenerator := InjectedRoutesGenerator

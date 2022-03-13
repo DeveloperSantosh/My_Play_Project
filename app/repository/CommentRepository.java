@@ -1,7 +1,7 @@
 package repository;
 
-import model.Blog;
-import model.Comment;
+import models.Blog;
+import models.Comment;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;

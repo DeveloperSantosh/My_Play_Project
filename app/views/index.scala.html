@@ -1,4 +1,4 @@
-@(userFrom:play.data.Form[JwtRequest])
+@(userFrom:play.data.Form[User])
 @import helper._
 <html>
   <head>
@@ -15,6 +15,9 @@
         <br><br>
         <button type="submit">Login</button>
     </form>
-    <button onsubmit="@routes.UserController.register()" formmethod="get">Register</button>
+    <form action="@routes.UserController.register()" method="get">
+        <button type="submit">Register</button>
+    </form>
+
   </body>
 </html>
