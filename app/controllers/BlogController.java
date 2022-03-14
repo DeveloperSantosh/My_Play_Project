@@ -2,6 +2,8 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
 import models.Blog;
 import models.User;
 import play.data.Form;
@@ -9,8 +11,10 @@ import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.With;
 import repository.BlogRepository;
 import repository.UserRepository;
+import security.MyDeadboltHandler;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
@@ -18,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlogController extends Controller {
-
-
     private final FormFactory formFactory;
     private final BlogRepository blogRepository;
     List<Blog> blogs;
@@ -31,12 +33,13 @@ public class BlogController extends Controller {
         blogs = new ArrayList<>();
     }
 
+    @Restrict(@Group({"USER"}))
     public Result home(Integer userId) throws SQLException {
         blogs = blogRepository.findAllBlogs();
         return ok(views.html.blog.home.render(blogs, userId));
     }
 
-    @Restrict(@Group({"ADMIN"}))
+    @Restrict(@Group({"USER"}))
     public Result showBlog(String title, Integer userId){
         try {
             Blog blog = blogRepository.findBlogByTitle(title);

@@ -7,6 +7,8 @@
 GET     /                                  controllers.UserController.index()
 +nocsrf
 POST    /login                              controllers.UserController.login(request: Request)
++nocsrf
+DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
 GET     /register                           controllers.UserController.register()
 +nocsrf
 POST    /register                           controllers.UserController.saveUser(request: Request)

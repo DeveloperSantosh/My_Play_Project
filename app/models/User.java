@@ -11,16 +11,18 @@ public class User implements Subject {
     private String password;
     private String email;
     private List<UserRole> roles;
+    private List<UserPermission> permissions;
 
     public User() {
     }
 
-    public User(int id, String username, String password, String email, List<UserRole> roles) {
+    public User(int id, String username, String password, String email, List<UserRole> roles, List<UserPermission> permissions) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.roles = roles;
+        this.permissions = permissions;
     }
 
     public int getId() {
@@ -59,14 +61,18 @@ public class User implements Subject {
         this.roles = roles;
     }
 
+    public void setPermissions(List<UserPermission> permissions) {
+        this.permissions = permissions;
+    }
+
     @Override
-    public List<? extends Permission> getPermissions() {
-        return null;
+    public List<UserPermission> getPermissions() {
+        return permissions;
     }
 
     @Override
     public String getIdentifier() {
-        return null;
+        return email;
     }
 
     @Override
