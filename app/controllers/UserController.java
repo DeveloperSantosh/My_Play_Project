@@ -3,6 +3,8 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.MyUser;
+import models.RequestUser;
+import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
@@ -23,6 +25,8 @@ public class UserController  extends Controller {
     UserRepository userRepository;
     BlogRepository blogRepository;
     HttpExecutionContext ec;
+    @Inject
+    FormFactory formFactory;
 
     @Inject
     public UserController(HttpExecutionContext ec){
@@ -43,39 +47,45 @@ public class UserController  extends Controller {
 //    }
 
     public Result login(Http.Request request){
+        Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
+        if(requestUserForm.hasErrors()){
+            return badRequest("Error in form data.");
+        }
+        RequestUser requestUser = requestUserForm.get();
         String email = request.body().asJson().get("email").textValue();
         String password = request.body().asJson().get("password").textValue();
 
         MyUser myUser = null;
         try {
-            myUser= userRepository.findUserByEmail(email);
-            if(myUser != null && password.equals(myUser.getPassword()) ){
+            myUser= userRepository.findUserByEmail(requestUser.getEmail());
+            if(myUser != null && requestUser.getPassword().equals(myUser.getPassword()) ){
                 request.session().adding("email", myUser.getEmail());
             }
             else return notFound("Sorry Username and password not matched");
         } catch (SQLException e) {
             e.printStackTrace();
-            return notFound("Sorry user not found");
+            return internalServerError("Something went wrong");
         }
         return ok("Login Successfully").addingToSession(request, "email",email);
     }
 
     public Result saveUser(Http.Request request) throws SQLException {
-        String email = request.body().asJson().get("email").textValue();
-        String password = request.body().asJson().get("password").textValue();
-        String username = request.body().asJson().get("username").textValue();
+        Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
+        if(requestUserForm.hasErrors()){
+            return badRequest("Error in form data.");
+        }
+        RequestUser requestUser = requestUserForm.get();
         MyUser user = MyUser.newBuilder()
-                .setEmail(email)
-                .setPassword(password)
-                .setUsername(username)
+                .setEmail(requestUser.getEmail())
+                .setPassword(requestUser.getPassword())
+                .setUsername(requestUser.getUsername())
                 .addRole(RoleRepository.getInstance().findUserRoleByType("USER"))
                 .addAllPermission(PermissionRepository.getInstance().findAllPermissions())
                 .build();
         try{
             userRepository.save(user);
-            MyUser savedUser = userRepository.findUserByEmail(email);
             return ok("User created successfully with id: " +
-                    userRepository.findUserByEmail(email).getId());
+                    userRepository.findUserByEmail(user.getEmail()).getId());
         }catch (SQLException  e){
             e.printStackTrace();
             return internalServerError("Could Not create user");

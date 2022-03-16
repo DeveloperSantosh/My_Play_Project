@@ -3,6 +3,8 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.MyBlog;
+import models.RequestBlog;
+import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -53,13 +55,15 @@ public class BlogController extends Controller {
 //    }
 
     @Restrict(@Group({"USER"}))
-    public Result saveBlog(Integer userId, Http.Request request) throws SQLException {
-        String title = request.body().asJson().get("title").textValue();
-        String content = request.body().asJson().get("content").textValue();
-        int authorId = request.body().asJson().get("username").intValue();
+    public Result saveBlog(Integer authorId, Http.Request request) throws SQLException {
+        Form<RequestBlog> requestBlogForm =  formFactory.form(RequestBlog.class).bindFromRequest(request);
+        if(requestBlogForm.hasErrors()){
+            return badRequest("Error in form data.");
+        }
+        RequestBlog requestBlog = requestBlogForm.get();
         MyBlog newBlog = MyBlog.newBuilder()
-                .setTitle(title)
-                .setContent(content)
+                .setTitle(requestBlog.getTitle())
+                .setContent(requestBlog.getContent())
                 .setAuthor(UserRepository.getInstance().findUserByID(authorId))
                 .setTimestamp(CommentController.getCurrentTimeStamp())
                 .build();

@@ -4,6 +4,8 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.MyComment;
 import models.RequestComment;
+import models.RequestUser;
+import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
 import play.mvc.Controller;
@@ -54,9 +56,14 @@ public class CommentController extends Controller {
 
     @Restrict(@Group({"USER"}))
     public Result saveComment(String title, Integer userId, Http.Request request) throws SQLException {
-        String comment = request.body().asJson().get("comment").textValue();
+        Form<RequestComment> requestCommentForm =  formFactory.form(RequestComment.class).bindFromRequest(request);
+        if(requestCommentForm.hasErrors()){
+            return badRequest("Error in form data.");
+        }
+        RequestComment requestComment = requestCommentForm.get();
+//        String comment = request.body().asJson().get("comment").textValue();
         MyComment newComment = MyComment.newBuilder()
-                .setComment(comment)
+                .setComment(requestComment.getComment())
                 .setBlog(BlogRepository.getInstance().findBlogByTitle(title))
                 .setTimestamp(getCurrentTimeStamp())
                 .build();
