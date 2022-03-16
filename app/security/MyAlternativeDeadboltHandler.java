@@ -6,7 +6,6 @@ import be.objectify.deadbolt.java.models.Subject;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.UserRepository;
-import views.html.accessFailed;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +37,7 @@ public class MyAlternativeDeadboltHandler extends AbstractDeadboltHandler {
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
         // you can return any result from here - forbidden, etc
-        return CompletableFuture.supplyAsync(() -> ok(accessFailed.render()));
+        return CompletableFuture.supplyAsync(() -> notFound("Authentication Failed"));
     }
 
     @Override

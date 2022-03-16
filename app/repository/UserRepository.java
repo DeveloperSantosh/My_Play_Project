@@ -1,9 +1,6 @@
 package repository;
 
-import models.User;
-import play.db.Database;
-
-import javax.inject.Inject;
+import models.MyUser;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +32,7 @@ public class UserRepository {
         }
     }
 
-    public boolean save(@NotNull User user) throws SQLException {
+    public boolean save(@NotNull MyUser user) throws SQLException {
         String saveQuery = "INSERT INTO "+TABLE_NAME+
                 " (USERNAME, PASSWORD, EMAIL) VALUES ('"+
                 user.getUsername()+"','"+
@@ -43,75 +40,83 @@ public class UserRepository {
                 user.getEmail()+"');";
         int count = statement.executeUpdate(saveQuery);
         System.out.println(saveQuery);
-        return (count == 1 && UserRoleRepository.getInstance().save(user));
+        return (count == 1 && UserRoleRepository.getInstance().save(user)  && UserPermissionRepository.getInstance().save(user));
     }
 
-    public User findUserByID(Integer id) throws SQLException {
+    public MyUser findUserByID(Integer id) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID="+id;
-        User user = new User();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            user.setId(resultSet.getInt("USER_ID"));
-            user.setUsername(resultSet.getString("USERNAME"));
-            user.setPassword(resultSet.getString("PASSWORD"));
-            user.setEmail(resultSet.getString("EMAIL"));
-            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
-            return user;
+            return MyUser.newBuilder()
+                    .setId(id)
+                    .setUsername(resultSet.getString("USERNAME"))
+                    .setPassword(resultSet.getString("PASSWORD"))
+                    .setEmail(resultSet.getString("EMAIL"))
+                    .addAllRole(UserRoleRepository.getInstance().findRolesByUserId(id))
+                    .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
+                    .build();
         }
         return null;
     }
 
-    public User findUserByName(String name) throws SQLException {
+    public MyUser findUserByName(String name) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USERNAME='"+name+"';";
-        User user = new User();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            user.setId(resultSet.getInt("USER_ID"));
-            user.setUsername(resultSet.getString("USERNAME"));
-            user.setPassword(resultSet.getString("PASSWORD"));
-            user.setEmail(resultSet.getString("EMAIL"));
-            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
-            return user;
+            int id = resultSet.getInt("USER_ID");
+            return MyUser.newBuilder()
+                    .setId(id)
+                    .setUsername(resultSet.getString("USERNAME"))
+                    .setPassword(resultSet.getString("PASSWORD"))
+                    .setEmail(resultSet.getString("EMAIL"))
+                    .addAllRole(UserRoleRepository.getInstance().findRolesByUserId(id))
+                    .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
+                    .build();
         }
         return null;
     }
 
-    public User findUserByEmail(String email) throws SQLException {
+    public MyUser findUserByEmail(String email) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE EMAIL = '"+email+"';";
-        User user = new User();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            user.setId(resultSet.getInt("USER_ID"));
-            user.setUsername(resultSet.getString("USERNAME"));
-            user.setPassword(resultSet.getString("PASSWORD"));
-            user.setEmail(resultSet.getString("EMAIL"));
-            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
-            return user;
+            int id = resultSet.getInt("USER_ID");
+            return MyUser.newBuilder()
+                    .setId(id)
+                    .setUsername(resultSet.getString("USERNAME"))
+                    .setPassword(resultSet.getString("PASSWORD"))
+                    .setEmail(resultSet.getString("EMAIL"))
+                    .addAllRole(UserRoleRepository.getInstance().findRolesByUserId(id))
+                    .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
+                    .build();
         }
         return null;
     }
 
-    public List<User> findAllUsers() throws SQLException {
+    public List<MyUser> findAllUsers() throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<User> users = new ArrayList<>();
+        List<MyUser> users = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
-            User user = new User();
-            user.setId(resultSet.getInt("USER_ID"));
-            user.setUsername(resultSet.getString("USERNAME"));
-            user.setPassword(resultSet.getString("PASSWORD"));
-            user.setEmail(resultSet.getString("EMAIL"));
-            user.setRoles(UserRoleRepository.getInstance().findRolesByUserId(user.getId()));
+            int id = resultSet.getInt("USER_ID");
+            MyUser user = MyUser.newBuilder()
+                    .setId(id)
+                    .setUsername(resultSet.getString("USERNAME"))
+                    .setPassword(resultSet.getString("PASSWORD"))
+                    .setEmail(resultSet.getString("EMAIL"))
+                    .addAllRole(UserRoleRepository.getInstance().findRolesByUserId(id))
+                    .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
+                    .build();
             users.add(user);
         }
         return users;
     }
 
-    public boolean updateUser(User oldUser, User newUser) throws SQLException {
+    public boolean updateUser(MyUser oldUser, MyUser newUser) throws SQLException {
         String query = "UPDATE "+TABLE_NAME+" SET "+
                 "USERNAME = '"+newUser.getUsername()+"',"+
                 "PASSWORD = '"+newUser.getPassword()+"',"+
@@ -123,9 +128,10 @@ public class UserRepository {
         return (count == 1);
     }
 
-    public boolean delete(User user) throws SQLException {
+    public boolean delete(MyUser user) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID="+user.getId();
         UserRoleRepository.getInstance().deleteUserAllRoles(user);
+        UserPermissionRepository.getInstance().deleteUserAllPermission(user);
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);

@@ -1,7 +1,7 @@
 package repository;
 
-import models.User;
-import models.UserRole;
+import models.MyUser;
+import models.MyRole;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,23 +31,24 @@ public class UserRoleRepository {
         }
     }
 
-    public boolean save(@NotNull User user) throws SQLException {
+    public boolean save(@NotNull MyUser user) throws SQLException {
         int count = 0;
-        for(UserRole role: user.getRoles()) {
+        for(MyRole role: user.getRoleList()) {
             String saveQuery = "INSERT INTO " + TABLE_NAME +
                     " (ROLE_TYPE, USER_ID) VALUES ('" +
                     role.getRoleType() + "','" +
                     user.getId() + "');";
-            boolean save = RoleRepository.getInstance().save(role);
+            if(!RoleRepository.getInstance().findAllUserRoles().contains(role))
+                RoleRepository.getInstance().save(role);
             count = statement.executeUpdate(saveQuery);
             System.out.println(saveQuery);
         }
         return (count >= 1);
     }
 
-    public List<User> findUsersByRoleType(String roleType) throws SQLException {
+    public List<MyUser> findUsersByRoleType(String roleType) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE='"+roleType+"';";
-        List<User> users = new ArrayList<>();
+        List<MyUser> users = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
@@ -56,9 +57,9 @@ public class UserRoleRepository {
         return users;
     }
 
-    public List<UserRole> findRolesByUserId(int userId) throws SQLException {
+    public List<MyRole> findRolesByUserId(int userId) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID = "+userId;
-        List<UserRole> userRoles = new ArrayList<>();
+        List<MyRole> userRoles = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
@@ -68,9 +69,9 @@ public class UserRoleRepository {
         return userRoles;
     }
 
-    public boolean updateUserRole(User oldUser, User newUser) throws SQLException {
+    public boolean updateUserRole(MyUser oldUser, MyUser newUser) throws SQLException {
         int count =0;
-        for(UserRole role:newUser.getRoles()) {
+        for(MyRole role:newUser.getRoleList()) {
             String query = "UPDATE " + TABLE_NAME + " SET ROLE_TYPE ='" + role.getRoleType() + "', USER_ID="+newUser.getId()+
                     " WHERE USER_ID=" + oldUser.getId()+" and ROLE_TYPE='"+role.getRoleType()+"'";
             count = statement.executeUpdate(query);
@@ -80,14 +81,14 @@ public class UserRoleRepository {
 
     }
 
-    public boolean deleteUserRole(User user, UserRole role) throws SQLException {
+    public boolean deleteUserRole(MyUser user, MyRole role) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE ='"+role.getRoleType()+"' and USER_ID="+user.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);
     }
 
-    public boolean deleteUserAllRoles(User user) throws SQLException {
+    public boolean deleteUserAllRoles(MyUser user) throws SQLException {
             String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID="+user.getId();
             int count = statement.executeUpdate(query);
             System.out.println(query);

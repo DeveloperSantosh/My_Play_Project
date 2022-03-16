@@ -1,8 +1,7 @@
 package repository;
 
-import models.User;
-import models.UserPermission;
-
+import models.MyPermission;
+import models.MyUser;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,41 +31,43 @@ public class UserPermissionRepository {
         }
     }
 
-    public boolean save(@NotNull User user) throws SQLException {
+    public boolean save(@NotNull MyUser user) throws SQLException {
         int count = 0;
-        for(UserPermission p: user.getPermissions()){
+        for(MyPermission p: user.getPermissionList()){
             String saveQuery = "INSERT INTO "+TABLE_NAME+
                     " (PERMISSION_ID, USER_ID) VALUES ("+ user.getId()+","+p.getId()+");";
-            boolean save = PermissionRepository.getInstance().save(p);
+            if(!PermissionRepository.getInstance().findAllPermissions().contains(p))
+                PermissionRepository.getInstance().save(p);
             count = statement.executeUpdate(saveQuery);
             System.out.println(saveQuery);
         }
         return (count >= 1);
     }
 
-    public List<UserPermission> findAllPermissionsByUserId(int userId) throws SQLException {
+    public List<MyPermission> findAllPermissionsByUserId(int userId) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID="+userId;
-        List<UserPermission> permissions = new ArrayList<>();
+        List<MyPermission> permissions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
-            UserPermission permission = new UserPermission();
-            permission.setId(resultSet.getInt("PERMISSION_ID"));
-            permission.setValue(resultSet.getString("VALUE"));
+            MyPermission permission = MyPermission.newBuilder()
+                    .setId(resultSet.getInt("PERMISSION_ID"))
+                    .setValue(resultSet.getString("VALUE"))
+                    .build();
             permissions.add(permission);
         }
         return permissions;
     }
 
 
-    public boolean deleteUserPermission(User user, UserPermission permission) throws SQLException {
+    public boolean deleteUserPermission(MyUser user, MyPermission permission) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID="+permission.getId()+" AND USER_ID="+user.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);
     }
 
-    public boolean deleteUserAllPermission(User user) throws SQLException {
+    public boolean deleteUserAllPermission(MyUser user) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID="+user.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);

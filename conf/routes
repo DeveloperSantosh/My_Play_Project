@@ -3,26 +3,25 @@
 # ~~~~
 # An example controller showing a sample home page
 
-# A controller for Blog page
-GET     /                                  controllers.UserController.index()
+# The controllers for User
 +nocsrf
 POST    /login                              controllers.UserController.login(request: Request)
 +nocsrf
 DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
-GET     /register                           controllers.UserController.register()
 +nocsrf
 POST    /register                           controllers.UserController.saveUser(request: Request)
+GET     /users/all                          controllers.UserController.getAllUsers()
 
-GET     /:userId/blogs                      controllers.BlogController.home(userId: Integer)
-GET     /:userId/blogs/create               controllers.BlogController.createBlog(userId: Integer)
+# The controllers for Blogs
+GET     /:userId/blogs                      controllers.BlogController.getBlogCount(userId: Integer)
 GET     /:userId/blogs/:title               controllers.BlogController.showBlog(title: String, userId: Integer)
 +nocsrf
 POST    /:userId/blogs/create               controllers.BlogController.saveBlog(userId: Integer, request: Request)
 
-GET     /:userId/blogs/:blogId/comment      controllers.CommentController.showComment(blogId: Integer, userId: Integer)
-GET     /:userId/blogs/:blogId/comment/add  controllers.CommentController.addComment(blogId: Integer, userId: Integer, request: Request)
+# The controllers for Comments
+GET     /:userId/blogs/:title/comment      controllers.CommentController.getCommentCount(title: String, userId: Integer)
 +nocsrf
-POST    /:userId/blogs/:blogId/comment/add  controllers.CommentController.saveComment(blogId: Integer, userId: Integer, request: Request)
+POST    /:userId/blogs/:title/comment/add  controllers.CommentController.saveComment(title: String, userId: Integer, request: Request)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

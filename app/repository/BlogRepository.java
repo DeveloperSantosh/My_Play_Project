@@ -1,7 +1,6 @@
 package repository;
 
-import models.Blog;
-import models.User;
+import models.MyBlog;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +34,7 @@ public class BlogRepository {
         }
     }
 
-    public boolean save(@NotNull Blog blog) throws SQLException {
+    public boolean save(@NotNull MyBlog blog) throws SQLException {
         String saveQuery = "INSERT INTO "+TABLE_NAME+
                 " (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES ('"+
                 blog.getTitle()+"','"+
@@ -48,71 +47,69 @@ public class BlogRepository {
         return (count == 1);
     }
 
-    public Blog findBlogByTitle(String title) throws SQLException {
+    public MyBlog findBlogByTitle(String title) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_TITLE = '"+title+"'";
-        Blog blog = new Blog();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
-            return blog;
+            return MyBlog.newBuilder()
+                    .setId(resultSet.getInt("BLOG_ID"))
+                    .setTitle(resultSet.getString("BLOG_TITLE"))
+                    .setContent(resultSet.getString("BLOG_CONTENT"))
+                    .setTimestamp(resultSet.getString("CREATION_TIME"))
+                    .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                    .build();
         }
         return null;
     }
 
-    public Blog findBlogById(Integer id) throws SQLException {
+    public MyBlog findBlogById(Integer id) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID = "+id;
-        Blog blog = new Blog();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
-            return blog;
+            return MyBlog.newBuilder()
+                    .setId(resultSet.getInt("BLOG_ID"))
+                    .setTitle(resultSet.getString("BLOG_TITLE"))
+                    .setContent(resultSet.getString("BLOG_CONTENT"))
+                    .setTimestamp(resultSet.getString("CREATION_TIME"))
+                    .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                    .build();
         }
         return null;
     }
 
-    public List<Blog> findAllBlogs() throws SQLException {
+    public List<MyBlog> findAllBlogs() throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<Blog> blogs = new ArrayList<>();
+        List<MyBlog> blogs = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
-            Blog blog = new Blog();
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
+            MyBlog blog = MyBlog.newBuilder()
+                    .setId(resultSet.getInt("BLOG_ID"))
+                    .setTitle(resultSet.getString("BLOG_TITLE"))
+                    .setContent(resultSet.getString("BLOG_CONTENT"))
+                    .setTimestamp(resultSet.getString("CREATION_TIME"))
+                    .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                    .build();
             blogs.add(blog);
         }
         return blogs;
     }
 
-    public boolean updateBlog(@NotNull Blog oldBlog, @NotNull Blog newBlog) throws SQLException {
+    public boolean updateBlog(@NotNull MyBlog oldBlog, @NotNull MyBlog newBlog) throws SQLException {
         String query = "UPDATE "+TABLE_NAME+" SET "+
                 "BLOG_TITLE = '"+newBlog.getTitle()+"',"+
                 "BLOG_CONTENT = '"+newBlog.getContent()+"',"+
                 "AUTHOR_ID  = "+newBlog.getAuthor().getId()+"' " +
-                "WHERE BLOG_ID="+oldBlog.getBlogId();
+                "WHERE BLOG_ID="+oldBlog.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);
     }
 
-    public boolean delete(@NotNull Blog blog) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID="+blog.getBlogId();
+    public boolean delete(@NotNull MyBlog blog) throws SQLException {
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID="+blog.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);
         return (count == 1);

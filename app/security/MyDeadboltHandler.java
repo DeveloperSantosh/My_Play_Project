@@ -21,8 +21,9 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 
     @Override
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
-        // in a real application, the user name would probably be in the session following a login process
+        // in a real application, the username would probably be in the session following a login process
         String email = requestHeader.session().get("email").orElse("empty");
+        System.out.println(email);
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();
@@ -38,7 +39,7 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
         // you can return any result from here - forbidden, etc
-        return CompletableFuture.completedFuture(ok(views.html.accessFailed.render()));
+        return CompletableFuture.completedFuture(notFound("Authentication Failed"));
     }
 
 }

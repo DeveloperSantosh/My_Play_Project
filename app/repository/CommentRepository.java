@@ -1,8 +1,6 @@
 package repository;
 
-import models.Blog;
-import models.Comment;
-
+import models.MyComment;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,47 +33,44 @@ public class CommentRepository {
         }
     }
 
-    public boolean save(@NotNull Comment comment) throws SQLException {
+    public boolean save(@NotNull MyComment comment) throws SQLException {
         String saveQuery = "INSERT INTO "+TABLE_NAME+
                 " (COMMENT, CREATION_TIME, BLOG_ID) VALUES ('"+
                 comment.getComment()+"','"+
                 comment.getTimestamp()+"',"+
-                comment.getBlog().getBlogId()+ ")";
+                comment.getBlog().getId()+ ")";
         System.out.println(saveQuery);
         int count = statement.executeUpdate(saveQuery);
         return (count == 1);
     }
 
-    public Comment findCommentById(Integer id) throws SQLException {
+    public MyComment findCommentById(Integer id) throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE COMMENT_ID = "+id;
-        Comment comment = new Comment();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         if(resultSet.next()) {
-            comment.setCommentId(resultSet.getInt("COMMENT_ID"));
-            comment.setComment(resultSet.getString("COMMENT"));
-            comment.setTimestamp(resultSet.getString("CREATION_TIME"));
-            Integer blogId = resultSet.getInt("BLOG_ID");
-            Blog blog = BlogRepository.getInstance().findBlogById(blogId);
-            comment.setBlog(blog);
-            return comment;
+            return MyComment.newBuilder()
+                    .setId(resultSet.getInt("COMMENT_ID"))
+                    .setComment(resultSet.getString("COMMENT"))
+                    .setTimestamp(resultSet.getString("CREATION_TIME"))
+                    .setBlog(BlogRepository.getInstance().findBlogById(resultSet.getInt("BLOG_ID")))
+                    .build();
         }
         return null;
     }
 
-    public List<Comment> findAllComments() throws SQLException {
+    public List<MyComment> findAllComments() throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<Comment> comments = new ArrayList<>();
+        List<MyComment> comments = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
-            Comment comment = new Comment();
-            comment.setCommentId(resultSet.getInt("COMMENT_ID"));
-            comment.setComment(resultSet.getString("COMMENT"));
-            comment.setTimestamp(resultSet.getString("CREATION_TIME"));
-            Integer blogId = resultSet.getInt("BLOG_ID");
-            Blog blog = BlogRepository.getInstance().findBlogById(blogId);
-            comment.setBlog(blog);
+            MyComment comment = MyComment.newBuilder()
+                    .setId(resultSet.getInt("COMMENT_ID"))
+                    .setComment(resultSet.getString("COMMENT"))
+                    .setTimestamp(resultSet.getString("CREATION_TIME"))
+                    .setBlog(BlogRepository.getInstance().findBlogById(resultSet.getInt("BLOG_ID")))
+                    .build();
             comments.add(comment);
         }
         return comments;

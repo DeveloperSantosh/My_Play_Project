@@ -1,6 +1,6 @@
 package repository;
 
-import models.UserPermission;
+import models.MyPermission;
 import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -30,7 +30,7 @@ public class PermissionRepository {
         }
     }
 
-    public boolean save(@NotNull UserPermission permission) throws SQLException {
+    public boolean save(@NotNull MyPermission permission) throws SQLException {
         String saveQuery = "INSERT INTO "+TABLE_NAME+
                 " (VALUE) VALUES ('"+ permission.getValue()+"');";
         int count = statement.executeUpdate(saveQuery);
@@ -38,21 +38,22 @@ public class PermissionRepository {
         return (count == 1);
     }
 
-    public List<UserPermission> findAllPermissions() throws SQLException {
+    public List<MyPermission> findAllPermissions() throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<UserPermission> permissions = new ArrayList<>();
+        List<MyPermission> permissions = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery(findQuery);
         System.out.println(findQuery);
         while(resultSet.next()) {
-            UserPermission permission = new UserPermission();
-            permission.setId(resultSet.getInt("PERMISSION_ID"));
-            permission.setValue(resultSet.getString("VALUE"));
+            MyPermission permission = MyPermission.newBuilder()
+                    .setId(resultSet.getInt("PERMISSION_ID"))
+                    .setValue(resultSet.getString("VALUE"))
+                    .build();
             permissions.add(permission);
         }
         return permissions;
     }
 
-    public boolean updatePermission(UserPermission oldPermission, UserPermission newPermission) throws SQLException {
+    public boolean updatePermission(MyPermission oldPermission, MyPermission newPermission) throws SQLException {
         String query = "UPDATE "+TABLE_NAME+" SET "+
                 "VALUE = '"+newPermission.getValue()+"',"+
                 "WHERE PERMISSION_ID="+oldPermission.getId();
@@ -61,7 +62,7 @@ public class PermissionRepository {
         return (count == 1);
     }
 
-    public boolean deletePermission(UserPermission permission) throws SQLException {
+    public boolean deletePermission(MyPermission permission) throws SQLException {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID="+permission.getId();
         int count = statement.executeUpdate(query);
         System.out.println(query);

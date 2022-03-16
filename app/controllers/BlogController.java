@@ -2,20 +2,13 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import models.Blog;
-import models.User;
-import play.data.Form;
+import models.MyBlog;
 import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.With;
 import repository.BlogRepository;
 import repository.UserRepository;
-import security.MyDeadboltHandler;
-
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,7 +17,7 @@ import java.util.List;
 public class BlogController extends Controller {
     private final FormFactory formFactory;
     private final BlogRepository blogRepository;
-    List<Blog> blogs;
+    List<MyBlog> blogs;
 
     @Inject
     public BlogController(FormFactory formFactory) {
@@ -34,42 +27,50 @@ public class BlogController extends Controller {
     }
 
     @Restrict(@Group({"USER"}))
-    public Result home(Integer userId) throws SQLException {
+    public Result getBlogCount(Integer userId) throws SQLException {
         blogs = blogRepository.findAllBlogs();
-        return ok(views.html.blog.home.render(blogs, userId));
+        StringBuilder result = new StringBuilder();
+        for(MyBlog blog: blogs){
+            result.append(blog.toString()).append("\n");
+        }
+        return ok(result.toString());
     }
 
     @Restrict(@Group({"USER"}))
     public Result showBlog(String title, Integer userId){
         try {
-            Blog blog = blogRepository.findBlogByTitle(title);
-            return ok(views.html.blog.show.render(blog, userId));
+            return ok(blogRepository.findBlogByTitle(title).toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return notFound("Sorry! blog not found");
+        return null;
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result createBlog(Integer userId){
-        Form<Blog> form = formFactory.form(Blog.class);
-        return ok(views.html.blog.create.render(form, userId));
-    }
+//    @Restrict(@Group({"USER"}))
+//    public Result createBlog(Integer userId){
+//        Form<Blog> form = formFactory.form(Blog.class);
+//        return ok(views.html.blog.create.render(form, userId));
+//    }
 
     @Restrict(@Group({"USER"}))
-    public Result saveBlog(Integer userId, Http.Request request) {
-        Form<Blog> blogForm = formFactory.form(Blog.class).bindFromRequest(request);
-        Blog blog = blogForm.get();
+    public Result saveBlog(Integer userId, Http.Request request) throws SQLException {
+        String title = request.body().asJson().get("title").textValue();
+        String content = request.body().asJson().get("content").textValue();
+        int authorId = request.body().asJson().get("username").intValue();
+        MyBlog newBlog = MyBlog.newBuilder()
+                .setTitle(title)
+                .setContent(content)
+                .setAuthor(UserRepository.getInstance().findUserByID(authorId))
+                .setTimestamp(CommentController.getCurrentTimeStamp())
+                .build();
         try {
-            User user = UserRepository.getInstance().findUserByID(userId);
-            blog.setAuthor(user);
-            blogRepository.save(blog);
-            blogs = blogRepository.findAllBlogs();
-            return redirect(routes.BlogController.home(userId));
+            if(blogRepository.save(newBlog))
+                return ok("Blog saved Successfully");
+            return internalServerError("Could not save blog.");
         } catch (SQLException e) {
             e.printStackTrace();
+            return internalServerError("Could not save blog.");
         }
-        return notFound();
     }
 
 
