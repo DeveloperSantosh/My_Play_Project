@@ -4,7 +4,7 @@
 package models;
 
 public interface MyUserOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:com.treeleaf.MyUser)
+    // @@protoc_insertion_point(interface_extends:models.MyUser)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -17,7 +17,7 @@ public interface MyUserOrBuilder extends
    * <code>string email = 2;</code>
    * @return The email.
    */
-  String getEmail();
+  java.lang.String getEmail();
   /**
    * <code>string email = 2;</code>
    * @return The bytes for email.
@@ -29,7 +29,7 @@ public interface MyUserOrBuilder extends
    * <code>string password = 3;</code>
    * @return The password.
    */
-  String getPassword();
+  java.lang.String getPassword();
   /**
    * <code>string password = 3;</code>
    * @return The bytes for password.
@@ -41,7 +41,7 @@ public interface MyUserOrBuilder extends
    * <code>string username = 4;</code>
    * @return The username.
    */
-  String getUsername();
+  java.lang.String getUsername();
   /**
    * <code>string username = 4;</code>
    * @return The bytes for username.
@@ -50,50 +50,50 @@ public interface MyUserOrBuilder extends
       getUsernameBytes();
 
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  java.util.List<MyRole>
+  java.util.List<models.MyRole> 
       getRoleList();
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  MyRole getRole(int index);
+  models.MyRole getRole(int index);
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
   int getRoleCount();
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  java.util.List<? extends MyRoleOrBuilder>
+  java.util.List<? extends models.MyRoleOrBuilder> 
       getRoleOrBuilderList();
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  MyRoleOrBuilder getRoleOrBuilder(
+  models.MyRoleOrBuilder getRoleOrBuilder(
       int index);
 
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  java.util.List<MyPermission>
+  java.util.List<models.MyPermission> 
       getPermissionList();
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  MyPermission getPermission(int index);
+  models.MyPermission getPermission(int index);
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
   int getPermissionCount();
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  java.util.List<? extends MyPermissionOrBuilder>
+  java.util.List<? extends models.MyPermissionOrBuilder> 
       getPermissionOrBuilderList();
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  MyPermissionOrBuilder getPermissionOrBuilder(
+  models.MyPermissionOrBuilder getPermissionOrBuilder(
       int index);
 }

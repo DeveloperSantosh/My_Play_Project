@@ -6,12 +6,12 @@ package models;
 import be.objectify.deadbolt.java.models.Permission;
 
 /**
- * Protobuf type {@code com.treeleaf.MyPermission}
+ * Protobuf type {@code models.MyPermission}
  */
 public final class MyPermission extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.treeleaf.MyPermission)
-        MyPermissionOrBuilder, Permission {
+    // @@protoc_insertion_point(message_implements:models.MyPermission)
+    MyPermissionOrBuilder, Permission {
 private static final long serialVersionUID = 0L;
   // Use MyPermission.newBuilder() to construct.
   private MyPermission(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -21,14 +21,14 @@ private static final long serialVersionUID = 0L;
     value_ = "";
   }
 
-  @Override
+  @java.lang.Override
   @SuppressWarnings({"unused"})
-  protected Object newInstance(
+  protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
     return new MyPermission();
   }
 
-  @Override
+  @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return this.unknownFields;
@@ -39,7 +39,7 @@ private static final long serialVersionUID = 0L;
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
     if (extensionRegistry == null) {
-      throw new NullPointerException();
+      throw new java.lang.NullPointerException();
     }
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
         com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -57,7 +57,7 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 18: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             value_ = s;
             break;
@@ -83,15 +83,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return Entities.internal_static_com_treeleaf_MyPermission_descriptor;
+    return models.Entities.internal_static_models_MyPermission_descriptor;
   }
 
-  @Override
-  protected FieldAccessorTable
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return Entities.internal_static_com_treeleaf_MyPermission_fieldAccessorTable
+    return models.Entities.internal_static_models_MyPermission_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MyPermission.class, MyPermission.Builder.class);
+            models.MyPermission.class, models.MyPermission.Builder.class);
   }
 
   public static final int ID_FIELD_NUMBER = 1;
@@ -100,26 +100,26 @@ private static final long serialVersionUID = 0L;
    * <code>int32 id = 1;</code>
    * @return The id.
    */
-  @Override
+  @java.lang.Override
   public int getId() {
     return id_;
   }
 
   public static final int VALUE_FIELD_NUMBER = 2;
-  private volatile Object value_;
+  private volatile java.lang.Object value_;
   /**
    * <code>string value = 2;</code>
    * @return The value.
    */
-  @Override
-  public String getValue() {
-    Object ref = value_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getValue() {
+    java.lang.Object ref = value_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       value_ = s;
       return s;
     }
@@ -128,14 +128,14 @@ private static final long serialVersionUID = 0L;
    * <code>string value = 2;</code>
    * @return The bytes for value.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getValueBytes() {
-    Object ref = value_;
-    if (ref instanceof String) {
+    java.lang.Object ref = value_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       value_ = b;
       return b;
     } else {
@@ -144,7 +144,7 @@ private static final long serialVersionUID = 0L;
   }
 
   private byte memoizedIsInitialized = -1;
-  @Override
+  @java.lang.Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -154,7 +154,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (id_ != 0) {
@@ -166,7 +166,7 @@ private static final long serialVersionUID = 0L;
     unknownFields.writeTo(output);
   }
 
-  @Override
+  @java.lang.Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -184,15 +184,15 @@ private static final long serialVersionUID = 0L;
     return size;
   }
 
-  @Override
-  public boolean equals(final Object obj) {
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof MyPermission)) {
+    if (!(obj instanceof models.MyPermission)) {
       return super.equals(obj);
     }
-    MyPermission other = (MyPermission) obj;
+    models.MyPermission other = (models.MyPermission) obj;
 
     if (getId()
         != other.getId()) return false;
@@ -202,7 +202,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -218,69 +218,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyPermission parseFrom(byte[] data)
+  public static models.MyPermission parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyPermission parseFrom(java.io.InputStream input)
+  public static models.MyPermission parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyPermission parseDelimitedFrom(java.io.InputStream input)
+  public static models.MyPermission parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static MyPermission parseDelimitedFrom(
+  public static models.MyPermission parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyPermission parseFrom(
+  public static models.MyPermission parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -288,53 +288,53 @@ private static final long serialVersionUID = 0L;
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
-  @Override
+  @java.lang.Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(MyPermission prototype) {
+  public static Builder newBuilder(models.MyPermission prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
-  @Override
+  @java.lang.Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @Override
+  @java.lang.Override
   protected Builder newBuilderForType(
-      BuilderParent parent) {
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
   /**
-   * Protobuf type {@code com.treeleaf.MyPermission}
+   * Protobuf type {@code models.MyPermission}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.treeleaf.MyPermission)
-          MyPermissionOrBuilder {
+      // @@protoc_insertion_point(builder_implements:models.MyPermission)
+      models.MyPermissionOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return Entities.internal_static_com_treeleaf_MyPermission_descriptor;
+      return models.Entities.internal_static_models_MyPermission_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return Entities.internal_static_com_treeleaf_MyPermission_fieldAccessorTable
+      return models.Entities.internal_static_models_MyPermission_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MyPermission.class, MyPermission.Builder.class);
+              models.MyPermission.class, models.MyPermission.Builder.class);
     }
 
-    // Construct using com.treeleaf.MyPermission.newBuilder()
+    // Construct using models.MyPermission.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
 
     private Builder(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -343,7 +343,7 @@ private static final long serialVersionUID = 0L;
               .alwaysUseFieldBuilders) {
       }
     }
-    @Override
+    @java.lang.Override
     public Builder clear() {
       super.clear();
       id_ = 0;
@@ -353,79 +353,79 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return Entities.internal_static_com_treeleaf_MyPermission_descriptor;
+      return models.Entities.internal_static_models_MyPermission_descriptor;
     }
 
-    @Override
-    public MyPermission getDefaultInstanceForType() {
-      return MyPermission.getDefaultInstance();
+    @java.lang.Override
+    public models.MyPermission getDefaultInstanceForType() {
+      return models.MyPermission.getDefaultInstance();
     }
 
-    @Override
-    public MyPermission build() {
-      MyPermission result = buildPartial();
+    @java.lang.Override
+    public models.MyPermission build() {
+      models.MyPermission result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    @Override
-    public MyPermission buildPartial() {
-      MyPermission result = new MyPermission(this);
+    @java.lang.Override
+    public models.MyPermission buildPartial() {
+      models.MyPermission result = new models.MyPermission(this);
       result.id_ = id_;
       result.value_ = value_;
       onBuilt();
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public Builder clone() {
       return super.clone();
     }
-    @Override
+    @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.setField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
       return super.clearField(field);
     }
-    @Override
+    @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
       return super.clearOneof(oneof);
     }
-    @Override
+    @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, Object value) {
+        int index, java.lang.Object value) {
       return super.setRepeatedField(field, index, value);
     }
-    @Override
+    @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.addRepeatedField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof MyPermission) {
-        return mergeFrom((MyPermission)other);
+      if (other instanceof models.MyPermission) {
+        return mergeFrom((models.MyPermission)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(MyPermission other) {
-      if (other == MyPermission.getDefaultInstance()) return this;
+    public Builder mergeFrom(models.MyPermission other) {
+      if (other == models.MyPermission.getDefaultInstance()) return this;
       if (other.getId() != 0) {
         setId(other.getId());
       }
@@ -438,21 +438,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      MyPermission parsedMessage = null;
+      models.MyPermission parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (MyPermission) e.getUnfinishedMessage();
+        parsedMessage = (models.MyPermission) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -467,7 +467,7 @@ private static final long serialVersionUID = 0L;
      * <code>int32 id = 1;</code>
      * @return The id.
      */
-    @Override
+    @java.lang.Override
     public int getId() {
       return id_;
     }
@@ -493,21 +493,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object value_ = "";
+    private java.lang.Object value_ = "";
     /**
      * <code>string value = 2;</code>
      * @return The value.
      */
-    public String getValue() {
-      Object ref = value_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getValue() {
+      java.lang.Object ref = value_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         value_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -516,11 +516,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getValueBytes() {
-      Object ref = value_;
+      java.lang.Object ref = value_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         value_ = b;
         return b;
       } else {
@@ -533,7 +533,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setValue(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -568,35 +568,35 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
-    @Override
+    @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.setUnknownFields(unknownFields);
     }
 
-    @Override
+    @java.lang.Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.mergeUnknownFields(unknownFields);
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.treeleaf.MyPermission)
+    // @@protoc_insertion_point(builder_scope:models.MyPermission)
   }
 
-  // @@protoc_insertion_point(class_scope:com.treeleaf.MyPermission)
-  private static final MyPermission DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:models.MyPermission)
+  private static final models.MyPermission DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new MyPermission();
+    DEFAULT_INSTANCE = new models.MyPermission();
   }
 
-  public static MyPermission getDefaultInstance() {
+  public static models.MyPermission getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
   private static final com.google.protobuf.Parser<MyPermission>
       PARSER = new com.google.protobuf.AbstractParser<MyPermission>() {
-    @Override
+    @java.lang.Override
     public MyPermission parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -609,13 +609,13 @@ private static final long serialVersionUID = 0L;
     return PARSER;
   }
 
-  @Override
+  @java.lang.Override
   public com.google.protobuf.Parser<MyPermission> getParserForType() {
     return PARSER;
   }
 
-  @Override
-  public MyPermission getDefaultInstanceForType() {
+  @java.lang.Override
+  public models.MyPermission getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

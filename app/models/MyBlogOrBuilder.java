@@ -4,7 +4,7 @@
 package models;
 
 public interface MyBlogOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:com.treeleaf.MyBlog)
+    // @@protoc_insertion_point(interface_extends:models.MyBlog)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -17,7 +17,7 @@ public interface MyBlogOrBuilder extends
    * <code>string title = 2;</code>
    * @return The title.
    */
-  String getTitle();
+  java.lang.String getTitle();
   /**
    * <code>string title = 2;</code>
    * @return The bytes for title.
@@ -29,7 +29,7 @@ public interface MyBlogOrBuilder extends
    * <code>string content = 3;</code>
    * @return The content.
    */
-  String getContent();
+  java.lang.String getContent();
   /**
    * <code>string content = 3;</code>
    * @return The bytes for content.
@@ -41,7 +41,7 @@ public interface MyBlogOrBuilder extends
    * <code>string timestamp = 4;</code>
    * @return The timestamp.
    */
-  String getTimestamp();
+  java.lang.String getTimestamp();
   /**
    * <code>string timestamp = 4;</code>
    * @return The bytes for timestamp.
@@ -50,41 +50,66 @@ public interface MyBlogOrBuilder extends
       getTimestampBytes();
 
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>repeated string imagePath = 5;</code>
+   * @return A list containing the imagePath.
+   */
+  java.util.List<java.lang.String>
+      getImagePathList();
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @return The count of imagePath.
+   */
+  int getImagePathCount();
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @param index The index of the element to return.
+   * @return The imagePath at the given index.
+   */
+  java.lang.String getImagePath(int index);
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the imagePath at the given index.
+   */
+  com.google.protobuf.ByteString
+      getImagePathBytes(int index);
+
+  /**
+   * <code>.models.MyUser author = 6;</code>
    * @return Whether the author field is set.
    */
   boolean hasAuthor();
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>.models.MyUser author = 6;</code>
    * @return The author.
    */
-  MyUser getAuthor();
+  models.MyUser getAuthor();
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>.models.MyUser author = 6;</code>
    */
-  MyUserOrBuilder getAuthorOrBuilder();
+  models.MyUserOrBuilder getAuthorOrBuilder();
 
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  java.util.List<MyComment>
+  java.util.List<models.MyComment> 
       getCommentsList();
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  MyComment getComments(int index);
+  models.MyComment getComments(int index);
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
   int getCommentsCount();
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  java.util.List<? extends MyCommentOrBuilder>
+  java.util.List<? extends models.MyCommentOrBuilder> 
       getCommentsOrBuilderList();
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  MyCommentOrBuilder getCommentsOrBuilder(
+  models.MyCommentOrBuilder getCommentsOrBuilder(
       int index);
 }

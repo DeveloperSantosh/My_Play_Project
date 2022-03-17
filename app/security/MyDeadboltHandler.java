@@ -23,7 +23,6 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
         // in a real application, the username would probably be in the session following a login process
         String email = requestHeader.session().get("email").orElse("empty");
-        System.out.println(email);
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();

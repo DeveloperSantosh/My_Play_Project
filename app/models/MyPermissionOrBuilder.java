@@ -4,7 +4,7 @@
 package models;
 
 public interface MyPermissionOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:com.treeleaf.MyPermission)
+    // @@protoc_insertion_point(interface_extends:models.MyPermission)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -17,7 +17,7 @@ public interface MyPermissionOrBuilder extends
    * <code>string value = 2;</code>
    * @return The value.
    */
-  String getValue();
+  java.lang.String getValue();
   /**
    * <code>string value = 2;</code>
    * @return The bytes for value.

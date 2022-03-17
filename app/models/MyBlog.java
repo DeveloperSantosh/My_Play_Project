@@ -4,12 +4,12 @@
 package models;
 
 /**
- * Protobuf type {@code com.treeleaf.MyBlog}
+ * Protobuf type {@code models.MyBlog}
  */
 public final class MyBlog extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.treeleaf.MyBlog)
-        MyBlogOrBuilder {
+    // @@protoc_insertion_point(message_implements:models.MyBlog)
+    MyBlogOrBuilder {
 private static final long serialVersionUID = 0L;
   // Use MyBlog.newBuilder() to construct.
   private MyBlog(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -19,17 +19,18 @@ private static final long serialVersionUID = 0L;
     title_ = "";
     content_ = "";
     timestamp_ = "";
+    imagePath_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     comments_ = java.util.Collections.emptyList();
   }
 
-  @Override
+  @java.lang.Override
   @SuppressWarnings({"unused"})
-  protected Object newInstance(
+  protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
     return new MyBlog();
   }
 
-  @Override
+  @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return this.unknownFields;
@@ -40,7 +41,7 @@ private static final long serialVersionUID = 0L;
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
     if (extensionRegistry == null) {
-      throw new NullPointerException();
+      throw new java.lang.NullPointerException();
     }
     int mutable_bitField0_ = 0;
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
@@ -59,29 +60,38 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 18: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             title_ = s;
             break;
           }
           case 26: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             content_ = s;
             break;
           }
           case 34: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             timestamp_ = s;
             break;
           }
           case 42: {
-            MyUser.Builder subBuilder = null;
+            java.lang.String s = input.readStringRequireUtf8();
+            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+              imagePath_ = new com.google.protobuf.LazyStringArrayList();
+              mutable_bitField0_ |= 0x00000001;
+            }
+            imagePath_.add(s);
+            break;
+          }
+          case 50: {
+            models.MyUser.Builder subBuilder = null;
             if (author_ != null) {
               subBuilder = author_.toBuilder();
             }
-            author_ = input.readMessage(MyUser.parser(), extensionRegistry);
+            author_ = input.readMessage(models.MyUser.parser(), extensionRegistry);
             if (subBuilder != null) {
               subBuilder.mergeFrom(author_);
               author_ = subBuilder.buildPartial();
@@ -89,13 +99,13 @@ private static final long serialVersionUID = 0L;
 
             break;
           }
-          case 50: {
-            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              comments_ = new java.util.ArrayList<MyComment>();
-              mutable_bitField0_ |= 0x00000001;
+          case 58: {
+            if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+              comments_ = new java.util.ArrayList<models.MyComment>();
+              mutable_bitField0_ |= 0x00000002;
             }
             comments_.add(
-                input.readMessage(MyComment.parser(), extensionRegistry));
+                input.readMessage(models.MyComment.parser(), extensionRegistry));
             break;
           }
           default: {
@@ -114,6 +124,9 @@ private static final long serialVersionUID = 0L;
           e).setUnfinishedMessage(this);
     } finally {
       if (((mutable_bitField0_ & 0x00000001) != 0)) {
+        imagePath_ = imagePath_.getUnmodifiableView();
+      }
+      if (((mutable_bitField0_ & 0x00000002) != 0)) {
         comments_ = java.util.Collections.unmodifiableList(comments_);
       }
       this.unknownFields = unknownFields.build();
@@ -122,15 +135,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return Entities.internal_static_com_treeleaf_MyBlog_descriptor;
+    return models.Entities.internal_static_models_MyBlog_descriptor;
   }
 
-  @Override
-  protected FieldAccessorTable
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return Entities.internal_static_com_treeleaf_MyBlog_fieldAccessorTable
+    return models.Entities.internal_static_models_MyBlog_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MyBlog.class, MyBlog.Builder.class);
+            models.MyBlog.class, models.MyBlog.Builder.class);
   }
 
   public static final int ID_FIELD_NUMBER = 1;
@@ -139,26 +152,26 @@ private static final long serialVersionUID = 0L;
    * <code>int32 id = 1;</code>
    * @return The id.
    */
-  @Override
+  @java.lang.Override
   public int getId() {
     return id_;
   }
 
   public static final int TITLE_FIELD_NUMBER = 2;
-  private volatile Object title_;
+  private volatile java.lang.Object title_;
   /**
    * <code>string title = 2;</code>
    * @return The title.
    */
-  @Override
-  public String getTitle() {
-    Object ref = title_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getTitle() {
+    java.lang.Object ref = title_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       title_ = s;
       return s;
     }
@@ -167,14 +180,14 @@ private static final long serialVersionUID = 0L;
    * <code>string title = 2;</code>
    * @return The bytes for title.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getTitleBytes() {
-    Object ref = title_;
-    if (ref instanceof String) {
+    java.lang.Object ref = title_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       title_ = b;
       return b;
     } else {
@@ -183,20 +196,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CONTENT_FIELD_NUMBER = 3;
-  private volatile Object content_;
+  private volatile java.lang.Object content_;
   /**
    * <code>string content = 3;</code>
    * @return The content.
    */
-  @Override
-  public String getContent() {
-    Object ref = content_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getContent() {
+    java.lang.Object ref = content_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       content_ = s;
       return s;
     }
@@ -205,14 +218,14 @@ private static final long serialVersionUID = 0L;
    * <code>string content = 3;</code>
    * @return The bytes for content.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getContentBytes() {
-    Object ref = content_;
-    if (ref instanceof String) {
+    java.lang.Object ref = content_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       content_ = b;
       return b;
     } else {
@@ -221,20 +234,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TIMESTAMP_FIELD_NUMBER = 4;
-  private volatile Object timestamp_;
+  private volatile java.lang.Object timestamp_;
   /**
    * <code>string timestamp = 4;</code>
    * @return The timestamp.
    */
-  @Override
-  public String getTimestamp() {
-    Object ref = timestamp_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getTimestamp() {
+    java.lang.Object ref = timestamp_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       timestamp_ = s;
       return s;
     }
@@ -243,14 +256,14 @@ private static final long serialVersionUID = 0L;
    * <code>string timestamp = 4;</code>
    * @return The bytes for timestamp.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getTimestampBytes() {
-    Object ref = timestamp_;
-    if (ref instanceof String) {
+    java.lang.Object ref = timestamp_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       timestamp_ = b;
       return b;
     } else {
@@ -258,74 +271,109 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int AUTHOR_FIELD_NUMBER = 5;
-  private MyUser author_;
+  public static final int IMAGEPATH_FIELD_NUMBER = 5;
+  private com.google.protobuf.LazyStringList imagePath_;
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>repeated string imagePath = 5;</code>
+   * @return A list containing the imagePath.
+   */
+  public com.google.protobuf.ProtocolStringList
+      getImagePathList() {
+    return imagePath_;
+  }
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @return The count of imagePath.
+   */
+  public int getImagePathCount() {
+    return imagePath_.size();
+  }
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @param index The index of the element to return.
+   * @return The imagePath at the given index.
+   */
+  public java.lang.String getImagePath(int index) {
+    return imagePath_.get(index);
+  }
+  /**
+   * <code>repeated string imagePath = 5;</code>
+   * @param index The index of the value to return.
+   * @return The bytes of the imagePath at the given index.
+   */
+  public com.google.protobuf.ByteString
+      getImagePathBytes(int index) {
+    return imagePath_.getByteString(index);
+  }
+
+  public static final int AUTHOR_FIELD_NUMBER = 6;
+  private models.MyUser author_;
+  /**
+   * <code>.models.MyUser author = 6;</code>
    * @return Whether the author field is set.
    */
-  @Override
+  @java.lang.Override
   public boolean hasAuthor() {
     return author_ != null;
   }
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>.models.MyUser author = 6;</code>
    * @return The author.
    */
-  @Override
-  public MyUser getAuthor() {
-    return author_ == null ? MyUser.getDefaultInstance() : author_;
+  @java.lang.Override
+  public models.MyUser getAuthor() {
+    return author_ == null ? models.MyUser.getDefaultInstance() : author_;
   }
   /**
-   * <code>.com.treeleaf.MyUser author = 5;</code>
+   * <code>.models.MyUser author = 6;</code>
    */
-  @Override
-  public MyUserOrBuilder getAuthorOrBuilder() {
+  @java.lang.Override
+  public models.MyUserOrBuilder getAuthorOrBuilder() {
     return getAuthor();
   }
 
-  public static final int COMMENTS_FIELD_NUMBER = 6;
-  private java.util.List<MyComment> comments_;
+  public static final int COMMENTS_FIELD_NUMBER = 7;
+  private java.util.List<models.MyComment> comments_;
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  @Override
-  public java.util.List<MyComment> getCommentsList() {
+  @java.lang.Override
+  public java.util.List<models.MyComment> getCommentsList() {
     return comments_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  @Override
-  public java.util.List<? extends MyCommentOrBuilder>
+  @java.lang.Override
+  public java.util.List<? extends models.MyCommentOrBuilder> 
       getCommentsOrBuilderList() {
     return comments_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  @Override
+  @java.lang.Override
   public int getCommentsCount() {
     return comments_.size();
   }
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  @Override
-  public MyComment getComments(int index) {
+  @java.lang.Override
+  public models.MyComment getComments(int index) {
     return comments_.get(index);
   }
   /**
-   * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+   * <code>repeated .models.MyComment comments = 7;</code>
    */
-  @Override
-  public MyCommentOrBuilder getCommentsOrBuilder(
+  @java.lang.Override
+  public models.MyCommentOrBuilder getCommentsOrBuilder(
       int index) {
     return comments_.get(index);
   }
 
   private byte memoizedIsInitialized = -1;
-  @Override
+  @java.lang.Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -335,7 +383,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (id_ != 0) {
@@ -350,16 +398,19 @@ private static final long serialVersionUID = 0L;
     if (!getTimestampBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, timestamp_);
     }
+    for (int i = 0; i < imagePath_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, imagePath_.getRaw(i));
+    }
     if (author_ != null) {
-      output.writeMessage(5, getAuthor());
+      output.writeMessage(6, getAuthor());
     }
     for (int i = 0; i < comments_.size(); i++) {
-      output.writeMessage(6, comments_.get(i));
+      output.writeMessage(7, comments_.get(i));
     }
     unknownFields.writeTo(output);
   }
 
-  @Override
+  @java.lang.Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -378,28 +429,36 @@ private static final long serialVersionUID = 0L;
     if (!getTimestampBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, timestamp_);
     }
+    {
+      int dataSize = 0;
+      for (int i = 0; i < imagePath_.size(); i++) {
+        dataSize += computeStringSizeNoTag(imagePath_.getRaw(i));
+      }
+      size += dataSize;
+      size += 1 * getImagePathList().size();
+    }
     if (author_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, getAuthor());
+        .computeMessageSize(6, getAuthor());
     }
     for (int i = 0; i < comments_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(6, comments_.get(i));
+        .computeMessageSize(7, comments_.get(i));
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
-  @Override
-  public boolean equals(final Object obj) {
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof MyBlog)) {
+    if (!(obj instanceof models.MyBlog)) {
       return super.equals(obj);
     }
-    MyBlog other = (MyBlog) obj;
+    models.MyBlog other = (models.MyBlog) obj;
 
     if (getId()
         != other.getId()) return false;
@@ -409,6 +468,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getContent())) return false;
     if (!getTimestamp()
         .equals(other.getTimestamp())) return false;
+    if (!getImagePathList()
+        .equals(other.getImagePathList())) return false;
     if (hasAuthor() != other.hasAuthor()) return false;
     if (hasAuthor()) {
       if (!getAuthor()
@@ -420,7 +481,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -435,6 +496,10 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getContent().hashCode();
     hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
     hash = (53 * hash) + getTimestamp().hashCode();
+    if (getImagePathCount() > 0) {
+      hash = (37 * hash) + IMAGEPATH_FIELD_NUMBER;
+      hash = (53 * hash) + getImagePathList().hashCode();
+    }
     if (hasAuthor()) {
       hash = (37 * hash) + AUTHOR_FIELD_NUMBER;
       hash = (53 * hash) + getAuthor().hashCode();
@@ -448,69 +513,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyBlog parseFrom(byte[] data)
+  public static models.MyBlog parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyBlog parseFrom(java.io.InputStream input)
+  public static models.MyBlog parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyBlog parseDelimitedFrom(java.io.InputStream input)
+  public static models.MyBlog parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static MyBlog parseDelimitedFrom(
+  public static models.MyBlog parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyBlog parseFrom(
+  public static models.MyBlog parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -518,53 +583,53 @@ private static final long serialVersionUID = 0L;
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
-  @Override
+  @java.lang.Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(MyBlog prototype) {
+  public static Builder newBuilder(models.MyBlog prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
-  @Override
+  @java.lang.Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @Override
+  @java.lang.Override
   protected Builder newBuilderForType(
-      BuilderParent parent) {
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
   /**
-   * Protobuf type {@code com.treeleaf.MyBlog}
+   * Protobuf type {@code models.MyBlog}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.treeleaf.MyBlog)
-          MyBlogOrBuilder {
+      // @@protoc_insertion_point(builder_implements:models.MyBlog)
+      models.MyBlogOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return Entities.internal_static_com_treeleaf_MyBlog_descriptor;
+      return models.Entities.internal_static_models_MyBlog_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return Entities.internal_static_com_treeleaf_MyBlog_fieldAccessorTable
+      return models.Entities.internal_static_models_MyBlog_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MyBlog.class, MyBlog.Builder.class);
+              models.MyBlog.class, models.MyBlog.Builder.class);
     }
 
-    // Construct using com.treeleaf.MyBlog.newBuilder()
+    // Construct using models.MyBlog.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
 
     private Builder(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -574,7 +639,7 @@ private static final long serialVersionUID = 0L;
         getCommentsFieldBuilder();
       }
     }
-    @Override
+    @java.lang.Override
     public Builder clear() {
       super.clear();
       id_ = 0;
@@ -585,6 +650,8 @@ private static final long serialVersionUID = 0L;
 
       timestamp_ = "";
 
+      imagePath_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
       if (authorBuilder_ == null) {
         author_ = null;
       } else {
@@ -593,50 +660,55 @@ private static final long serialVersionUID = 0L;
       }
       if (commentsBuilder_ == null) {
         comments_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
       } else {
         commentsBuilder_.clear();
       }
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return Entities.internal_static_com_treeleaf_MyBlog_descriptor;
+      return models.Entities.internal_static_models_MyBlog_descriptor;
     }
 
-    @Override
-    public MyBlog getDefaultInstanceForType() {
-      return MyBlog.getDefaultInstance();
+    @java.lang.Override
+    public models.MyBlog getDefaultInstanceForType() {
+      return models.MyBlog.getDefaultInstance();
     }
 
-    @Override
-    public MyBlog build() {
-      MyBlog result = buildPartial();
+    @java.lang.Override
+    public models.MyBlog build() {
+      models.MyBlog result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    @Override
-    public MyBlog buildPartial() {
-      MyBlog result = new MyBlog(this);
+    @java.lang.Override
+    public models.MyBlog buildPartial() {
+      models.MyBlog result = new models.MyBlog(this);
       int from_bitField0_ = bitField0_;
       result.id_ = id_;
       result.title_ = title_;
       result.content_ = content_;
       result.timestamp_ = timestamp_;
+      if (((bitField0_ & 0x00000001) != 0)) {
+        imagePath_ = imagePath_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000001);
+      }
+      result.imagePath_ = imagePath_;
       if (authorBuilder_ == null) {
         result.author_ = author_;
       } else {
         result.author_ = authorBuilder_.build();
       }
       if (commentsBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           comments_ = java.util.Collections.unmodifiableList(comments_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.comments_ = comments_;
       } else {
@@ -646,50 +718,50 @@ private static final long serialVersionUID = 0L;
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public Builder clone() {
       return super.clone();
     }
-    @Override
+    @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.setField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
       return super.clearField(field);
     }
-    @Override
+    @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
       return super.clearOneof(oneof);
     }
-    @Override
+    @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, Object value) {
+        int index, java.lang.Object value) {
       return super.setRepeatedField(field, index, value);
     }
-    @Override
+    @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.addRepeatedField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof MyBlog) {
-        return mergeFrom((MyBlog)other);
+      if (other instanceof models.MyBlog) {
+        return mergeFrom((models.MyBlog)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(MyBlog other) {
-      if (other == MyBlog.getDefaultInstance()) return this;
+    public Builder mergeFrom(models.MyBlog other) {
+      if (other == models.MyBlog.getDefaultInstance()) return this;
       if (other.getId() != 0) {
         setId(other.getId());
       }
@@ -705,6 +777,16 @@ private static final long serialVersionUID = 0L;
         timestamp_ = other.timestamp_;
         onChanged();
       }
+      if (!other.imagePath_.isEmpty()) {
+        if (imagePath_.isEmpty()) {
+          imagePath_ = other.imagePath_;
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          ensureImagePathIsMutable();
+          imagePath_.addAll(other.imagePath_);
+        }
+        onChanged();
+      }
       if (other.hasAuthor()) {
         mergeAuthor(other.getAuthor());
       }
@@ -712,7 +794,7 @@ private static final long serialVersionUID = 0L;
         if (!other.comments_.isEmpty()) {
           if (comments_.isEmpty()) {
             comments_ = other.comments_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureCommentsIsMutable();
             comments_.addAll(other.comments_);
@@ -725,7 +807,7 @@ private static final long serialVersionUID = 0L;
             commentsBuilder_.dispose();
             commentsBuilder_ = null;
             comments_ = other.comments_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
             commentsBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getCommentsFieldBuilder() : null;
@@ -739,21 +821,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      MyBlog parsedMessage = null;
+      models.MyBlog parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (MyBlog) e.getUnfinishedMessage();
+        parsedMessage = (models.MyBlog) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -769,7 +851,7 @@ private static final long serialVersionUID = 0L;
      * <code>int32 id = 1;</code>
      * @return The id.
      */
-    @Override
+    @java.lang.Override
     public int getId() {
       return id_;
     }
@@ -795,21 +877,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object title_ = "";
+    private java.lang.Object title_ = "";
     /**
      * <code>string title = 2;</code>
      * @return The title.
      */
-    public String getTitle() {
-      Object ref = title_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getTitle() {
+      java.lang.Object ref = title_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         title_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -818,11 +900,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getTitleBytes() {
-      Object ref = title_;
+      java.lang.Object ref = title_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         title_ = b;
         return b;
       } else {
@@ -835,7 +917,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setTitle(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -871,21 +953,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object content_ = "";
+    private java.lang.Object content_ = "";
     /**
      * <code>string content = 3;</code>
      * @return The content.
      */
-    public String getContent() {
-      Object ref = content_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getContent() {
+      java.lang.Object ref = content_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         content_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -894,11 +976,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getContentBytes() {
-      Object ref = content_;
+      java.lang.Object ref = content_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         content_ = b;
         return b;
       } else {
@@ -911,7 +993,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setContent(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -947,21 +1029,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object timestamp_ = "";
+    private java.lang.Object timestamp_ = "";
     /**
      * <code>string timestamp = 4;</code>
      * @return The timestamp.
      */
-    public String getTimestamp() {
-      Object ref = timestamp_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getTimestamp() {
+      java.lang.Object ref = timestamp_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         timestamp_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -970,11 +1052,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getTimestampBytes() {
-      Object ref = timestamp_;
+      java.lang.Object ref = timestamp_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         timestamp_ = b;
         return b;
       } else {
@@ -987,7 +1069,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setTimestamp(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1023,31 +1105,141 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private MyUser author_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-            MyUser, MyUser.Builder, MyUserOrBuilder> authorBuilder_;
+    private com.google.protobuf.LazyStringList imagePath_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureImagePathIsMutable() {
+      if (!((bitField0_ & 0x00000001) != 0)) {
+        imagePath_ = new com.google.protobuf.LazyStringArrayList(imagePath_);
+        bitField0_ |= 0x00000001;
+       }
+    }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>repeated string imagePath = 5;</code>
+     * @return A list containing the imagePath.
+     */
+    public com.google.protobuf.ProtocolStringList
+        getImagePathList() {
+      return imagePath_.getUnmodifiableView();
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @return The count of imagePath.
+     */
+    public int getImagePathCount() {
+      return imagePath_.size();
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param index The index of the element to return.
+     * @return The imagePath at the given index.
+     */
+    public java.lang.String getImagePath(int index) {
+      return imagePath_.get(index);
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the imagePath at the given index.
+     */
+    public com.google.protobuf.ByteString
+        getImagePathBytes(int index) {
+      return imagePath_.getByteString(index);
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param index The index to set the value at.
+     * @param value The imagePath to set.
+     * @return This builder for chaining.
+     */
+    public Builder setImagePath(
+        int index, java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureImagePathIsMutable();
+      imagePath_.set(index, value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param value The imagePath to add.
+     * @return This builder for chaining.
+     */
+    public Builder addImagePath(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureImagePathIsMutable();
+      imagePath_.add(value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param values The imagePath to add.
+     * @return This builder for chaining.
+     */
+    public Builder addAllImagePath(
+        java.lang.Iterable<java.lang.String> values) {
+      ensureImagePathIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, imagePath_);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearImagePath() {
+      imagePath_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string imagePath = 5;</code>
+     * @param value The bytes of the imagePath to add.
+     * @return This builder for chaining.
+     */
+    public Builder addImagePathBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      ensureImagePathIsMutable();
+      imagePath_.add(value);
+      onChanged();
+      return this;
+    }
+
+    private models.MyUser author_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        models.MyUser, models.MyUser.Builder, models.MyUserOrBuilder> authorBuilder_;
+    /**
+     * <code>.models.MyUser author = 6;</code>
      * @return Whether the author field is set.
      */
     public boolean hasAuthor() {
       return authorBuilder_ != null || author_ != null;
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      * @return The author.
      */
-    public MyUser getAuthor() {
+    public models.MyUser getAuthor() {
       if (authorBuilder_ == null) {
-        return author_ == null ? MyUser.getDefaultInstance() : author_;
+        return author_ == null ? models.MyUser.getDefaultInstance() : author_;
       } else {
         return authorBuilder_.getMessage();
       }
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
-    public Builder setAuthor(MyUser value) {
+    public Builder setAuthor(models.MyUser value) {
       if (authorBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1061,10 +1253,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
     public Builder setAuthor(
-        MyUser.Builder builderForValue) {
+        models.MyUser.Builder builderForValue) {
       if (authorBuilder_ == null) {
         author_ = builderForValue.build();
         onChanged();
@@ -1075,13 +1267,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
-    public Builder mergeAuthor(MyUser value) {
+    public Builder mergeAuthor(models.MyUser value) {
       if (authorBuilder_ == null) {
         if (author_ != null) {
           author_ =
-            MyUser.newBuilder(author_).mergeFrom(value).buildPartial();
+            models.MyUser.newBuilder(author_).mergeFrom(value).buildPartial();
         } else {
           author_ = value;
         }
@@ -1093,7 +1285,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
     public Builder clearAuthor() {
       if (authorBuilder_ == null) {
@@ -1107,33 +1299,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
-    public MyUser.Builder getAuthorBuilder() {
+    public models.MyUser.Builder getAuthorBuilder() {
       
       onChanged();
       return getAuthorFieldBuilder().getBuilder();
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
-    public MyUserOrBuilder getAuthorOrBuilder() {
+    public models.MyUserOrBuilder getAuthorOrBuilder() {
       if (authorBuilder_ != null) {
         return authorBuilder_.getMessageOrBuilder();
       } else {
         return author_ == null ?
-            MyUser.getDefaultInstance() : author_;
+            models.MyUser.getDefaultInstance() : author_;
       }
     }
     /**
-     * <code>.com.treeleaf.MyUser author = 5;</code>
+     * <code>.models.MyUser author = 6;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-            MyUser, MyUser.Builder, MyUserOrBuilder>
+        models.MyUser, models.MyUser.Builder, models.MyUserOrBuilder> 
         getAuthorFieldBuilder() {
       if (authorBuilder_ == null) {
         authorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-                MyUser, MyUser.Builder, MyUserOrBuilder>(
+            models.MyUser, models.MyUser.Builder, models.MyUserOrBuilder>(
                 getAuthor(),
                 getParentForChildren(),
                 isClean());
@@ -1142,22 +1334,22 @@ private static final long serialVersionUID = 0L;
       return authorBuilder_;
     }
 
-    private java.util.List<MyComment> comments_ =
+    private java.util.List<models.MyComment> comments_ =
       java.util.Collections.emptyList();
     private void ensureCommentsIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
-        comments_ = new java.util.ArrayList<MyComment>(comments_);
-        bitField0_ |= 0x00000001;
+      if (!((bitField0_ & 0x00000002) != 0)) {
+        comments_ = new java.util.ArrayList<models.MyComment>(comments_);
+        bitField0_ |= 0x00000002;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyComment, MyComment.Builder, MyCommentOrBuilder> commentsBuilder_;
+        models.MyComment, models.MyComment.Builder, models.MyCommentOrBuilder> commentsBuilder_;
 
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public java.util.List<MyComment> getCommentsList() {
+    public java.util.List<models.MyComment> getCommentsList() {
       if (commentsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(comments_);
       } else {
@@ -1165,7 +1357,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public int getCommentsCount() {
       if (commentsBuilder_ == null) {
@@ -1175,9 +1367,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public MyComment getComments(int index) {
+    public models.MyComment getComments(int index) {
       if (commentsBuilder_ == null) {
         return comments_.get(index);
       } else {
@@ -1185,10 +1377,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder setComments(
-        int index, MyComment value) {
+        int index, models.MyComment value) {
       if (commentsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1202,10 +1394,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder setComments(
-        int index, MyComment.Builder builderForValue) {
+        int index, models.MyComment.Builder builderForValue) {
       if (commentsBuilder_ == null) {
         ensureCommentsIsMutable();
         comments_.set(index, builderForValue.build());
@@ -1216,9 +1408,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public Builder addComments(MyComment value) {
+    public Builder addComments(models.MyComment value) {
       if (commentsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1232,10 +1424,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder addComments(
-        int index, MyComment value) {
+        int index, models.MyComment value) {
       if (commentsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1249,10 +1441,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder addComments(
-        MyComment.Builder builderForValue) {
+        models.MyComment.Builder builderForValue) {
       if (commentsBuilder_ == null) {
         ensureCommentsIsMutable();
         comments_.add(builderForValue.build());
@@ -1263,10 +1455,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder addComments(
-        int index, MyComment.Builder builderForValue) {
+        int index, models.MyComment.Builder builderForValue) {
       if (commentsBuilder_ == null) {
         ensureCommentsIsMutable();
         comments_.add(index, builderForValue.build());
@@ -1277,10 +1469,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder addAllComments(
-        Iterable<? extends MyComment> values) {
+        java.lang.Iterable<? extends models.MyComment> values) {
       if (commentsBuilder_ == null) {
         ensureCommentsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1292,12 +1484,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder clearComments() {
       if (commentsBuilder_ == null) {
         comments_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
       } else {
         commentsBuilder_.clear();
@@ -1305,7 +1497,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
     public Builder removeComments(int index) {
       if (commentsBuilder_ == null) {
@@ -1318,16 +1510,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public MyComment.Builder getCommentsBuilder(
+    public models.MyComment.Builder getCommentsBuilder(
         int index) {
       return getCommentsFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public MyCommentOrBuilder getCommentsOrBuilder(
+    public models.MyCommentOrBuilder getCommentsOrBuilder(
         int index) {
       if (commentsBuilder_ == null) {
         return comments_.get(index);  } else {
@@ -1335,9 +1527,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public java.util.List<? extends MyCommentOrBuilder>
+    public java.util.List<? extends models.MyCommentOrBuilder> 
          getCommentsOrBuilderList() {
       if (commentsBuilder_ != null) {
         return commentsBuilder_.getMessageOrBuilderList();
@@ -1346,70 +1538,70 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public MyComment.Builder addCommentsBuilder() {
+    public models.MyComment.Builder addCommentsBuilder() {
       return getCommentsFieldBuilder().addBuilder(
-          MyComment.getDefaultInstance());
+          models.MyComment.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public MyComment.Builder addCommentsBuilder(
+    public models.MyComment.Builder addCommentsBuilder(
         int index) {
       return getCommentsFieldBuilder().addBuilder(
-          index, MyComment.getDefaultInstance());
+          index, models.MyComment.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyComment comments = 6;</code>
+     * <code>repeated .models.MyComment comments = 7;</code>
      */
-    public java.util.List<MyComment.Builder>
+    public java.util.List<models.MyComment.Builder> 
          getCommentsBuilderList() {
       return getCommentsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyComment, MyComment.Builder, MyCommentOrBuilder>
+        models.MyComment, models.MyComment.Builder, models.MyCommentOrBuilder> 
         getCommentsFieldBuilder() {
       if (commentsBuilder_ == null) {
         commentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-                MyComment, MyComment.Builder, MyCommentOrBuilder>(
+            models.MyComment, models.MyComment.Builder, models.MyCommentOrBuilder>(
                 comments_,
-                ((bitField0_ & 0x00000001) != 0),
+                ((bitField0_ & 0x00000002) != 0),
                 getParentForChildren(),
                 isClean());
         comments_ = null;
       }
       return commentsBuilder_;
     }
-    @Override
+    @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.setUnknownFields(unknownFields);
     }
 
-    @Override
+    @java.lang.Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.mergeUnknownFields(unknownFields);
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.treeleaf.MyBlog)
+    // @@protoc_insertion_point(builder_scope:models.MyBlog)
   }
 
-  // @@protoc_insertion_point(class_scope:com.treeleaf.MyBlog)
-  private static final MyBlog DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:models.MyBlog)
+  private static final models.MyBlog DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new MyBlog();
+    DEFAULT_INSTANCE = new models.MyBlog();
   }
 
-  public static MyBlog getDefaultInstance() {
+  public static models.MyBlog getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
   private static final com.google.protobuf.Parser<MyBlog>
       PARSER = new com.google.protobuf.AbstractParser<MyBlog>() {
-    @Override
+    @java.lang.Override
     public MyBlog parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1422,13 +1614,13 @@ private static final long serialVersionUID = 0L;
     return PARSER;
   }
 
-  @Override
+  @java.lang.Override
   public com.google.protobuf.Parser<MyBlog> getParserForType() {
     return PARSER;
   }
 
-  @Override
-  public MyBlog getDefaultInstanceForType() {
+  @java.lang.Override
+  public models.MyBlog getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

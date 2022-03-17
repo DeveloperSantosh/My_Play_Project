@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-option java_package = "com.treeleaf";
+
 option java_multiple_files = true;
 
 // Protobuf package name
-package com.treeleaf;
+package models;
 
 message MyUser {
   int32 id = 1;
@@ -20,8 +20,9 @@ message MyBlog{
   string title = 2;
   string content = 3;
   string timestamp = 4;
-  MyUser author = 5;
-  repeated MyComment comments = 6;
+  repeated string imagePath = 5;
+  MyUser author = 6;
+  repeated MyComment comments = 7;
 }
 
 message MyComment{

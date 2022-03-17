@@ -1,15 +1,19 @@
 package repository;
 
 import models.MyComment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.validation.constraints.NotNull;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommentRepository {
+    private static CommentRepository instance = null;
+    private  Connection connection = null;
+    private final Logger logger;
+
     String TABLE_NAME = "BLOG_COMMENTS";
     String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
             "COMMENT_ID INTEGER AUTO_INCREMENT, "+
@@ -18,36 +22,34 @@ public class CommentRepository {
             "BLOG_ID INTEGER, "+
             "PRIMARY KEY (COMMENT_ID)," +
             "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
-    Statement statement = null;
-    private static CommentRepository instance = null;
 
     private CommentRepository() {
-        Connection connection = MyDatabase.getConnection();
+        logger = LoggerFactory.getLogger(CommentRepository.class);
+        connection = MyDatabase.getConnection();
         try {
-            statement = connection.createStatement();
-            statement.executeUpdate(createTable);
-            System.out.println(createTable);
-            System.out.println("Table fetched successfully.");
+            PreparedStatement statement = connection.prepareStatement(createTable);
+            statement.execute();
+            logger.info("Table fetched successfully.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
     }
 
     public boolean save(@NotNull MyComment comment) throws SQLException {
-        String saveQuery = "INSERT INTO "+TABLE_NAME+
-                " (COMMENT, CREATION_TIME, BLOG_ID) VALUES ('"+
-                comment.getComment()+"','"+
-                comment.getTimestamp()+"',"+
-                comment.getBlog().getId()+ ")";
-        System.out.println(saveQuery);
-        int count = statement.executeUpdate(saveQuery);
+        String saveQuery = "INSERT INTO "+TABLE_NAME+" VALUES(?,?,?);";
+        PreparedStatement statement = connection.prepareStatement(saveQuery);
+        statement.setString(1,comment.getComment());
+        statement.setString(2, comment.getTimestamp());
+        statement.setInt(3, comment.getBlog().getId());
+        int count = statement.executeUpdate();
+        logger.info("Comment saved successfully.");
         return (count == 1);
     }
 
     public MyComment findCommentById(Integer id) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE COMMENT_ID = "+id;
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE COMMENT_ID=?";
+        PreparedStatement statement = connection.prepareStatement(findQuery);
+        ResultSet resultSet = statement.executeQuery();
         if(resultSet.next()) {
             return MyComment.newBuilder()
                     .setId(resultSet.getInt("COMMENT_ID"))
@@ -61,9 +63,9 @@ public class CommentRepository {
 
     public List<MyComment> findAllComments() throws SQLException {
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
+        PreparedStatement statement = connection.prepareStatement(findQuery);
         List<MyComment> comments = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
+        ResultSet resultSet = statement.executeQuery();
         while(resultSet.next()) {
             MyComment comment = MyComment.newBuilder()
                     .setId(resultSet.getInt("COMMENT_ID"))

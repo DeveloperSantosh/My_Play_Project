@@ -4,7 +4,7 @@
 package models;
 
 public interface MyCommentOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:com.treeleaf.MyComment)
+    // @@protoc_insertion_point(interface_extends:models.MyComment)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -17,7 +17,7 @@ public interface MyCommentOrBuilder extends
    * <code>string comment = 2;</code>
    * @return The comment.
    */
-  String getComment();
+  java.lang.String getComment();
   /**
    * <code>string comment = 2;</code>
    * @return The bytes for comment.
@@ -29,7 +29,7 @@ public interface MyCommentOrBuilder extends
    * <code>string timestamp = 3;</code>
    * @return The timestamp.
    */
-  String getTimestamp();
+  java.lang.String getTimestamp();
   /**
    * <code>string timestamp = 3;</code>
    * @return The bytes for timestamp.
@@ -38,17 +38,17 @@ public interface MyCommentOrBuilder extends
       getTimestampBytes();
 
   /**
-   * <code>.com.treeleaf.MyBlog blog = 4;</code>
+   * <code>.models.MyBlog blog = 4;</code>
    * @return Whether the blog field is set.
    */
   boolean hasBlog();
   /**
-   * <code>.com.treeleaf.MyBlog blog = 4;</code>
+   * <code>.models.MyBlog blog = 4;</code>
    * @return The blog.
    */
-  MyBlog getBlog();
+  models.MyBlog getBlog();
   /**
-   * <code>.com.treeleaf.MyBlog blog = 4;</code>
+   * <code>.models.MyBlog blog = 4;</code>
    */
-  MyBlogOrBuilder getBlogOrBuilder();
+  models.MyBlogOrBuilder getBlogOrBuilder();
 }

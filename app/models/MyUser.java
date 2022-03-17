@@ -3,17 +3,19 @@
 
 package models;
 
+import be.objectify.deadbolt.java.models.Permission;
+import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
 
 import java.util.List;
 
 /**
- * Protobuf type {@code com.treeleaf.MyUser}
+ * Protobuf type {@code models.MyUser}
  */
 public final class MyUser extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.treeleaf.MyUser)
-        MyUserOrBuilder, Subject {
+    // @@protoc_insertion_point(message_implements:models.MyUser)
+    MyUserOrBuilder, Subject {
 private static final long serialVersionUID = 0L;
   // Use MyUser.newBuilder() to construct.
   private MyUser(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -27,14 +29,14 @@ private static final long serialVersionUID = 0L;
     permission_ = java.util.Collections.emptyList();
   }
 
-  @Override
+  @java.lang.Override
   @SuppressWarnings({"unused"})
-  protected Object newInstance(
+  protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
     return new MyUser();
   }
 
-  @Override
+  @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return this.unknownFields;
@@ -45,7 +47,7 @@ private static final long serialVersionUID = 0L;
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
     if (extensionRegistry == null) {
-      throw new NullPointerException();
+      throw new java.lang.NullPointerException();
     }
     int mutable_bitField0_ = 0;
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
@@ -64,39 +66,39 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 18: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             email_ = s;
             break;
           }
           case 26: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             password_ = s;
             break;
           }
           case 34: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             username_ = s;
             break;
           }
           case 42: {
             if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-              role_ = new java.util.ArrayList<MyRole>();
+              role_ = new java.util.ArrayList<models.MyRole>();
               mutable_bitField0_ |= 0x00000001;
             }
             role_.add(
-                input.readMessage(MyRole.parser(), extensionRegistry));
+                input.readMessage(models.MyRole.parser(), extensionRegistry));
             break;
           }
           case 50: {
             if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-              permission_ = new java.util.ArrayList<MyPermission>();
+              permission_ = new java.util.ArrayList<models.MyPermission>();
               mutable_bitField0_ |= 0x00000002;
             }
             permission_.add(
-                input.readMessage(MyPermission.parser(), extensionRegistry));
+                input.readMessage(models.MyPermission.parser(), extensionRegistry));
             break;
           }
           default: {
@@ -126,15 +128,15 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return Entities.internal_static_com_treeleaf_MyUser_descriptor;
+    return models.Entities.internal_static_models_MyUser_descriptor;
   }
 
-  @Override
-  protected FieldAccessorTable
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return Entities.internal_static_com_treeleaf_MyUser_fieldAccessorTable
+    return models.Entities.internal_static_models_MyUser_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MyUser.class, MyUser.Builder.class);
+            models.MyUser.class, models.MyUser.Builder.class);
   }
 
   public static final int ID_FIELD_NUMBER = 1;
@@ -143,26 +145,26 @@ private static final long serialVersionUID = 0L;
    * <code>int32 id = 1;</code>
    * @return The id.
    */
-  @Override
+  @java.lang.Override
   public int getId() {
     return id_;
   }
 
   public static final int EMAIL_FIELD_NUMBER = 2;
-  private volatile Object email_;
+  private volatile java.lang.Object email_;
   /**
    * <code>string email = 2;</code>
    * @return The email.
    */
-  @Override
-  public String getEmail() {
-    Object ref = email_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getEmail() {
+    java.lang.Object ref = email_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       email_ = s;
       return s;
     }
@@ -171,14 +173,14 @@ private static final long serialVersionUID = 0L;
    * <code>string email = 2;</code>
    * @return The bytes for email.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getEmailBytes() {
-    Object ref = email_;
-    if (ref instanceof String) {
+    java.lang.Object ref = email_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       email_ = b;
       return b;
     } else {
@@ -187,20 +189,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int PASSWORD_FIELD_NUMBER = 3;
-  private volatile Object password_;
+  private volatile java.lang.Object password_;
   /**
    * <code>string password = 3;</code>
    * @return The password.
    */
-  @Override
-  public String getPassword() {
-    Object ref = password_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getPassword() {
+    java.lang.Object ref = password_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       password_ = s;
       return s;
     }
@@ -209,14 +211,14 @@ private static final long serialVersionUID = 0L;
    * <code>string password = 3;</code>
    * @return The bytes for password.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getPasswordBytes() {
-    Object ref = password_;
-    if (ref instanceof String) {
+    java.lang.Object ref = password_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       password_ = b;
       return b;
     } else {
@@ -225,20 +227,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int USERNAME_FIELD_NUMBER = 4;
-  private volatile Object username_;
+  private volatile java.lang.Object username_;
   /**
    * <code>string username = 4;</code>
    * @return The username.
    */
-  @Override
-  public String getUsername() {
-    Object ref = username_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getUsername() {
+    java.lang.Object ref = username_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       username_ = s;
       return s;
     }
@@ -247,14 +249,14 @@ private static final long serialVersionUID = 0L;
    * <code>string username = 4;</code>
    * @return The bytes for username.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getUsernameBytes() {
-    Object ref = username_;
-    if (ref instanceof String) {
+    java.lang.Object ref = username_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       username_ = b;
       return b;
     } else {
@@ -263,87 +265,87 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int ROLE_FIELD_NUMBER = 5;
-  private List<MyRole> role_;
+  private java.util.List<models.MyRole> role_;
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  @Override
-  public List<MyRole> getRoleList() {
+  @java.lang.Override
+  public java.util.List<models.MyRole> getRoleList() {
     return role_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  @Override
-  public List<? extends MyRoleOrBuilder>
+  @java.lang.Override
+  public java.util.List<? extends models.MyRoleOrBuilder> 
       getRoleOrBuilderList() {
     return role_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  @Override
+  @java.lang.Override
   public int getRoleCount() {
     return role_.size();
   }
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  @Override
-  public MyRole getRole(int index) {
+  @java.lang.Override
+  public models.MyRole getRole(int index) {
     return role_.get(index);
   }
   /**
-   * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+   * <code>repeated .models.MyRole role = 5;</code>
    */
-  @Override
-  public MyRoleOrBuilder getRoleOrBuilder(
+  @java.lang.Override
+  public models.MyRoleOrBuilder getRoleOrBuilder(
       int index) {
     return role_.get(index);
   }
 
   public static final int PERMISSION_FIELD_NUMBER = 6;
-  private List<MyPermission> permission_;
+  private java.util.List<models.MyPermission> permission_;
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  @Override
-  public List<MyPermission> getPermissionList() {
+  @java.lang.Override
+  public java.util.List<models.MyPermission> getPermissionList() {
     return permission_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  @Override
-  public List<? extends MyPermissionOrBuilder>
+  @java.lang.Override
+  public java.util.List<? extends models.MyPermissionOrBuilder> 
       getPermissionOrBuilderList() {
     return permission_;
   }
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  @Override
+  @java.lang.Override
   public int getPermissionCount() {
     return permission_.size();
   }
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  @Override
-  public MyPermission getPermission(int index) {
+  @java.lang.Override
+  public models.MyPermission getPermission(int index) {
     return permission_.get(index);
   }
   /**
-   * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+   * <code>repeated .models.MyPermission permission = 6;</code>
    */
-  @Override
-  public MyPermissionOrBuilder getPermissionOrBuilder(
+  @java.lang.Override
+  public models.MyPermissionOrBuilder getPermissionOrBuilder(
       int index) {
     return permission_.get(index);
   }
 
   private byte memoizedIsInitialized = -1;
-  @Override
+  @java.lang.Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -353,7 +355,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (id_ != 0) {
@@ -377,7 +379,7 @@ private static final long serialVersionUID = 0L;
     unknownFields.writeTo(output);
   }
 
-  @Override
+  @java.lang.Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -409,15 +411,15 @@ private static final long serialVersionUID = 0L;
     return size;
   }
 
-  @Override
-  public boolean equals(final Object obj) {
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof MyUser)) {
+    if (!(obj instanceof models.MyUser)) {
       return super.equals(obj);
     }
-    MyUser other = (MyUser) obj;
+    models.MyUser other = (models.MyUser) obj;
 
     if (getId()
         != other.getId()) return false;
@@ -435,7 +437,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -463,69 +465,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyUser parseFrom(byte[] data)
+  public static models.MyUser parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyUser parseFrom(java.io.InputStream input)
+  public static models.MyUser parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyUser parseDelimitedFrom(java.io.InputStream input)
+  public static models.MyUser parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static MyUser parseDelimitedFrom(
+  public static models.MyUser parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyUser parseFrom(
+  public static models.MyUser parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -533,34 +535,34 @@ private static final long serialVersionUID = 0L;
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
-  @Override
+  @java.lang.Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(MyUser prototype) {
+  public static Builder newBuilder(models.MyUser prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
-  @Override
+  @java.lang.Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @Override
+  @java.lang.Override
   protected Builder newBuilderForType(
-      BuilderParent parent) {
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
 
   @Override
-  public List<MyRole> getRoles() {
+  public List<? extends Role> getRoles() {
     return getRoleList();
   }
 
   @Override
-  public List<MyPermission> getPermissions() {
+  public List<? extends Permission> getPermissions() {
     return getPermissionList();
   }
 
@@ -570,32 +572,32 @@ private static final long serialVersionUID = 0L;
   }
 
   /**
-   * Protobuf type {@code com.treeleaf.MyUser}
+   * Protobuf type {@code models.MyUser}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.treeleaf.MyUser)
-          MyUserOrBuilder {
+      // @@protoc_insertion_point(builder_implements:models.MyUser)
+      models.MyUserOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return Entities.internal_static_com_treeleaf_MyUser_descriptor;
+      return models.Entities.internal_static_models_MyUser_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return Entities.internal_static_com_treeleaf_MyUser_fieldAccessorTable
+      return models.Entities.internal_static_models_MyUser_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MyUser.class, MyUser.Builder.class);
+              models.MyUser.class, models.MyUser.Builder.class);
     }
 
-    // Construct using com.treeleaf.MyUser.newBuilder()
+    // Construct using models.MyUser.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
 
     private Builder(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -606,7 +608,7 @@ private static final long serialVersionUID = 0L;
         getPermissionFieldBuilder();
       }
     }
-    @Override
+    @java.lang.Override
     public Builder clear() {
       super.clear();
       id_ = 0;
@@ -632,29 +634,29 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return Entities.internal_static_com_treeleaf_MyUser_descriptor;
+      return models.Entities.internal_static_models_MyUser_descriptor;
     }
 
-    @Override
-    public MyUser getDefaultInstanceForType() {
-      return MyUser.getDefaultInstance();
+    @java.lang.Override
+    public models.MyUser getDefaultInstanceForType() {
+      return models.MyUser.getDefaultInstance();
     }
 
-    @Override
-    public MyUser build() {
-      MyUser result = buildPartial();
+    @java.lang.Override
+    public models.MyUser build() {
+      models.MyUser result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    @Override
-    public MyUser buildPartial() {
-      MyUser result = new MyUser(this);
+    @java.lang.Override
+    public models.MyUser buildPartial() {
+      models.MyUser result = new models.MyUser(this);
       int from_bitField0_ = bitField0_;
       result.id_ = id_;
       result.email_ = email_;
@@ -682,50 +684,50 @@ private static final long serialVersionUID = 0L;
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public Builder clone() {
       return super.clone();
     }
-    @Override
+    @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.setField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
       return super.clearField(field);
     }
-    @Override
+    @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
       return super.clearOneof(oneof);
     }
-    @Override
+    @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, Object value) {
+        int index, java.lang.Object value) {
       return super.setRepeatedField(field, index, value);
     }
-    @Override
+    @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.addRepeatedField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof MyUser) {
-        return mergeFrom((MyUser)other);
+      if (other instanceof models.MyUser) {
+        return mergeFrom((models.MyUser)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(MyUser other) {
-      if (other == MyUser.getDefaultInstance()) return this;
+    public Builder mergeFrom(models.MyUser other) {
+      if (other == models.MyUser.getDefaultInstance()) return this;
       if (other.getId() != 0) {
         setId(other.getId());
       }
@@ -798,21 +800,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      MyUser parsedMessage = null;
+      models.MyUser parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (MyUser) e.getUnfinishedMessage();
+        parsedMessage = (models.MyUser) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -828,7 +830,7 @@ private static final long serialVersionUID = 0L;
      * <code>int32 id = 1;</code>
      * @return The id.
      */
-    @Override
+    @java.lang.Override
     public int getId() {
       return id_;
     }
@@ -854,21 +856,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object email_ = "";
+    private java.lang.Object email_ = "";
     /**
      * <code>string email = 2;</code>
      * @return The email.
      */
-    public String getEmail() {
-      Object ref = email_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getEmail() {
+      java.lang.Object ref = email_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         email_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -877,11 +879,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getEmailBytes() {
-      Object ref = email_;
+      java.lang.Object ref = email_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         email_ = b;
         return b;
       } else {
@@ -894,7 +896,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setEmail(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -930,21 +932,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object password_ = "";
+    private java.lang.Object password_ = "";
     /**
      * <code>string password = 3;</code>
      * @return The password.
      */
-    public String getPassword() {
-      Object ref = password_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getPassword() {
+      java.lang.Object ref = password_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         password_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -953,11 +955,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getPasswordBytes() {
-      Object ref = password_;
+      java.lang.Object ref = password_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         password_ = b;
         return b;
       } else {
@@ -970,7 +972,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setPassword(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1006,21 +1008,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object username_ = "";
+    private java.lang.Object username_ = "";
     /**
      * <code>string username = 4;</code>
      * @return The username.
      */
-    public String getUsername() {
-      Object ref = username_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getUsername() {
+      java.lang.Object ref = username_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         username_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -1029,11 +1031,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getUsernameBytes() {
-      Object ref = username_;
+      java.lang.Object ref = username_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         username_ = b;
         return b;
       } else {
@@ -1046,7 +1048,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setUsername(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -1082,22 +1084,22 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private List<MyRole> role_ =
+    private java.util.List<models.MyRole> role_ =
       java.util.Collections.emptyList();
     private void ensureRoleIsMutable() {
       if (!((bitField0_ & 0x00000001) != 0)) {
-        role_ = new java.util.ArrayList<MyRole>(role_);
+        role_ = new java.util.ArrayList<models.MyRole>(role_);
         bitField0_ |= 0x00000001;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyRole, MyRole.Builder, MyRoleOrBuilder> roleBuilder_;
+        models.MyRole, models.MyRole.Builder, models.MyRoleOrBuilder> roleBuilder_;
 
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public List<MyRole> getRoleList() {
+    public java.util.List<models.MyRole> getRoleList() {
       if (roleBuilder_ == null) {
         return java.util.Collections.unmodifiableList(role_);
       } else {
@@ -1105,7 +1107,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public int getRoleCount() {
       if (roleBuilder_ == null) {
@@ -1115,9 +1117,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public MyRole getRole(int index) {
+    public models.MyRole getRole(int index) {
       if (roleBuilder_ == null) {
         return role_.get(index);
       } else {
@@ -1125,10 +1127,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder setRole(
-        int index, MyRole value) {
+        int index, models.MyRole value) {
       if (roleBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1142,10 +1144,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder setRole(
-        int index, MyRole.Builder builderForValue) {
+        int index, models.MyRole.Builder builderForValue) {
       if (roleBuilder_ == null) {
         ensureRoleIsMutable();
         role_.set(index, builderForValue.build());
@@ -1156,9 +1158,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public Builder addRole(MyRole value) {
+    public Builder addRole(models.MyRole value) {
       if (roleBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1172,10 +1174,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder addRole(
-        int index, MyRole value) {
+        int index, models.MyRole value) {
       if (roleBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1189,10 +1191,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder addRole(
-        MyRole.Builder builderForValue) {
+        models.MyRole.Builder builderForValue) {
       if (roleBuilder_ == null) {
         ensureRoleIsMutable();
         role_.add(builderForValue.build());
@@ -1203,10 +1205,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder addRole(
-        int index, MyRole.Builder builderForValue) {
+        int index, models.MyRole.Builder builderForValue) {
       if (roleBuilder_ == null) {
         ensureRoleIsMutable();
         role_.add(index, builderForValue.build());
@@ -1217,10 +1219,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder addAllRole(
-        Iterable<? extends MyRole> values) {
+        java.lang.Iterable<? extends models.MyRole> values) {
       if (roleBuilder_ == null) {
         ensureRoleIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1232,7 +1234,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder clearRole() {
       if (roleBuilder_ == null) {
@@ -1245,7 +1247,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
     public Builder removeRole(int index) {
       if (roleBuilder_ == null) {
@@ -1258,16 +1260,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public MyRole.Builder getRoleBuilder(
+    public models.MyRole.Builder getRoleBuilder(
         int index) {
       return getRoleFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public MyRoleOrBuilder getRoleOrBuilder(
+    public models.MyRoleOrBuilder getRoleOrBuilder(
         int index) {
       if (roleBuilder_ == null) {
         return role_.get(index);  } else {
@@ -1275,9 +1277,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public List<? extends MyRoleOrBuilder>
+    public java.util.List<? extends models.MyRoleOrBuilder> 
          getRoleOrBuilderList() {
       if (roleBuilder_ != null) {
         return roleBuilder_.getMessageOrBuilderList();
@@ -1286,33 +1288,33 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public MyRole.Builder addRoleBuilder() {
+    public models.MyRole.Builder addRoleBuilder() {
       return getRoleFieldBuilder().addBuilder(
-          MyRole.getDefaultInstance());
+          models.MyRole.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public MyRole.Builder addRoleBuilder(
+    public models.MyRole.Builder addRoleBuilder(
         int index) {
       return getRoleFieldBuilder().addBuilder(
-          index, MyRole.getDefaultInstance());
+          index, models.MyRole.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyRole role = 5;</code>
+     * <code>repeated .models.MyRole role = 5;</code>
      */
-    public List<MyRole.Builder>
+    public java.util.List<models.MyRole.Builder> 
          getRoleBuilderList() {
       return getRoleFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyRole, MyRole.Builder, MyRoleOrBuilder>
+        models.MyRole, models.MyRole.Builder, models.MyRoleOrBuilder> 
         getRoleFieldBuilder() {
       if (roleBuilder_ == null) {
         roleBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-                MyRole, MyRole.Builder, MyRoleOrBuilder>(
+            models.MyRole, models.MyRole.Builder, models.MyRoleOrBuilder>(
                 role_,
                 ((bitField0_ & 0x00000001) != 0),
                 getParentForChildren(),
@@ -1322,22 +1324,22 @@ private static final long serialVersionUID = 0L;
       return roleBuilder_;
     }
 
-    private List<MyPermission> permission_ =
+    private java.util.List<models.MyPermission> permission_ =
       java.util.Collections.emptyList();
     private void ensurePermissionIsMutable() {
       if (!((bitField0_ & 0x00000002) != 0)) {
-        permission_ = new java.util.ArrayList<MyPermission>(permission_);
+        permission_ = new java.util.ArrayList<models.MyPermission>(permission_);
         bitField0_ |= 0x00000002;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyPermission, MyPermission.Builder, MyPermissionOrBuilder> permissionBuilder_;
+        models.MyPermission, models.MyPermission.Builder, models.MyPermissionOrBuilder> permissionBuilder_;
 
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public List<MyPermission> getPermissionList() {
+    public java.util.List<models.MyPermission> getPermissionList() {
       if (permissionBuilder_ == null) {
         return java.util.Collections.unmodifiableList(permission_);
       } else {
@@ -1345,7 +1347,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public int getPermissionCount() {
       if (permissionBuilder_ == null) {
@@ -1355,9 +1357,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public MyPermission getPermission(int index) {
+    public models.MyPermission getPermission(int index) {
       if (permissionBuilder_ == null) {
         return permission_.get(index);
       } else {
@@ -1365,10 +1367,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder setPermission(
-        int index, MyPermission value) {
+        int index, models.MyPermission value) {
       if (permissionBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1382,10 +1384,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder setPermission(
-        int index, MyPermission.Builder builderForValue) {
+        int index, models.MyPermission.Builder builderForValue) {
       if (permissionBuilder_ == null) {
         ensurePermissionIsMutable();
         permission_.set(index, builderForValue.build());
@@ -1396,9 +1398,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public Builder addPermission(MyPermission value) {
+    public Builder addPermission(models.MyPermission value) {
       if (permissionBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1412,10 +1414,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder addPermission(
-        int index, MyPermission value) {
+        int index, models.MyPermission value) {
       if (permissionBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1429,10 +1431,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder addPermission(
-        MyPermission.Builder builderForValue) {
+        models.MyPermission.Builder builderForValue) {
       if (permissionBuilder_ == null) {
         ensurePermissionIsMutable();
         permission_.add(builderForValue.build());
@@ -1443,10 +1445,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder addPermission(
-        int index, MyPermission.Builder builderForValue) {
+        int index, models.MyPermission.Builder builderForValue) {
       if (permissionBuilder_ == null) {
         ensurePermissionIsMutable();
         permission_.add(index, builderForValue.build());
@@ -1457,10 +1459,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder addAllPermission(
-        Iterable<? extends MyPermission> values) {
+        java.lang.Iterable<? extends models.MyPermission> values) {
       if (permissionBuilder_ == null) {
         ensurePermissionIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1472,7 +1474,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder clearPermission() {
       if (permissionBuilder_ == null) {
@@ -1485,7 +1487,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
     public Builder removePermission(int index) {
       if (permissionBuilder_ == null) {
@@ -1498,16 +1500,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public MyPermission.Builder getPermissionBuilder(
+    public models.MyPermission.Builder getPermissionBuilder(
         int index) {
       return getPermissionFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public MyPermissionOrBuilder getPermissionOrBuilder(
+    public models.MyPermissionOrBuilder getPermissionOrBuilder(
         int index) {
       if (permissionBuilder_ == null) {
         return permission_.get(index);  } else {
@@ -1515,9 +1517,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public List<? extends MyPermissionOrBuilder>
+    public java.util.List<? extends models.MyPermissionOrBuilder> 
          getPermissionOrBuilderList() {
       if (permissionBuilder_ != null) {
         return permissionBuilder_.getMessageOrBuilderList();
@@ -1526,33 +1528,33 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public MyPermission.Builder addPermissionBuilder() {
+    public models.MyPermission.Builder addPermissionBuilder() {
       return getPermissionFieldBuilder().addBuilder(
-          MyPermission.getDefaultInstance());
+          models.MyPermission.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public MyPermission.Builder addPermissionBuilder(
+    public models.MyPermission.Builder addPermissionBuilder(
         int index) {
       return getPermissionFieldBuilder().addBuilder(
-          index, MyPermission.getDefaultInstance());
+          index, models.MyPermission.getDefaultInstance());
     }
     /**
-     * <code>repeated .com.treeleaf.MyPermission permission = 6;</code>
+     * <code>repeated .models.MyPermission permission = 6;</code>
      */
-    public List<MyPermission.Builder>
+    public java.util.List<models.MyPermission.Builder> 
          getPermissionBuilderList() {
       return getPermissionFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-            MyPermission, MyPermission.Builder, MyPermissionOrBuilder>
+        models.MyPermission, models.MyPermission.Builder, models.MyPermissionOrBuilder> 
         getPermissionFieldBuilder() {
       if (permissionBuilder_ == null) {
         permissionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-                MyPermission, MyPermission.Builder, MyPermissionOrBuilder>(
+            models.MyPermission, models.MyPermission.Builder, models.MyPermissionOrBuilder>(
                 permission_,
                 ((bitField0_ & 0x00000002) != 0),
                 getParentForChildren(),
@@ -1561,35 +1563,35 @@ private static final long serialVersionUID = 0L;
       }
       return permissionBuilder_;
     }
-    @Override
+    @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.setUnknownFields(unknownFields);
     }
 
-    @Override
+    @java.lang.Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.mergeUnknownFields(unknownFields);
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.treeleaf.MyUser)
+    // @@protoc_insertion_point(builder_scope:models.MyUser)
   }
 
-  // @@protoc_insertion_point(class_scope:com.treeleaf.MyUser)
-  private static final MyUser DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:models.MyUser)
+  private static final models.MyUser DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new MyUser();
+    DEFAULT_INSTANCE = new models.MyUser();
   }
 
-  public static MyUser getDefaultInstance() {
+  public static models.MyUser getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
   private static final com.google.protobuf.Parser<MyUser>
       PARSER = new com.google.protobuf.AbstractParser<MyUser>() {
-    @Override
+    @java.lang.Override
     public MyUser parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1602,13 +1604,13 @@ private static final long serialVersionUID = 0L;
     return PARSER;
   }
 
-  @Override
+  @java.lang.Override
   public com.google.protobuf.Parser<MyUser> getParserForType() {
     return PARSER;
   }
 
-  @Override
-  public MyUser getDefaultInstanceForType() {
+  @java.lang.Override
+  public models.MyUser getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

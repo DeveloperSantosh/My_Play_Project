@@ -3,13 +3,15 @@ package models;
 public class RequestBlog {
     private String title;
     private String content;
+    private String imagePath;
 
     public RequestBlog() {
     }
 
-    public RequestBlog(String title, String content) {
+    public RequestBlog(String title, String content, String imagePath) {
         this.title = title;
         this.content = content;
+        this.imagePath = imagePath;
     }
 
     public String getTitle() {
@@ -26,5 +28,13 @@ public class RequestBlog {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

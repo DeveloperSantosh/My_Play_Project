@@ -6,12 +6,12 @@ package models;
 import be.objectify.deadbolt.java.models.Role;
 
 /**
- * Protobuf type {@code com.treeleaf.MyRole}
+ * Protobuf type {@code models.MyRole}
  */
 public final class MyRole extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.treeleaf.MyRole)
-        MyRoleOrBuilder, Role {
+    // @@protoc_insertion_point(message_implements:models.MyRole)
+    MyRoleOrBuilder, Role {
 private static final long serialVersionUID = 0L;
   // Use MyRole.newBuilder() to construct.
   private MyRole(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
@@ -22,14 +22,14 @@ private static final long serialVersionUID = 0L;
     description_ = "";
   }
 
-  @Override
+  @java.lang.Override
   @SuppressWarnings({"unused"})
-  protected Object newInstance(
+  protected java.lang.Object newInstance(
       UnusedPrivateParameter unused) {
     return new MyRole();
   }
 
-  @Override
+  @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return this.unknownFields;
@@ -40,7 +40,7 @@ private static final long serialVersionUID = 0L;
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
     if (extensionRegistry == null) {
-      throw new NullPointerException();
+      throw new java.lang.NullPointerException();
     }
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
         com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -53,13 +53,13 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           case 10: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             roleType_ = s;
             break;
           }
           case 18: {
-            String s = input.readStringRequireUtf8();
+            java.lang.String s = input.readStringRequireUtf8();
 
             description_ = s;
             break;
@@ -85,32 +85,32 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return Entities.internal_static_com_treeleaf_MyRole_descriptor;
+    return models.Entities.internal_static_models_MyRole_descriptor;
   }
 
-  @Override
-  protected FieldAccessorTable
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return Entities.internal_static_com_treeleaf_MyRole_fieldAccessorTable
+    return models.Entities.internal_static_models_MyRole_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MyRole.class, MyRole.Builder.class);
+            models.MyRole.class, models.MyRole.Builder.class);
   }
 
   public static final int ROLETYPE_FIELD_NUMBER = 1;
-  private volatile Object roleType_;
+  private volatile java.lang.Object roleType_;
   /**
    * <code>string roleType = 1;</code>
    * @return The roleType.
    */
-  @Override
-  public String getRoleType() {
-    Object ref = roleType_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getRoleType() {
+    java.lang.Object ref = roleType_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       roleType_ = s;
       return s;
     }
@@ -119,14 +119,14 @@ private static final long serialVersionUID = 0L;
    * <code>string roleType = 1;</code>
    * @return The bytes for roleType.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getRoleTypeBytes() {
-    Object ref = roleType_;
-    if (ref instanceof String) {
+    java.lang.Object ref = roleType_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       roleType_ = b;
       return b;
     } else {
@@ -135,20 +135,20 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DESCRIPTION_FIELD_NUMBER = 2;
-  private volatile Object description_;
+  private volatile java.lang.Object description_;
   /**
    * <code>string description = 2;</code>
    * @return The description.
    */
-  @Override
-  public String getDescription() {
-    Object ref = description_;
-    if (ref instanceof String) {
-      return (String) ref;
+  @java.lang.Override
+  public java.lang.String getDescription() {
+    java.lang.Object ref = description_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
-      String s = bs.toStringUtf8();
+      java.lang.String s = bs.toStringUtf8();
       description_ = s;
       return s;
     }
@@ -157,14 +157,14 @@ private static final long serialVersionUID = 0L;
    * <code>string description = 2;</code>
    * @return The bytes for description.
    */
-  @Override
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getDescriptionBytes() {
-    Object ref = description_;
-    if (ref instanceof String) {
+    java.lang.Object ref = description_;
+    if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
-              (String) ref);
+              (java.lang.String) ref);
       description_ = b;
       return b;
     } else {
@@ -173,7 +173,7 @@ private static final long serialVersionUID = 0L;
   }
 
   private byte memoizedIsInitialized = -1;
-  @Override
+  @java.lang.Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -183,7 +183,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (!getRoleTypeBytes().isEmpty()) {
@@ -195,7 +195,7 @@ private static final long serialVersionUID = 0L;
     unknownFields.writeTo(output);
   }
 
-  @Override
+  @java.lang.Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -212,15 +212,15 @@ private static final long serialVersionUID = 0L;
     return size;
   }
 
-  @Override
-  public boolean equals(final Object obj) {
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof MyRole)) {
+    if (!(obj instanceof models.MyRole)) {
       return super.equals(obj);
     }
-    MyRole other = (MyRole) obj;
+    models.MyRole other = (models.MyRole) obj;
 
     if (!getRoleType()
         .equals(other.getRoleType())) return false;
@@ -230,7 +230,7 @@ private static final long serialVersionUID = 0L;
     return true;
   }
 
-  @Override
+  @java.lang.Override
   public int hashCode() {
     if (memoizedHashCode != 0) {
       return memoizedHashCode;
@@ -246,69 +246,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyRole parseFrom(byte[] data)
+  public static models.MyRole parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MyRole parseFrom(java.io.InputStream input)
+  public static models.MyRole parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyRole parseDelimitedFrom(java.io.InputStream input)
+  public static models.MyRole parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static MyRole parseDelimitedFrom(
+  public static models.MyRole parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MyRole parseFrom(
+  public static models.MyRole parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -316,23 +316,23 @@ private static final long serialVersionUID = 0L;
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
-  @Override
+  @java.lang.Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(MyRole prototype) {
+  public static Builder newBuilder(models.MyRole prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
-  @Override
+  @java.lang.Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
   }
 
-  @Override
+  @java.lang.Override
   protected Builder newBuilderForType(
-      BuilderParent parent) {
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
@@ -343,32 +343,32 @@ private static final long serialVersionUID = 0L;
   }
 
   /**
-   * Protobuf type {@code com.treeleaf.MyRole}
+   * Protobuf type {@code models.MyRole}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.treeleaf.MyRole)
-          MyRoleOrBuilder {
+      // @@protoc_insertion_point(builder_implements:models.MyRole)
+      models.MyRoleOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return Entities.internal_static_com_treeleaf_MyRole_descriptor;
+      return models.Entities.internal_static_models_MyRole_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return Entities.internal_static_com_treeleaf_MyRole_fieldAccessorTable
+      return models.Entities.internal_static_models_MyRole_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MyRole.class, MyRole.Builder.class);
+              models.MyRole.class, models.MyRole.Builder.class);
     }
 
-    // Construct using com.treeleaf.MyRole.newBuilder()
+    // Construct using models.MyRole.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
 
     private Builder(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -377,7 +377,7 @@ private static final long serialVersionUID = 0L;
               .alwaysUseFieldBuilders) {
       }
     }
-    @Override
+    @java.lang.Override
     public Builder clear() {
       super.clear();
       roleType_ = "";
@@ -387,79 +387,79 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return Entities.internal_static_com_treeleaf_MyRole_descriptor;
+      return models.Entities.internal_static_models_MyRole_descriptor;
     }
 
-    @Override
-    public MyRole getDefaultInstanceForType() {
-      return MyRole.getDefaultInstance();
+    @java.lang.Override
+    public models.MyRole getDefaultInstanceForType() {
+      return models.MyRole.getDefaultInstance();
     }
 
-    @Override
-    public MyRole build() {
-      MyRole result = buildPartial();
+    @java.lang.Override
+    public models.MyRole build() {
+      models.MyRole result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    @Override
-    public MyRole buildPartial() {
-      MyRole result = new MyRole(this);
+    @java.lang.Override
+    public models.MyRole buildPartial() {
+      models.MyRole result = new models.MyRole(this);
       result.roleType_ = roleType_;
       result.description_ = description_;
       onBuilt();
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public Builder clone() {
       return super.clone();
     }
-    @Override
+    @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.setField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
       return super.clearField(field);
     }
-    @Override
+    @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
       return super.clearOneof(oneof);
     }
-    @Override
+    @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, Object value) {
+        int index, java.lang.Object value) {
       return super.setRepeatedField(field, index, value);
     }
-    @Override
+    @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        Object value) {
+        java.lang.Object value) {
       return super.addRepeatedField(field, value);
     }
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof MyRole) {
-        return mergeFrom((MyRole)other);
+      if (other instanceof models.MyRole) {
+        return mergeFrom((models.MyRole)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(MyRole other) {
-      if (other == MyRole.getDefaultInstance()) return this;
+    public Builder mergeFrom(models.MyRole other) {
+      if (other == models.MyRole.getDefaultInstance()) return this;
       if (!other.getRoleType().isEmpty()) {
         roleType_ = other.roleType_;
         onChanged();
@@ -473,21 +473,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      MyRole parsedMessage = null;
+      models.MyRole parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (MyRole) e.getUnfinishedMessage();
+        parsedMessage = (models.MyRole) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -497,21 +497,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object roleType_ = "";
+    private java.lang.Object roleType_ = "";
     /**
      * <code>string roleType = 1;</code>
      * @return The roleType.
      */
-    public String getRoleType() {
-      Object ref = roleType_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getRoleType() {
+      java.lang.Object ref = roleType_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         roleType_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -520,11 +520,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getRoleTypeBytes() {
-      Object ref = roleType_;
+      java.lang.Object ref = roleType_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         roleType_ = b;
         return b;
       } else {
@@ -537,7 +537,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setRoleType(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -573,21 +573,21 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private Object description_ = "";
+    private java.lang.Object description_ = "";
     /**
      * <code>string description = 2;</code>
      * @return The description.
      */
-    public String getDescription() {
-      Object ref = description_;
-      if (!(ref instanceof String)) {
+    public java.lang.String getDescription() {
+      java.lang.Object ref = description_;
+      if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         description_ = s;
         return s;
       } else {
-        return (String) ref;
+        return (java.lang.String) ref;
       }
     }
     /**
@@ -596,11 +596,11 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ByteString
         getDescriptionBytes() {
-      Object ref = description_;
+      java.lang.Object ref = description_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         description_ = b;
         return b;
       } else {
@@ -613,7 +613,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setDescription(
-        String value) {
+        java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
@@ -648,35 +648,35 @@ private static final long serialVersionUID = 0L;
       onChanged();
       return this;
     }
-    @Override
+    @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.setUnknownFields(unknownFields);
     }
 
-    @Override
+    @java.lang.Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
       return super.mergeUnknownFields(unknownFields);
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.treeleaf.MyRole)
+    // @@protoc_insertion_point(builder_scope:models.MyRole)
   }
 
-  // @@protoc_insertion_point(class_scope:com.treeleaf.MyRole)
-  private static final MyRole DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:models.MyRole)
+  private static final models.MyRole DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new MyRole();
+    DEFAULT_INSTANCE = new models.MyRole();
   }
 
-  public static MyRole getDefaultInstance() {
+  public static models.MyRole getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
   private static final com.google.protobuf.Parser<MyRole>
       PARSER = new com.google.protobuf.AbstractParser<MyRole>() {
-    @Override
+    @java.lang.Override
     public MyRole parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -689,13 +689,13 @@ private static final long serialVersionUID = 0L;
     return PARSER;
   }
 
-  @Override
+  @java.lang.Override
   public com.google.protobuf.Parser<MyRole> getParserForType() {
     return PARSER;
   }
 
-  @Override
-  public MyRole getDefaultInstanceForType() {
+  @java.lang.Override
+  public models.MyRole getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

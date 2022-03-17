@@ -15,45 +15,30 @@ public final class Entities {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_RequestUser_descriptor;
+    internal_static_models_MyUser_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_RequestUser_fieldAccessorTable;
+      internal_static_models_MyUser_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_MyUser_descriptor;
+    internal_static_models_MyBlog_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_MyUser_fieldAccessorTable;
+      internal_static_models_MyBlog_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_RequestBlog_descriptor;
+    internal_static_models_MyComment_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_RequestBlog_fieldAccessorTable;
+      internal_static_models_MyComment_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_MyBlog_descriptor;
+    internal_static_models_MyPermission_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_MyBlog_fieldAccessorTable;
+      internal_static_models_MyPermission_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_RequestComment_descriptor;
+    internal_static_models_MyRole_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_RequestComment_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_MyComment_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_MyComment_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_MyPermission_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_MyPermission_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_treeleaf_MyRole_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_treeleaf_MyRole_fieldAccessorTable;
+      internal_static_models_MyRole_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -62,79 +47,56 @@ public final class Entities {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\016entities.proto\022\014com.treeleaf\".\n\013Reques" +
-      "tUser\022\r\n\005email\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"\233" +
-      "\001\n\006MyUser\022\n\n\002id\030\001 \001(\005\022\r\n\005email\030\002 \001(\t\022\020\n\010" +
-      "password\030\003 \001(\t\022\020\n\010username\030\004 \001(\t\022\"\n\004role" +
-      "\030\005 \003(\0132\024.com.treeleaf.MyRole\022.\n\npermissi" +
-      "on\030\006 \003(\0132\032.com.treeleaf.MyPermission\"?\n\013" +
-      "RequestBlog\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 " +
-      "\001(\t\022\020\n\010authorId\030\004 \001(\005\"\230\001\n\006MyBlog\022\n\n\002id\030\001" +
-      " \001(\005\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\021\n\t" +
-      "timestamp\030\004 \001(\t\022$\n\006author\030\005 \001(\0132\024.com.tr" +
-      "eeleaf.MyUser\022)\n\010comments\030\006 \003(\0132\027.com.tr" +
-      "eeleaf.MyComment\"4\n\016RequestComment\022\017\n\007co" +
-      "mment\030\001 \001(\t\022\021\n\tblogTitle\030\002 \001(\t\"_\n\tMyComm" +
-      "ent\022\n\n\002id\030\001 \001(\005\022\017\n\007comment\030\002 \001(\t\022\021\n\ttime" +
-      "stamp\030\003 \001(\t\022\"\n\004blog\030\004 \001(\0132\024.com.treeleaf" +
-      ".MyBlog\")\n\014MyPermission\022\n\n\002id\030\001 \001(\005\022\r\n\005v" +
-      "alue\030\002 \001(\t\"/\n\006MyRole\022\020\n\010roleType\030\001 \001(\t\022\023" +
-      "\n\013description\030\002 \001(\tB\020\n\014com.treeleafP\001b\006p" +
-      "roto3"
+    java.lang.String[] descriptorData = {
+      "\n\016entities.proto\022\006models\"\217\001\n\006MyUser\022\n\n\002i" +
+      "d\030\001 \001(\005\022\r\n\005email\030\002 \001(\t\022\020\n\010password\030\003 \001(\t" +
+      "\022\020\n\010username\030\004 \001(\t\022\034\n\004role\030\005 \003(\0132\016.model" +
+      "s.MyRole\022(\n\npermission\030\006 \003(\0132\024.models.My" +
+      "Permission\"\237\001\n\006MyBlog\022\n\n\002id\030\001 \001(\005\022\r\n\005tit" +
+      "le\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\021\n\ttimestamp\030\004" +
+      " \001(\t\022\021\n\timagePath\030\005 \003(\t\022\036\n\006author\030\006 \001(\0132" +
+      "\016.models.MyUser\022#\n\010comments\030\007 \003(\0132\021.mode" +
+      "ls.MyComment\"Y\n\tMyComment\022\n\n\002id\030\001 \001(\005\022\017\n" +
+      "\007comment\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\t\022\034\n\004blo" +
+      "g\030\004 \001(\0132\016.models.MyBlog\")\n\014MyPermission\022" +
+      "\n\n\002id\030\001 \001(\005\022\r\n\005value\030\002 \001(\t\"/\n\006MyRole\022\020\n\010" +
+      "roleType\030\001 \001(\t\022\023\n\013description\030\002 \001(\tB\002P\001b" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_com_treeleaf_RequestUser_descriptor =
+    internal_static_models_MyUser_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_com_treeleaf_RequestUser_fieldAccessorTable = new
+    internal_static_models_MyUser_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_RequestUser_descriptor,
-        new String[] { "Email", "Password", });
-    internal_static_com_treeleaf_MyUser_descriptor =
+        internal_static_models_MyUser_descriptor,
+        new java.lang.String[] { "Id", "Email", "Password", "Username", "Role", "Permission", });
+    internal_static_models_MyBlog_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_com_treeleaf_MyUser_fieldAccessorTable = new
+    internal_static_models_MyBlog_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_MyUser_descriptor,
-        new String[] { "Id", "Email", "Password", "Username", "Role", "Permission", });
-    internal_static_com_treeleaf_RequestBlog_descriptor =
+        internal_static_models_MyBlog_descriptor,
+        new java.lang.String[] { "Id", "Title", "Content", "Timestamp", "ImagePath", "Author", "Comments", });
+    internal_static_models_MyComment_descriptor =
       getDescriptor().getMessageTypes().get(2);
-    internal_static_com_treeleaf_RequestBlog_fieldAccessorTable = new
+    internal_static_models_MyComment_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_RequestBlog_descriptor,
-        new String[] { "Title", "Content", "AuthorId", });
-    internal_static_com_treeleaf_MyBlog_descriptor =
+        internal_static_models_MyComment_descriptor,
+        new java.lang.String[] { "Id", "Comment", "Timestamp", "Blog", });
+    internal_static_models_MyPermission_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_com_treeleaf_MyBlog_fieldAccessorTable = new
+    internal_static_models_MyPermission_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_MyBlog_descriptor,
-        new String[] { "Id", "Title", "Content", "Timestamp", "Author", "Comments", });
-    internal_static_com_treeleaf_RequestComment_descriptor =
+        internal_static_models_MyPermission_descriptor,
+        new java.lang.String[] { "Id", "Value", });
+    internal_static_models_MyRole_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_com_treeleaf_RequestComment_fieldAccessorTable = new
+    internal_static_models_MyRole_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_RequestComment_descriptor,
-        new String[] { "Comment", "BlogTitle", });
-    internal_static_com_treeleaf_MyComment_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_com_treeleaf_MyComment_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_MyComment_descriptor,
-        new String[] { "Id", "Comment", "Timestamp", "Blog", });
-    internal_static_com_treeleaf_MyPermission_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_com_treeleaf_MyPermission_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_MyPermission_descriptor,
-        new String[] { "Id", "Value", });
-    internal_static_com_treeleaf_MyRole_descriptor =
-      getDescriptor().getMessageTypes().get(7);
-    internal_static_com_treeleaf_MyRole_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_treeleaf_MyRole_descriptor,
-        new String[] { "RoleType", "Description", });
+        internal_static_models_MyRole_descriptor,
+        new java.lang.String[] { "RoleType", "Description", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

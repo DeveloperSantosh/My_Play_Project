@@ -4,14 +4,14 @@
 package models;
 
 public interface MyRoleOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:com.treeleaf.MyRole)
+    // @@protoc_insertion_point(interface_extends:models.MyRole)
     com.google.protobuf.MessageOrBuilder {
 
   /**
    * <code>string roleType = 1;</code>
    * @return The roleType.
    */
-  String getRoleType();
+  java.lang.String getRoleType();
   /**
    * <code>string roleType = 1;</code>
    * @return The bytes for roleType.
@@ -23,7 +23,7 @@ public interface MyRoleOrBuilder extends
    * <code>string description = 2;</code>
    * @return The description.
    */
-  String getDescription();
+  java.lang.String getDescription();
   /**
    * <code>string description = 2;</code>
    * @return The bytes for description.
