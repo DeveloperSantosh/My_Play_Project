@@ -1,7 +1,9 @@
 package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Pattern;
 import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -35,5 +37,7 @@ public class UserController  extends Controller {
         return userService.getAllUsers();
     }
 
+    @SubjectPresent
+    public Result logout(Http.Request request, Integer userId){ return userService.logout(request, userId); }
 
 }

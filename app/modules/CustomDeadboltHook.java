@@ -12,13 +12,12 @@ import security.MyHandlerCache;
 
 import javax.inject.Singleton;
 
-public class CustomDeadboltHook extends Module
-{
+public class CustomDeadboltHook extends Module {
     @Override
-    public Seq<Binding<?>> bindings(final Environment environment,
-                                    final Configuration configuration)
-    {
-        return seq(bind(TemplateFailureListener.class).to(MyCustomTemplateFailureListener.class).in(Singleton.class),
-                bind(HandlerCache.class).to(MyHandlerCache.class).in(Singleton.class));
+    public Seq<Binding<?>> bindings(final Environment environment, final Configuration configuration) {
+        return seq(
+                bind(TemplateFailureListener.class).to(MyCustomTemplateFailureListener.class).in(Singleton.class),
+                bind(HandlerCache.class).to(MyHandlerCache.class).in(Singleton.class)
+                );
     }
 }

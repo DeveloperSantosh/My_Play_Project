@@ -23,13 +23,10 @@ public class MyAlternativeDeadboltHandler extends AbstractDeadboltHandler {
     @Override
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
         // in a real application, the user name would probably be in the session following a login process
-        String sessionId = requestHeader.session().get("sessionId").get();
+        Optional<String> sessionId = requestHeader.session().get("sessionId");
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(sessionId));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if(sessionId.isPresent())
+                return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(sessionId.get()));
             return Optional.empty();
         });
     }

@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,29 +40,39 @@ public class ImageRepository {
         }
     }
 
-    public boolean save(@NotNull MyBlog blog) throws SQLException {
+    public boolean save(@NotNull MyBlog blog, @NotNull Integer savedBlogId) {
         String saveQuery = "INSERT INTO "+TABLE_NAME + " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
-        PreparedStatement smt = connection.prepareStatement(saveQuery);
-        int count = 0;
-        for(String imagePath: blog.getImagePathList()){
-            smt.setString(1, imagePath);
-            smt.setInt(2, blog.getId());
-            count += smt.executeUpdate();
+        try {
+            PreparedStatement smt = connection.prepareStatement(saveQuery);
+            int count = 0;
+            for (String imagePath : blog.getImagePathList()) {
+                smt.setString(1, imagePath);
+                smt.setInt(2, savedBlogId);
+                System.out.println(smt);
+                count += smt.executeUpdate();
+            }
+            logger.info(count + " Image paths saved Successfully");
+            return true;
+        }catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        logger.info(count+" Image paths saved Successfully");
-        return (count >= 1);
+        return false;
     }
 
-    public List<String> findImagesPathByBlogTitle(@NotNull @NotEmpty Integer blogId) throws SQLException {
+    public List<String> findImagesPathByBlogTitle(@NotNull @NotEmpty Integer blogId){
         List<String> imagePaths = new ArrayList<>();
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID=?";
-        PreparedStatement smt = connection.prepareStatement(findQuery);
-        smt.setInt(1, blogId);
-        ResultSet resultSet = smt.executeQuery();
-        while(resultSet.next()) {
-            imagePaths.add(resultSet.getString("IMAGE_PATH"));
+        try {
+            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID=?";
+            PreparedStatement smt = connection.prepareStatement(findQuery);
+            smt.setInt(1, blogId);
+            ResultSet resultSet = smt.executeQuery();
+            while(resultSet.next()) {
+                imagePaths.add(resultSet.getString("IMAGE_PATH"));
+            }
+            logger.info("Total images Obtained: "+imagePaths.size());
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        logger.info("Total images Obtained: "+imagePaths.size());
         return imagePaths;
     }
 
@@ -83,41 +96,58 @@ public class ImageRepository {
 //        return users;
 //    }
 
-    public boolean updateImagePath(@NotNull MyBlog oldBlog, @NotNull MyBlog newBlog) throws SQLException {
-        String query = "UPDATE "+ TABLE_NAME+ "SET IMAGE_PATH=? BLOG_TITLE=? WHERE BLOG_TITLE=?";
-        PreparedStatement smt = connection.prepareStatement(query);
-        int count = 0;
-        for(String newPath:newBlog.getImagePathList()) {
-            smt.setString(1, newPath);
-            smt.setString(2, newBlog.getTitle());
-            smt.setString(3, oldBlog.getTitle());
-            count += smt.executeUpdate();
+    public boolean updateImagePath(@NotNull MyBlog oldBlog, @NotNull MyBlog newBlog){
+        try {
+            String query = "UPDATE "+ TABLE_NAME+ "SET IMAGE_PATH=? BLOG_TITLE=? WHERE BLOG_TITLE=?";
+            PreparedStatement smt = connection.prepareStatement(query);
+            int count = 0;
+            for(String newPath:newBlog.getImagePathList()) {
+                smt.setString(1, newPath);
+                smt.setString(2, newBlog.getTitle());
+                smt.setString(3, oldBlog.getTitle());
+                count += smt.executeUpdate();
+            }
+            logger.info("Total update image path: "+count);
+            return true;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        logger.info("Total update image path: "+count);
-        return (count >= 1);
+        return false;
     }
 
-    public boolean deleteImagePath(@NotNull MyBlog blog, @NotEmpty @NotNull String imagePath) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_TITLE=? AND IMAGE_PATH=?";
-        PreparedStatement smt = connection.prepareStatement(query);
-        smt.setString(1, blog.getTitle());
-        smt.setString(2, imagePath);
-        int count = smt.executeUpdate();
-        logger.info("Deleted image path: "+imagePath);
-        return (count == 1);
-    }
-
-    public boolean deleteAllImagePaths(@NotNull MyBlog blog) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_TITLE=?";
-        PreparedStatement smt = connection.prepareStatement(query);
-        int count = 0;
-        for(String imagePath: blog.getImagePathList()){
-            smt.setString(1, blog.getTitle());
+    public boolean deleteImagePath(@NotNull MyBlog blog, @NotEmpty @NotNull String imagePath){
+        try {
+            String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=? AND IMAGE_PATH=?";
+            PreparedStatement smt = connection.prepareStatement(query);
+            smt.setInt(1, blog.getId());
             smt.setString(2, imagePath);
-            count += smt.executeUpdate();
+            int count = smt.executeUpdate();
+            logger.info("Deleted image path: "+imagePath);
+            return (count == 1 && Files.deleteIfExists(Paths.get(imagePath)));
+        } catch (SQLException | IOException e) {
+            logger.warn(e.getMessage());
         }
-        logger.info("Total deleted image paths: "+count);
-        return true;
+        return false;
+    }
+
+    public boolean deleteAllImagePaths(@NotNull MyBlog blog){
+        try {
+            String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=? AND IMAGE_PATH=?";
+            PreparedStatement smt = connection.prepareStatement(query);
+            int count = 0;
+            boolean result = true;
+            for(String imagePath: blog.getImagePathList()){
+                smt.setInt(1, blog.getId());
+                smt.setString(2, imagePath);
+                count += smt.executeUpdate();
+                result = Files.deleteIfExists(Paths.get(imagePath));
+            }
+            logger.info("Total deleted image paths: "+count);
+            return result;
+        } catch (SQLException | IOException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
     public static ImageRepository getInstance(){
         if(instance == null){

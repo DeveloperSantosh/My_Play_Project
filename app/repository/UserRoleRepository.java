@@ -4,7 +4,6 @@ import models.MyUser;
 import models.MyRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,65 +35,88 @@ public class UserRoleRepository {
         }
     }
 
-    public boolean save(@NotNull MyUser user) throws SQLException {
-        int count = 0;
-        String query = "INSERT INTO "+TABLE_NAME+" VALUES(?,?)";
-        PreparedStatement statement = connection.prepareStatement(query);
-        for(MyRole role: user.getRoleList()) {
-            statement.setString(1, role.getRoleType());
-            statement.setInt(2, user.getId());
-            if(!RoleRepository.getInstance().findAllUserRoles().contains(role))
-                RoleRepository.getInstance().save(role);
-            count += statement.executeUpdate();
+    public boolean save(@NotNull MyUser user) {
+        try {
+            String query = "INSERT INTO "+TABLE_NAME+" VALUES(?,?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            for(MyRole role: user.getRoleList()) {
+                statement.setString(1, role.getRoleType());
+                statement.setInt(2, user.getId());
+                if(!RoleRepository.getInstance().findAllUserRoles().contains(role))
+                    RoleRepository.getInstance().save(role);
+                statement.executeUpdate();
+            }
+            logger.info("User saved successfully");
+            return true;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        logger.info("User saved successfully");
-        return (count >= 1);
+        return false;
     }
 
-    public List<MyUser> findUsersByRoleType(String roleType) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
-        PreparedStatement statement = connection.prepareStatement(findQuery);
-        statement.setString(1, roleType);
+    public List<MyUser> findUsersByRoleType(String roleType) {
         List<MyUser> users = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery();
-        if(resultSet.next()) {
-            users.add(UserRepository.getInstance().findUserByID(resultSet.getInt("USER_ID")));
+        try {
+            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            statement.setString(1, roleType);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                users.add(UserRepository.getInstance().findUserByID(resultSet.getInt("USER_ID")));
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
         return users;
     }
 
-    public List<MyRole> findRolesByUserId(int userId) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID = ?";
-        PreparedStatement statement = connection.prepareStatement(findQuery);
-        statement.setInt(1, userId);
+    public List<MyRole> findRolesByUserId(int userId) {
         List<MyRole> userRoles = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery();
-        while(resultSet.next()) {
-            userRoles.add(RoleRepository.getInstance().
-                    findUserRoleByType(resultSet.getString("ROLE_TYPE")));
+        try {
+            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID = ?";
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            statement.setInt(1, userId);
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                userRoles.add(RoleRepository.getInstance().
+                        findUserRoleByType(resultSet.getString("ROLE_TYPE")));
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
         return userRoles;
     }
 
-    public boolean updateUserRole(MyUser oldUser, MyUser newUser) throws SQLException {
+    public boolean updateUserRole(MyUser oldUser, MyUser newUser) {
         return deleteUserAllRoles(oldUser) && save(newUser);
     }
 
-    public boolean deleteUserRole(MyUser user, MyRole role) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =? AND USER_ID=?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, role.getRoleType());
-        statement.setInt(2, user.getId());
-        int count = statement.executeUpdate();
-        return (count == 1);
+    public boolean deleteUserRole(MyUser user, MyRole role) {
+        try {
+            String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =? AND USER_ID=?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, role.getRoleType());
+            statement.setInt(2, user.getId());
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public boolean deleteUserAllRoles(MyUser user) throws SQLException {
+    public boolean deleteUserAllRoles(MyUser user) {
+        try {
             String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, user.getId());
-            int count = statement.executeUpdate();
-        return (count >= 0);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
     public static UserRoleRepository getInstance(){
         if(instance == null){

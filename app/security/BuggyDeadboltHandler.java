@@ -22,14 +22,11 @@ public class BuggyDeadboltHandler extends AbstractDeadboltHandler {
     @Override
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
         // in a real application, the user name would probably be in the session following a login process
-        String email = "";
+        String email = requestHeader.session().get("email").orElse("empty");
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return Optional.empty();
+            if(email.equals("empty"))
+                return Optional.empty();
+            return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
         });
     }
 

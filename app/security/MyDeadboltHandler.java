@@ -26,19 +26,14 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();
-            try {
-                return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return Optional.empty();
+            return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
         });
     }
 
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
         // you can return any result from here - forbidden, etc
-        return CompletableFuture.completedFuture(notFound("Authentication Failed"));
+        return CompletableFuture.completedFuture(forbidden("You cannot access"));
     }
 
 }

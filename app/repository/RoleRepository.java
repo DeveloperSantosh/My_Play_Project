@@ -35,62 +35,84 @@ public class RoleRepository {
         }
     }
 
-    public boolean save(@NotNull MyRole role) throws SQLException {
-        String saveQuery = "INSERT INTO "+TABLE_NAME+ " VALUES(?,?)";
-        PreparedStatement statement = connection.prepareStatement(saveQuery);
-        statement.setString(1, role.getRoleType());
-        statement.setString(2, role.getDescription());
-        int count = statement.executeUpdate();
-        logger.info("Role saved successfully");
-        return (count == 1);
+    public boolean save(@NotNull MyRole role) {
+        try {
+            String saveQuery = "INSERT INTO "+TABLE_NAME+ " VALUES(?,?)";
+            PreparedStatement statement = connection.prepareStatement(saveQuery);
+            statement.setString(1, role.getRoleType());
+            statement.setString(2, role.getDescription());
+            int count = statement.executeUpdate();
+            logger.info(count+" Role saved successfully");
+            return true;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public MyRole findUserRoleByType(@NotEmpty @NotNull String roleType) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
-        PreparedStatement statement = connection.prepareStatement(findQuery);
-        statement.setString(1, roleType);
-        ResultSet resultSet = statement.executeQuery();
-        if(resultSet.next()) {
-            return MyRole.newBuilder()
-                    .setRoleType(resultSet.getString("ROLE_TYPE"))
-                    .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
-                    .build();
+    public MyRole findUserRoleByType(@NotEmpty @NotNull String roleType) {
+        try {
+            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            statement.setString(1, roleType);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                return MyRole.newBuilder()
+                        .setRoleType(resultSet.getString("ROLE_TYPE"))
+                        .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
         return null;
     }
 
-    public List<MyRole> findAllUserRoles() throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        PreparedStatement statement = connection.prepareStatement(findQuery);
+    public List<MyRole> findAllUserRoles() {
         List<MyRole> userRoles = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery();
-        while(resultSet.next()) {
-            MyRole role = MyRole.newBuilder()
-                    .setRoleType(resultSet.getString("ROLE_TYPE"))
-                    .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
-                    .build();
-            userRoles.add(role);
+        try {
+            String findQuery = "SELECT * FROM "+ TABLE_NAME;
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                MyRole role = MyRole.newBuilder()
+                        .setRoleType(resultSet.getString("ROLE_TYPE"))
+                        .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
+                        .build();
+                userRoles.add(role);
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
         return userRoles;
     }
 
-    public boolean updateUserRoles(MyRole oldRole, MyRole newRole) throws SQLException {
-        String query = "UPDATE "+ TABLE_NAME+ "SET ROLE_TYPE=?, ROLE_DESCRIPTION=? WHERE ROLE_TYPE=?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, newRole.getRoleType());
-        statement.setString(2, newRole.getDescription());
-        statement.setString(3, oldRole.getRoleType());
-        int count = statement.executeUpdate();
-        return (count == 1);
+    public boolean updateUserRoles(MyRole oldRole, MyRole newRole) {
+        try {
+            String query = "UPDATE "+ TABLE_NAME+ "SET ROLE_TYPE=?, ROLE_DESCRIPTION=? WHERE ROLE_TYPE=?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, newRole.getRoleType());
+            statement.setString(2, newRole.getDescription());
+            statement.setString(3, oldRole.getRoleType());
+            int count = statement.executeUpdate();
+            return (count == 1);
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public boolean delete(MyRole role) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, role.getRoleType());
-        int count = statement.executeUpdate();
-        System.out.println(query);
-        return (count == 1);
+    public boolean delete(MyRole role) {
+        try {
+            String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, role.getRoleType());
+            int count = statement.executeUpdate();
+            return (count == 1);
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
     public static RoleRepository getInstance(){

@@ -11,10 +11,12 @@ DELETE  /:userId                            controllers.UserController.deleteUse
 +nocsrf
 POST    /register                           controllers.UserController.saveUser(request: Request)
 GET     /users/all                          controllers.UserController.getAllUsers()
+GET     /:userId/logout                     controllers.UserController.logout(request: Request, userId: Integer)
 
 # The controllers for Blogs
 GET     /:userId/blogs                      controllers.BlogController.getBlogs(userId: Integer)
 GET     /:userId/blogs/:title               controllers.BlogController.showBlog(title: String, userId: Integer)
++nocsrf
 DELETE  /:userId/blogs/:title               controllers.BlogController.deleteBlog(userId: Integer, title: String)
 +nocsrf
 POST    /:userId/blogs/create               controllers.BlogController.saveBlog(userId: Integer, request: Request)

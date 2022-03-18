@@ -10,14 +10,12 @@ import javax.inject.Singleton;
  * @author Steve Chaloner (steve@objectify.be)
  */
 @Singleton
-public class MyCustomTemplateFailureListener implements TemplateFailureListener
-{
+public class MyCustomTemplateFailureListener implements TemplateFailureListener {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MyCustomTemplateFailureListener.class);
 
     @Override
-    public void failure(final String message,
-                        final long timeout)
-    {
+    public void failure(final String message, final long timeout) {
         LOGGER.error("Template constraint failure: message [{}]  timeout [{}]ms",
                      message,
                      timeout);
