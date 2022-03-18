@@ -1,9 +1,9 @@
 package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Pattern;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import be.objectify.deadbolt.java.actions.Unrestricted;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -19,10 +19,12 @@ public class UserController  extends Controller {
         this.userService = userService;
     }
 
+    @Unrestricted
     public Result login(Http.Request request){
         return userService.login(request);
     }
 
+    @Unrestricted
     public Result saveUser(Http.Request request){
         return userService.saveUser(request);
     }

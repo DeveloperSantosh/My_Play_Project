@@ -75,7 +75,7 @@ public class UserService {
         List<MyUser> users = userRepository.findAllUsers();
         StringBuilder result = new StringBuilder();
         for(MyUser user: users)
-            result.append((user.toString())).append("\n");
+            result.append((user)).append("\n");
         return ok(result.toString());
     }
 

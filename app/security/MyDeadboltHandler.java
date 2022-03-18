@@ -1,6 +1,7 @@
 package security;
 
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
+import be.objectify.deadbolt.java.ConstraintPoint;
 import be.objectify.deadbolt.java.models.Subject;
 import play.mvc.Http;
 import play.mvc.Result;

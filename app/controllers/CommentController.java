@@ -17,12 +17,12 @@ public class CommentController extends Controller {
         this.commentService = commentService;
     }
 
-    @Restrict(@Group({"USER"}))
+    @Group("USER")
     public Result getComments(String title, Integer userId){
         return commentService.getCommentsForBlogTitle(title);
     }
 
-    @Restrict(@Group({"USER"}))
+    @Restrict({@Group("USER"), @Group("ADMIN")})
     public Result saveComment(String title, Integer userId, Http.Request request){
         return commentService.addCommentsForBlog(title, request);
     }

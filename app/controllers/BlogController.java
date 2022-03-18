@@ -17,7 +17,6 @@ public class BlogController extends Controller {
     @Inject
     public BlogController(BlogService blogService) { this.blogService = blogService; }
 
-
     @Pattern("READ_STORAGE")
     @SubjectPresent
     public Result getBlogs(Integer userId){ return blogService.getBlogs(); }
@@ -29,12 +28,11 @@ public class BlogController extends Controller {
     }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @Group({"USER", "ADMIN"})
+    @Restrict({@Group("USER"), @Group("ADMIN")})
     public Result saveBlog(Integer id, Http.Request request){ return blogService.saveBlog(id, request); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @Group({"USER", "ADMIN"})
+    @Restrict({@Group("USER"), @Group("ADMIN")})
     public Result deleteBlog(Integer userId, String blogTitle){ return blogService.deleteBlog(userId, blogTitle); }
-
 
 }
