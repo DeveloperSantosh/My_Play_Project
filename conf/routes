@@ -11,6 +11,8 @@ DELETE  /:userId                            controllers.UserController.deleteUse
 +nocsrf
 POST    /register                           controllers.UserController.saveUser(request: Request)
 GET     /users/all                          controllers.UserController.getAllUsers()
++nocsrf
+PUT     /:userId/update                     controllers.UserController.updateUser(request: Request, userId: Integer)
 GET     /:userId/logout                     controllers.UserController.logout(request: Request, userId: Integer)
 
 # The controllers for Blogs

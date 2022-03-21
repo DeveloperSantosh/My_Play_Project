@@ -89,4 +89,22 @@ public class UserService {
         }
         else return notFound("Could not find user");
     }
+
+    public Result updateUser(Http.Request request, Integer userId) {
+        Form<RequestUser> requestUserForm = formFactory.form(RequestUser.class).bindFromRequest(request);
+        if (requestUserForm.hasErrors()) return internalServerError("Could not update user");
+        RequestUser requestUser = requestUserForm.get();
+        MyUser savedUser = userRepository.findUserByID(userId);
+        if(savedUser == null ) return notFound();
+        MyUser updatedUser = MyUser.newBuilder()
+                .setUsername(requestUser.getUsername())
+                .setPassword(requestUser.getPassword())
+                .setEmail(requestUser.getEmail())
+                .addAllRole(savedUser.getRoleList())
+                .addAllPermission(savedUser.getPermissionList())
+                .build();
+        if ( userRepository.updateUser(savedUser, updatedUser) )
+            return ok("User Updated Successfully.\n"+updatedUser);
+        return internalServerError("Could not update user");
+    }
 }

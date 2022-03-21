@@ -1,7 +1,6 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -17,12 +16,12 @@ public class CommentController extends Controller {
         this.commentService = commentService;
     }
 
-    @Group("USER")
+    @SubjectPresent
     public Result getComments(String title, Integer userId){
         return commentService.getCommentsForBlogTitle(title);
     }
 
-    @Restrict({@Group("USER"), @Group("ADMIN")})
+    @SubjectPresent
     public Result saveComment(String title, Integer userId, Http.Request request){
         return commentService.addCommentsForBlog(title, request);
     }

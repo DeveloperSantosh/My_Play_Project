@@ -151,7 +151,7 @@ public class UserRepository {
             statement.setString(1, newUser.getUsername());
             statement.setString(2, newUser.getPassword());
             statement.setString(3, newUser.getEmail());
-            UserRoleRepository.getInstance().updateUserRole(oldUser, newUser);
+            statement.setInt(4, oldUser.getId());
             int count = statement.executeUpdate();
             logger.info("TOTAL USER UPDATED: "+count);
             return true;

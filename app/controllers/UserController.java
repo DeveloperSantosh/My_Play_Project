@@ -40,6 +40,9 @@ public class UserController  extends Controller {
     }
 
     @SubjectPresent
+    public Result updateUser(Http.Request request, Integer userId) { return userService.updateUser(request, userId); }
+
+    @SubjectPresent
     public Result logout(Http.Request request, Integer userId){ return userService.logout(request, userId); }
 
 }

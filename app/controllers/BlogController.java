@@ -1,8 +1,6 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Pattern;
-import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -28,11 +26,11 @@ public class BlogController extends Controller {
     }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @Restrict({@Group("USER"), @Group("ADMIN")})
+    @SubjectPresent
     public Result saveBlog(Integer id, Http.Request request){ return blogService.saveBlog(id, request); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @Restrict({@Group("USER"), @Group("ADMIN")})
+    @SubjectPresent
     public Result deleteBlog(Integer userId, String blogTitle){ return blogService.deleteBlog(userId, blogTitle); }
 
 }
