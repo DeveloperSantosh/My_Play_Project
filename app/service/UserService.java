@@ -1,7 +1,7 @@
 package service;
 
 import models.MyUser;
-import models.RequestUser;
+import dto.RequestUser;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
@@ -13,6 +13,7 @@ import repository.RoleRepository;
 import repository.UserRepository;
 import javax.inject.Inject;
 import java.util.List;
+
 import static play.mvc.Results.*;
 
 @Service
@@ -45,18 +46,19 @@ public class UserService {
 //    Method to save user in database
     public Result saveUser(Http.Request request){
         Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
-        if(requestUserForm.hasErrors()) return badRequest("Error in form data.");
+        if(requestUserForm.hasErrors())
+            return badRequest("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
-        MyUser user = MyUser.newBuilder()
-                .setEmail(requestUser.getEmail())
-                .setPassword(requestUser.getPassword())
-                .setUsername(requestUser.getUsername())
-                .addRole(RoleRepository.getInstance().findUserRoleByType("USER"))
-                .addAllPermission(PermissionRepository.getInstance().findAllPermissions())
-                .build();
+        String result = requestUser.validate();
+        if (!result.equals("valid") && requestUser.getUsername().isBlank())
+            return badRequest(result);
+        if (userRepository.findUserByEmail(requestUser.getEmail()) != null)
+            return badRequest("User Already exist with email: "+requestUser.getEmail());
+        requestUser.setPermissions(PermissionRepository.getInstance().findAllPermissions());
+        requestUser.addRole(RoleRepository.getInstance().findUserRoleByType("USER"));
+        MyUser user = requestUser.getMyUser();
         if(userRepository.save(user))
-            return ok("User created successfully\n " +
-                userRepository.findUserByEmail(user.getEmail()));
+            return ok("User created successfully\n " + userRepository.findUserByEmail(user.getEmail()));
         return internalServerError("Could Not create user");
     }
 
@@ -92,19 +94,19 @@ public class UserService {
 
     public Result updateUser(Http.Request request, Integer userId) {
         Form<RequestUser> requestUserForm = formFactory.form(RequestUser.class).bindFromRequest(request);
-        if (requestUserForm.hasErrors()) return internalServerError("Could not update user");
+        if (requestUserForm.hasErrors())
+            return internalServerError("Could not update user");
         RequestUser requestUser = requestUserForm.get();
+        if (!requestUser.validate().equals("valid"))
+            return badRequest(requestUser.validate());
         MyUser savedUser = userRepository.findUserByID(userId);
         if(savedUser == null ) return notFound();
-        MyUser updatedUser = MyUser.newBuilder()
-                .setUsername(requestUser.getUsername())
-                .setPassword(requestUser.getPassword())
-                .setEmail(requestUser.getEmail())
-                .addAllRole(savedUser.getRoleList())
-                .addAllPermission(savedUser.getPermissionList())
-                .build();
+        requestUser.setRoles(savedUser.getRoleList());
+        requestUser.setPermissions(savedUser.getPermissionList());
+        MyUser updatedUser = requestUser.getMyUser();
         if ( userRepository.updateUser(savedUser, updatedUser) )
             return ok("User Updated Successfully.\n"+updatedUser);
         return internalServerError("Could not update user");
     }
+
 }

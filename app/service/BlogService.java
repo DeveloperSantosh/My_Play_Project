@@ -1,7 +1,7 @@
 package service;
 
 import models.MyBlog;
-import models.RequestBlog;
+import dto.RequestBlog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,16 +11,12 @@ import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.BlogRepository;
-import repository.UserRepository;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 import static play.mvc.Results.*;
 
 @Service
@@ -47,7 +43,8 @@ public class BlogService {
     }
 
 //    Method to retrieve blog from database with given title
-    public Result showBlog(String title){
+    public Result showBlog( String title){
+        if (title.trim().isEmpty()) return badRequest("Blog title should not be Empty");
         MyBlog blog = blogRepository.findBlogByTitle(title);
         if (blog == null) return notFound("BLOG NOT FOUND WITH TITLE: "+title);
         return ok(blog.toString());
@@ -56,27 +53,28 @@ public class BlogService {
 //    Method to save blog to database
     public Result saveBlog(Integer authorId, Http.Request request){
         Form<RequestBlog> requestBlogForm =  formFactory.form(RequestBlog.class).bindFromRequest(request);
-        if(requestBlogForm.hasErrors()){ return badRequest("Error in form data.");}
+        if(requestBlogForm.hasErrors())
+            return badRequest("Error in form data.");
         RequestBlog requestBlog = requestBlogForm.get();
+        String result = requestBlog.validate();
+        if (!result.equals("valid"))
+            return badRequest(result);
 
         if(blogRepository.findBlogByTitle(requestBlog.getTitle()) != null)
             return badRequest("BLOG ALREADY EXISTS WITH TITLE: "+requestBlog.getTitle());
 
         List<String> imagePaths = saveImagesAndGetPath(request, requestBlog.getTitle());
-        if(imagePaths.isEmpty()) return internalServerError("Something went wrong");
-        MyBlog newBlog = MyBlog.newBuilder()
-                .setTitle(requestBlog.getTitle())
-                .setContent(requestBlog.getContent())
-                .setAuthor(UserRepository.getInstance().findUserByID(authorId))
-                .setTimestamp(getCurrentTimeStamp())
-                .addAllImagePath(imagePaths)
-                .build();
+        if(imagePaths.isEmpty())
+            return badRequest("Images not found");
+        requestBlog.setImagePaths(imagePaths);
+        MyBlog newBlog = requestBlog.getMyBlog(authorId);
         if(blogRepository.save(newBlog))
             return ok("Blog saved Successfully\n"+blogRepository.findBlogByTitle(newBlog.getTitle()));
         return internalServerError("Could not save blog.");
     }
 
     public Result deleteBlog(Integer userId, String blogTitle) {
+        if (blogTitle.isBlank()) return badRequest("Enter Blog Title.");
         MyBlog blog = blogRepository.findBlogByTitle(blogTitle);
         if (blog!= null && blog.getAuthor().getId() == userId){
             if (blogRepository.delete(blog))
@@ -105,16 +103,9 @@ public class BlogService {
                 logger.info("File Uploaded Successfully.");
             }
         }catch (IOException ex) {
-            logger.warn("Could not create directory.");
+            logger.warn(ex.getMessage());
         }
         return imagesPath;
-    }
-
-//    Method to get current timestamp
-    public static String getCurrentTimeStamp(){
-        LocalDateTime dateTime = LocalDateTime.now();
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        return dateTime.format(myFormatObj);
     }
 
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import dto.RequestUser;
 import org.junit.Test;
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
