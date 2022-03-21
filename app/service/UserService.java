@@ -33,9 +33,9 @@ public class UserService {
 //    Method to validate credentials and login
     public Result login(Http.Request request){
         Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
-        if(requestUserForm.hasErrors()){ return badRequest("Error in form data."); }
+        if(requestUserForm.hasErrors()) return badRequest("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
-
+        if (requestUser.getEmail().isBlank()) return badRequest("Enter email");
         MyUser myUser = userRepository.findUserByEmail(requestUser.getEmail());
         if(myUser != null && requestUser.getPassword().equals(myUser.getPassword()) ){
             return ok("Login Successfully\n"+myUser).addingToSession(request, "email",myUser.getEmail());
@@ -50,7 +50,7 @@ public class UserService {
             return badRequest("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
         String result = requestUser.validate();
-        if (!result.equals("valid") && requestUser.getUsername().isBlank())
+        if (!result.equals("valid") )
             return badRequest(result);
         if (userRepository.findUserByEmail(requestUser.getEmail()) != null)
             return badRequest("User Already exist with email: "+requestUser.getEmail());

@@ -61,11 +61,13 @@ public class RequestUser {
         String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
         Pattern pattern = Pattern.compile(regex);
 
-        if(email==null || email.trim().isEmpty())
+        if(email==null || email.isBlank())
            return "Email Cannot be Empty.";
         else if(!pattern.matcher(email).matches())
             return "Enter valid Email";
-        else if(password==null || password.trim().isEmpty())
+        else if (username==null || username.isBlank())
+            return "Enter valid Username";
+        else if(password==null || password.isBlank())
             return "Password cannot be empty";
         else
             return "valid";
