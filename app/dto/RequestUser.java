@@ -68,6 +68,8 @@ public class RequestUser {
             return "Username cannot be >30.";
         else if(password==null || password.isBlank())
             return "Password cannot be empty";
+        else if (password.length()<8 || password.length()>30)
+            return "Password length should be in range 8-30";
         else
             return "valid";
     }
