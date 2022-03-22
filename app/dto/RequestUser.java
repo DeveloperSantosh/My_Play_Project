@@ -1,8 +1,11 @@
 package dto;
 
+import controllers.BlogController;
 import models.MyPermission;
 import models.MyRole;
 import models.MyUser;
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,16 +14,10 @@ import java.util.regex.Pattern;
 
 public class RequestUser {
 
-    @Email
-    @NotBlank
     private String email;
-    @NotBlank
     private String password;
-    @NotBlank
     private String username;
-    @NotNull
     private List<MyRole> roles;
-    @NotNull
     private List<MyPermission> permissions;
 
     public String getEmail() {
@@ -67,6 +64,8 @@ public class RequestUser {
             return "Enter valid Email";
         else if (username==null || username.isBlank())
             return "Enter valid Username";
+        else if(username.length()>30)
+            return "Username cannot be >30.";
         else if(password==null || password.isBlank())
             return "Password cannot be empty";
         else

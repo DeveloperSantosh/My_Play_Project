@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class UserRepository {
     private static UserRepository instance = null;
@@ -36,6 +37,7 @@ public class UserRepository {
     }
 
     public boolean save(@NotNull MyUser user) {
+        if (!validateUser(user)) return false;
         try {
             String saveQuery = "INSERT INTO "+TABLE_NAME+" VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(saveQuery);
@@ -182,5 +184,21 @@ public class UserRepository {
             instance = new UserRepository();
         }
         return instance;
+    }
+
+    public boolean validateUser(MyUser user){
+        MyUser.Builder userBuilder = user.toBuilder();
+        String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
+        Pattern pattern = Pattern.compile(regex);
+
+        if(userBuilder.getEmail().isBlank())
+            return false;
+        else if(!pattern.matcher(user.getEmail()).matches())
+            return false;
+        else if(userBuilder.getPassword().isBlank())
+            return false;
+        else if (userBuilder.getUsername().isBlank())
+            return false;
+        return true;
     }
 }

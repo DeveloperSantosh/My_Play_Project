@@ -12,13 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RequestBlog {
-    @NotBlank
-    @Size(max = 100)
+
     private String title;
-    @NotBlank
-    @Size(max = 500)
     private String content;
-    @NotEmpty
     private List<String> imagePaths = new ArrayList<>();
 
     public String getTitle() {

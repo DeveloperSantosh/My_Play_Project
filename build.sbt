@@ -12,8 +12,8 @@ libraryDependencies ++= Seq(
   javaJdbc,
   "mysql" % "mysql-connector-java" % "8.0.28",
   "be.objectify" %% "deadbolt-java" % "2.8.1",
-  "com.google.protobuf" % "protobuf-java" % "3.19.4" % "protobuf"
-
+  "org.mindrot" % "jbcrypt" % "0.3m",
+//  "com.google.protobuf" % "protobuf-java" % "3.19.4" % "protobuf"
 )
 
-////routesGenerator := InjectedRoutesGenerator
+//routesGenerator := InjectedRoutesGenerator

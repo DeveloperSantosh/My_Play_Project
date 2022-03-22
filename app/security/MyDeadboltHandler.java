@@ -3,10 +3,14 @@ package security;
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import be.objectify.deadbolt.java.ConstraintPoint;
 import be.objectify.deadbolt.java.models.Subject;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.UserRepository;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -24,6 +28,7 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
         // in a real application, the username would probably be in the session following a login process
         String email = requestHeader.session().get("email").orElse("empty");
+
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();

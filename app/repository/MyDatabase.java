@@ -3,6 +3,8 @@ package repository;
 import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.db.Database;
+
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -2,6 +2,7 @@ package service;
 
 import models.MyUser;
 import dto.RequestUser;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
@@ -13,7 +14,6 @@ import repository.RoleRepository;
 import repository.UserRepository;
 import javax.inject.Inject;
 import java.util.List;
-
 import static play.mvc.Results.*;
 
 @Service
@@ -38,7 +38,7 @@ public class UserService {
         if (requestUser.getEmail().isBlank()) return badRequest("Enter email");
         MyUser myUser = userRepository.findUserByEmail(requestUser.getEmail());
         if(myUser != null && requestUser.getPassword().equals(myUser.getPassword()) ){
-            return ok("Login Successfully\n"+myUser).addingToSession(request, "email",myUser.getEmail());
+            return ok("Login Successfully\n"+myUser).addingToSession(request, "email", myUser.getEmail());
         }
         return notFound("Sorry Username and password not matched");
     }
@@ -57,8 +57,10 @@ public class UserService {
         requestUser.setPermissions(PermissionRepository.getInstance().findAllPermissions());
         requestUser.addRole(RoleRepository.getInstance().findUserRoleByType("USER"));
         MyUser user = requestUser.getMyUser();
+
         if(userRepository.save(user))
             return ok("User created successfully\n " + userRepository.findUserByEmail(user.getEmail()));
+
         return internalServerError("Could Not create user");
     }
 
@@ -67,6 +69,7 @@ public class UserService {
         MyUser user = userRepository.findUserByID(userId);
         if(user == null)
             return notFound("Sorry User with id: "+userId+" not found");
+
         if(userRepository.delete(user))
             return ok("User deleted Successfully\n"+user);
         return internalServerError("Something went wrong");

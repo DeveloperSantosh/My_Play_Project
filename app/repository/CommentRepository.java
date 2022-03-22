@@ -37,6 +37,7 @@ public class CommentRepository {
     }
 
     public boolean save(@NotNull MyComment comment) {
+        if (validateComment(comment)) return false;
         try {
             String saveQuery = "INSERT INTO "+TABLE_NAME+" (COMMENT, CREATION_TIME, BLOG_ID) VALUES(?,?,?);";
             PreparedStatement statement = connection.prepareStatement(saveQuery);
@@ -52,24 +53,26 @@ public class CommentRepository {
         return false;
     }
 
-    public MyComment findCommentById(Integer id) {
+    public List<MyComment> findCommentsByBlogId(Integer blogId) {
+        List<MyComment> comments = new ArrayList<>();
         try {
-            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE COMMENT_ID=?";
+            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID=?";
             PreparedStatement statement = connection.prepareStatement(findQuery);
+            statement.setInt(1, blogId);
             ResultSet resultSet = statement.executeQuery();
-            statement.setInt(1, id);
-            if(resultSet.next()) {
-                return MyComment.newBuilder()
+            while(resultSet.next()) {
+                comments.add(
+                 MyComment.newBuilder()
                         .setId(resultSet.getInt("COMMENT_ID"))
                         .setComment(resultSet.getString("COMMENT"))
                         .setTimestamp(resultSet.getString("CREATION_TIME"))
-                        .setBlog(BlogRepository.getInstance().findBlogById(resultSet.getInt("BLOG_ID")))
-                        .build();
+//                        .setBlog(BlogRepository.getInstance().findBlogById(resultSet.getInt("BLOG_ID")))
+                        .build());
             }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
-        return null;
+        return comments;
     }
 
     public List<MyComment> findAllComments() {
@@ -87,7 +90,6 @@ public class CommentRepository {
                         .build();
                 comments.add(comment);
             }
-
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -125,5 +127,9 @@ public class CommentRepository {
             instance = new CommentRepository();
         }
         return instance;
+    }
+
+    public boolean validateComment(MyComment comment){
+        return !comment.getComment().isBlank() && comment.getComment().length() <= 100;
     }
 }

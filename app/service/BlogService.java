@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
+import play.filters.csrf.CSRF;
 import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -35,6 +36,7 @@ public class BlogService {
 
 //    Method to get blogs from database
     public Result getBlogs(){
+
         StringBuilder result = new StringBuilder();
         for(MyBlog blog: blogRepository.findAllBlogs()){
             result.append(blog.toString()).append("\n");
@@ -59,10 +61,8 @@ public class BlogService {
         String result = requestBlog.validate();
         if (!result.equals("valid"))
             return badRequest(result);
-
         if(blogRepository.findBlogByTitle(requestBlog.getTitle()) != null)
             return badRequest("BLOG ALREADY EXISTS WITH TITLE: "+requestBlog.getTitle());
-
         List<String> imagePaths = saveImagesAndGetPath(request, requestBlog.getTitle());
         if(imagePaths.isEmpty())
             return badRequest("Images not found");
@@ -78,7 +78,7 @@ public class BlogService {
         MyBlog blog = blogRepository.findBlogByTitle(blogTitle);
         if (blog!= null && blog.getAuthor().getId() == userId){
             if (blogRepository.delete(blog))
-                return ok("respond: Blog deleted successfully.\ndata: "+blog);
+                return ok("Blog deleted successfully.\n"+blog);
             else internalServerError("Something went wrong");
         }
         return badRequest("Only author can delete it.");

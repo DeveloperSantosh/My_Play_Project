@@ -53,5 +53,4 @@ public class CommentService {
         return internalServerError("Something went wrong");
     }
 
-
 }

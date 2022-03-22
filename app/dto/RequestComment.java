@@ -9,8 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 public class RequestComment {
 
-    @NotBlank
-    @Size(max = 100)
     private String comment;
 
     public String getComment() {

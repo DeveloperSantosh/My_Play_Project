@@ -3,6 +3,8 @@ package repository;
 import models.MyBlog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.db.Database;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
@@ -38,6 +40,7 @@ public class BlogRepository {
     }
 
     public boolean save(@NotNull MyBlog blog) {
+        if (validateBlog(blog)) return false;
         try {
             String query = "INSERT INTO "+TABLE_NAME+" (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES (?,?,?,?)";
             PreparedStatement stm = connection.prepareStatement(query);
@@ -70,6 +73,7 @@ public class BlogRepository {
                         .setTimestamp(resultSet.getString("CREATION_TIME"))
                         .addAllImagePath(ImageRepository.getInstance().findImagesPathByBlogTitle(blogId))
                         .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                        .addAllComments(CommentRepository.getInstance().findCommentsByBlogId(blogId))
                         .build();
             }
         } catch (SQLException e) {
@@ -115,6 +119,7 @@ public class BlogRepository {
                         .setTimestamp(resultSet.getString("CREATION_TIME"))
                         .addAllImagePath(ImageRepository.getInstance().findImagesPathByBlogTitle(blogId))
                         .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                        .addAllComments(CommentRepository.getInstance().findCommentsByBlogId(blogId))
                         .build();
                 blogs.add(blog);
             }
@@ -155,5 +160,15 @@ public class BlogRepository {
             instance = new BlogRepository();
         }
         return instance;
+    }
+
+    public boolean validateBlog(MyBlog blog){
+        if (blog.getTitle().isBlank() || blog.getTitle().length()>100 )
+            return false;
+        if (blog.getContent().isBlank() || blog.getContent().length() >500)
+            return false;
+        if (blog.getImagePathCount()<1)
+            return false;
+        return true;
     }
 }
