@@ -8,9 +8,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDatabase{
-    private Connection connection;
 
-    public MyDatabase() {
+    public static Connection getConnection(){
+        Connection connection = null;
         Logger logger = LoggerFactory.getLogger(MyDatabase.class);
         try {
             String DB_URL = "jdbc:mysql://localhost:3306/NewDB";
@@ -21,9 +21,6 @@ public class MyDatabase{
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
-    }
-
-    public static Connection getConnection(){
-        return new MyDatabase().connection;
+        return connection;
     }
 }

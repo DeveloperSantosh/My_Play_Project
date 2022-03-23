@@ -1,5 +1,6 @@
 package service;
 
+import exception.MyException;
 import models.MyUser;
 import dto.RequestUser;
 import org.mindrot.jbcrypt.BCrypt;
@@ -31,7 +32,7 @@ public class UserService {
     }
 
 //    Method to validate credentials and login
-    public Result login(Http.Request request){
+    public Result login(Http.Request request) throws MyException {
         Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
         if(requestUserForm.hasErrors()) return badRequest("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
