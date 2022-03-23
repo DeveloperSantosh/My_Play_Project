@@ -23,13 +23,12 @@ import static play.mvc.Results.*;
 @Service
 public class BlogService {
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(BlogService.class);
     private final BlogRepository blogRepository;
     FormFactory formFactory;
 
     @Inject
     public BlogService(FormFactory formFactory) {
-        logger = LoggerFactory.getLogger(BlogService.class);
         this.blogRepository = BlogRepository.getInstance();
         this.formFactory = formFactory;
     }

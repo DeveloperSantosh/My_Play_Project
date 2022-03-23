@@ -3,7 +3,6 @@ package repository;
 import models.MyUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,40 +10,45 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class UserRepository {
+
+    private final Logger logger = LoggerFactory.getLogger(UserRepository.class);
     private static UserRepository instance = null;
-    private final Connection connection;
-    private final Logger logger;
-
-
     private static final String TABLE_NAME = "MY_USER";
-    private static final String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-            "USER_ID INTEGER AUTO_INCREMENT, "+
-            "USERNAME varchar(200) NOT NULL, "+
-            "PASSWORD varchar(200) NOT NULL, "+
-            "EMAIL varchar(200) UNIQUE, "+
-            "PRIMARY KEY (USER_ID))";
 
-    private UserRepository() {
-        connection = MyDatabase.getConnection();
-        logger = LoggerFactory.getLogger(BlogRepository.class);
+    public UserRepository() {
+        createTable();
+    }
+    public void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "USER_ID INTEGER AUTO_INCREMENT, "+
+                "USERNAME varchar(200) NOT NULL, "+
+                "PASSWORD varchar(200) NOT NULL, "+
+                "EMAIL varchar(200) UNIQUE, "+
+                "PRIMARY KEY (USER_ID))";
+        Connection connection = MyDatabase.getConnection();
         try {
-            PreparedStatement statement = connection.prepareStatement(createTable);
-            statement.execute();
-            logger.info("Table fetched successfully.");
+            PreparedStatement statement = connection.prepareStatement(createTableQuery);
+            if (statement.execute())
+                logger.info("Table created successfully.");
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
     }
 
     public boolean save(@NotNull MyUser user) {
-        if (!validateUser(user)) return false;
+        if (!isValidUser(user)) return false;
+        String insertQuery = "INSERT INTO "+TABLE_NAME+" (USERNAME, PASSWORD, EMAIL) VALUES ( ?, ?, ?)";
+        Connection conn = MyDatabase.getConnection();
         try {
-            String saveQuery = "INSERT INTO "+TABLE_NAME+" VALUES (?, ?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(saveQuery);
-            statement.setString(2, user.getUsername());
-            statement.setString(3, user.getPassword());
-            statement.setString(4, user.getEmail());
-            statement.executeUpdate();
+            PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
+            insertStatement.setString(1, user.getUsername());
+            insertStatement.setString(2, user.getPassword());
+            insertStatement.setString(3, user.getEmail());
+            insertStatement.executeUpdate();
+            insertStatement.close();
+            conn.close();
             logger.info("User saved successfully");
             return UserRoleRepository.getInstance().save(user)  &&
                    UserPermissionRepository.getInstance().save(user);
@@ -55,13 +59,15 @@ public class UserRepository {
     }
 
     public MyUser findUserByID(@NotNull Integer id) {
+        MyUser user = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID=?";
         try {
-            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID=?";
+            Connection connection = MyDatabase.getConnection();
             PreparedStatement statement = connection.prepareStatement(findQuery);
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
-                return MyUser.newBuilder()
+                user =  MyUser.newBuilder()
                         .setId(id)
                         .setUsername(resultSet.getString("USERNAME"))
                         .setPassword(resultSet.getString("PASSWORD"))
@@ -70,21 +76,26 @@ public class UserRepository {
                         .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
                         .build();
             }
+            resultSet.close();
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
-        return null;
+        return user;
     }
 
     public MyUser findUserByName(String name) {
+        MyUser user = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USERNAME=?";
         try {
-            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USERNAME=?";
+            Connection connection = MyDatabase.getConnection();
             PreparedStatement statement = connection.prepareStatement(findQuery);
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
                 int id = resultSet.getInt("USER_ID");
-                return MyUser.newBuilder()
+                user = MyUser.newBuilder()
                         .setId(id)
                         .setUsername(resultSet.getString("USERNAME"))
                         .setPassword(resultSet.getString("PASSWORD"))
@@ -93,21 +104,26 @@ public class UserRepository {
                         .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
                         .build();
             }
+            resultSet.close();
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
-        return null;
+        return user;
     }
 
     public MyUser findUserByEmail(String email) {
+        MyUser user = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE EMAIL = ?";
         try {
-            String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE EMAIL = ?";
+            Connection connection = MyDatabase.getConnection();
             PreparedStatement statement = connection.prepareStatement(findQuery);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
                 int id = resultSet.getInt("USER_ID");
-                return MyUser.newBuilder()
+                user = MyUser.newBuilder()
                         .setId(id)
                         .setUsername(resultSet.getString("USERNAME"))
                         .setPassword(resultSet.getString("PASSWORD"))
@@ -116,18 +132,23 @@ public class UserRepository {
                         .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
                         .build();
             }
-        } catch (SQLException e) {
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException | NullPointerException e) {
+            e.printStackTrace();
             logger.warn(e.getMessage());
         }
-        return null;
+        return user;
     }
 
     public List<MyUser> findAllUsers() {
         List<MyUser> users = new ArrayList<>();
+        String selectAllQuery = "SELECT * FROM "+ TABLE_NAME;
+        Connection conn = MyDatabase.getConnection();
         try {
-            String findQuery = "SELECT * FROM "+ TABLE_NAME;
-            PreparedStatement statement = connection.prepareStatement(findQuery);
-            ResultSet resultSet = statement.executeQuery();
+            PreparedStatement selectAllStatement = conn.prepareStatement(selectAllQuery);
+            ResultSet resultSet = selectAllStatement.executeQuery();
             while(resultSet.next()) {
                 int id = resultSet.getInt("USER_ID");
                 MyUser user = MyUser.newBuilder()
@@ -140,6 +161,9 @@ public class UserRepository {
                         .build();
                 users.add(user);
             }
+            resultSet.close();
+            selectAllStatement.close();
+            conn.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -147,16 +171,21 @@ public class UserRepository {
     }
 
     public boolean updateUser(MyUser oldUser, MyUser newUser) {
+        if (!(isValidUser(newUser) && isValidUser(oldUser))) return false;
+        String updateQuery = "UPDATE "+TABLE_NAME+" SET USERNAME=?, PASSWORD=?, EMAIL=? WHERE USER_ID=?";
+        Connection connection = MyDatabase.getConnection();
         try {
-            String query = "UPDATE "+TABLE_NAME+" SET USERNAME=?, PASSWORD=?, EMAIL=? WHERE USER_ID=?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, newUser.getUsername());
-            statement.setString(2, newUser.getPassword());
-            statement.setString(3, newUser.getEmail());
-            statement.setInt(4, oldUser.getId());
-            int count = statement.executeUpdate();
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+            updateStatement.setString(1, newUser.getUsername());
+            updateStatement.setString(2, newUser.getPassword());
+            updateStatement.setString(3, newUser.getEmail());
+            updateStatement.setInt(4, oldUser.getId());
+            int count = updateStatement.executeUpdate();
+            updateStatement.close();
+            connection.close();
             logger.info("TOTAL USER UPDATED: "+count);
-            return true;
+            return UserPermissionRepository.getInstance().save(newUser) &&
+                    UserRoleRepository.getInstance().save(newUser);
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -164,13 +193,17 @@ public class UserRepository {
     }
 
     public boolean delete(MyUser user) {
+        if (!isValidUser(user)) return false;
+        String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
+        Connection connection = MyDatabase.getConnection();
         try {
-            String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, user.getId());
+            PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+            deleteStatement.setInt(1, user.getId());
             UserRoleRepository.getInstance().deleteUserAllRoles(user);
             UserPermissionRepository.getInstance().deleteUserAllPermission(user);
-            int count = statement.executeUpdate();
+            int count = deleteStatement.executeUpdate();
+            deleteStatement.close();
+            connection.close();
             logger.info("TOTAL USER DELETED: "+count);
             return true;
         } catch (SQLException e) {
@@ -179,18 +212,10 @@ public class UserRepository {
         return false;
     }
 
-    public static UserRepository getInstance(){
-        if(instance == null){
-            instance = new UserRepository();
-        }
-        return instance;
-    }
-
-    public boolean validateUser(MyUser user){
+    public boolean isValidUser(MyUser user){
         MyUser.Builder userBuilder = user.toBuilder();
         String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
         Pattern pattern = Pattern.compile(regex);
-
         if(userBuilder.getEmail().isBlank())
             return false;
         else if(!pattern.matcher(user.getEmail()).matches())
@@ -200,5 +225,12 @@ public class UserRepository {
         else if (userBuilder.getUsername().isBlank())
             return false;
         return true;
+    }
+
+    public static UserRepository getInstance(){
+        if(instance == null){
+            instance = new UserRepository();
+        }
+        return instance;
     }
 }

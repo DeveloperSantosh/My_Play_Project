@@ -37,10 +37,12 @@ public class UserService {
         RequestUser requestUser = requestUserForm.get();
         if (requestUser.getEmail().isBlank()) return badRequest("Enter email");
         MyUser myUser = userRepository.findUserByEmail(requestUser.getEmail());
-        if(myUser != null && requestUser.getPassword().equals(myUser.getPassword()) ){
+        if(myUser != null  ){
+            if (!requestUser.getPassword().equals(myUser.getPassword()))
+                return notFound("Sorry Username and password not matched");
             return ok("Login Successfully\n"+myUser).addingToSession(request, "email", myUser.getEmail());
         }
-        return notFound("Sorry Username and password not matched");
+        return notFound("User not found.");
     }
 
 //    Method to save user in database
@@ -98,14 +100,15 @@ public class UserService {
     public Result updateUser(Http.Request request, Integer userId) {
         Form<RequestUser> requestUserForm = formFactory.form(RequestUser.class).bindFromRequest(request);
         if (requestUserForm.hasErrors())
-            return internalServerError("Could not update user");
+            return internalServerError("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
         if (!requestUser.validate().equals("valid"))
             return badRequest(requestUser.validate());
         MyUser savedUser = userRepository.findUserByID(userId);
         if(savedUser == null ) return notFound();
-        requestUser.setRoles(savedUser.getRoleList());
+//        requestUser.setRoles(savedUser.getRoleList());
         requestUser.setPermissions(savedUser.getPermissionList());
+        requestUser.setId(savedUser.getId());
         MyUser updatedUser = requestUser.getMyUser();
         if ( userRepository.updateUser(savedUser, updatedUser) )
             return ok("User Updated Successfully.\n"+updatedUser);

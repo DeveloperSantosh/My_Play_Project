@@ -14,11 +14,16 @@ import java.util.regex.Pattern;
 
 public class RequestUser {
 
+    private int id;
     private String email;
     private String password;
     private String username;
     private List<MyRole> roles;
     private List<MyPermission> permissions;
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getEmail() {
         return email;

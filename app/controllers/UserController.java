@@ -20,9 +20,7 @@ public class UserController  extends Controller {
     }
 
     @Unrestricted
-    public Result login(Http.Request request){
-        return userService.login(request);
-    }
+    public Result login(Http.Request request){ return userService.login(request); }
 
     @Unrestricted
     public Result saveUser(Http.Request request){
