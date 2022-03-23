@@ -4,6 +4,7 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import be.objectify.deadbolt.java.actions.Unrestricted;
+import exception.MyException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -20,11 +21,21 @@ public class UserController  extends Controller {
     }
 
     @Unrestricted
-    public Result login(Http.Request request){ return userService.login(request); }
+    public Result login(Http.Request request){
+        try {
+            return userService.login(request);
+        }catch (MyException e){
+            return internalServerError("Something went wrong");
+        }
+    }
 
     @Unrestricted
     public Result saveUser(Http.Request request){
-        return userService.saveUser(request);
+        try {
+            return userService.saveUser(request);
+        }catch (MyException e){
+            return internalServerError("Something went wrong");
+        }
     }
 
     @Restrict(@Group("ADMIN"))
