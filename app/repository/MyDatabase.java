@@ -1,6 +1,5 @@
 package repository;
 
-import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.Connection;

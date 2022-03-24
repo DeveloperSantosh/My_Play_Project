@@ -2,6 +2,7 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Pattern;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import exception.BlogNotFoundException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -22,7 +23,11 @@ public class BlogController extends Controller {
     @Pattern("READ_STORAGE")
     @SubjectPresent
     public Result showBlog(String title, Integer userId){
-        return blogService.showBlog(title);
+        try {
+            return blogService.showBlog(title);
+        }catch (BlogNotFoundException e){
+            return notFound(e.getMessage());
+        }
     }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
@@ -31,6 +36,13 @@ public class BlogController extends Controller {
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
     @SubjectPresent
-    public Result deleteBlog(Integer userId, String blogTitle){ return blogService.deleteBlog(userId, blogTitle); }
+    public Result deleteBlog(Integer userId, String blogTitle){
+        try {
+            return blogService.deleteBlog(userId, blogTitle);
+        }catch (BlogNotFoundException e){
+            return notFound(e.getMessage());
+        }
+
+    }
 
 }

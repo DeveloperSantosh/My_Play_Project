@@ -7,7 +7,5 @@ target
 /.project
 /.settings
 /RUNNING_PID
-/sbtx.sh
-/proto_script.sh
 sbtx.sh
 proto_script.sh

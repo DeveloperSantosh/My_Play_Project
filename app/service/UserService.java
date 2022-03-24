@@ -1,9 +1,8 @@
 package service;
 
-import exception.MyException;
+import exception.UserNotFoundException;
 import models.MyUser;
 import dto.RequestUser;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
@@ -15,6 +14,8 @@ import repository.RoleRepository;
 import repository.UserRepository;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
+
 import static play.mvc.Results.*;
 
 @Service
@@ -32,18 +33,18 @@ public class UserService {
     }
 
 //    Method to validate credentials and login
-    public Result login(Http.Request request) throws MyException {
+    public Result login(Http.Request request){
         Form<RequestUser> requestUserForm =  formFactory.form(RequestUser.class).bindFromRequest(request);
-        if(requestUserForm.hasErrors()) return badRequest("Error in form data.");
+        if(requestUserForm.hasErrors())
+            return badRequest("Error in form data.");
         RequestUser requestUser = requestUserForm.get();
-        if (requestUser.getEmail().isBlank()) return badRequest("Enter email");
-        MyUser myUser = userRepository.findUserByEmail(requestUser.getEmail());
-        if(myUser != null  ){
-            if (!requestUser.getPassword().equals(myUser.getPassword()))
-                return notFound("Sorry Username and password not matched");
+        if (requestUser.getEmail().isBlank())
+            return badRequest("Enter email");
+        Optional<MyUser> user = Optional.ofNullable(userRepository.findUserByEmail(requestUser.getEmail()));
+        MyUser myUser = user.orElseThrow(()-> new UserNotFoundException("User Not found with email: "+requestUser.getEmail()));
+        if (requestUser.getPassword().equals(myUser.getPassword()))
             return ok("Login Successfully\n"+myUser).addingToSession(request, "email", myUser.getEmail());
-        }
-        return notFound("User not found.");
+        return notFound("Sorry Username and password not matched");
     }
 
 //    Method to save user in database
@@ -69,11 +70,9 @@ public class UserService {
 
 //    Method to delete user by its USER_ID'
     public Result deleteUser(Integer userId){
-        MyUser user = userRepository.findUserByID(userId);
-        if(user == null)
-            return notFound("Sorry User with id: "+userId+" not found");
-
-        if(userRepository.delete(user))
+        Optional<MyUser> user = Optional.ofNullable(userRepository.findUserByID(userId));
+        MyUser user1 = user.orElseThrow(()-> new UserNotFoundException("User not found with userId: "+userId));
+        if(userRepository.delete(user1))
             return ok("User deleted Successfully\n"+user);
         return internalServerError("Something went wrong");
     }

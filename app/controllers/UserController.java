@@ -4,7 +4,7 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import be.objectify.deadbolt.java.actions.Unrestricted;
-import exception.MyException;
+import exception.UserNotFoundException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -24,29 +24,25 @@ public class UserController  extends Controller {
     public Result login(Http.Request request){
         try {
             return userService.login(request);
-        }catch (MyException e){
-            return internalServerError("Something went wrong");
+        }catch (UserNotFoundException e){
+            return notFound(e.getMessage());
         }
     }
 
     @Unrestricted
-    public Result saveUser(Http.Request request){
+    public Result saveUser(Http.Request request){ return userService.saveUser(request); }
+
+    @Restrict(@Group("ADMIN"))
+    public Result deleteUser(Integer userId){
         try {
-            return userService.saveUser(request);
-        }catch (MyException e){
-            return internalServerError("Something went wrong");
+            return userService.deleteUser(userId);
+        }catch (UserNotFoundException e){
+            return notFound(e.getMessage());
         }
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result deleteUser(Integer userId){
-        return userService.deleteUser(userId);
-    }
-
-    @Restrict(@Group("ADMIN"))
-    public Result getAllUsers(){
-        return userService.getAllUsers();
-    }
+    public Result getAllUsers(){ return userService.getAllUsers(); }
 
     @SubjectPresent
     public Result updateUser(Http.Request request, Integer userId) { return userService.updateUser(request, userId); }
