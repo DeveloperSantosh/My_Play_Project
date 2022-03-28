@@ -14,9 +14,7 @@ public class UserRoleRepository {
     private static UserRoleRepository instance = null;
     private final String TABLE_NAME = "MY_USER_ROLE";
 
-    private UserRoleRepository() {
-        createTable();
-    }
+    private UserRoleRepository() {}
 
     private void createTable(){
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
@@ -25,12 +23,9 @@ public class UserRoleRepository {
                 "FOREIGN KEY (ROLE_TYPE) REFERENCES MY_ROLE(ROLE_TYPE), "+
                 "FOREIGN KEY (USER_ID) REFERENCES MY_USER(USER_ID), "+
                 "PRIMARY KEY (ROLE_TYPE, USER_ID))";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
             statement.execute();
-            statement.close();
-            connection.close();
             logger.info("Table fetched successfully.");
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
@@ -39,9 +34,8 @@ public class UserRoleRepository {
 
     public boolean save(MyUser user) {
         String query = "INSERT INTO "+TABLE_NAME+" VALUES(?,?)";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             for(MyRole role: user.getRoleList()) {
                 statement.setString(1, role.getRoleType());
                 statement.setInt(2, user.getId());
@@ -49,8 +43,6 @@ public class UserRoleRepository {
                     RoleRepository.getInstance().save(role);
                 statement.executeUpdate();
             }
-            statement.close();
-            connection.close();
             logger.info("User saved successfully");
             return true;
         } catch (SQLException | NullPointerException e) {
@@ -62,17 +54,14 @@ public class UserRoleRepository {
     public List<MyUser> findUsersByRoleType(String roleType) {
         List<MyUser> users = new ArrayList<>();
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setString(1, roleType);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
                 users.add(UserRepository.getInstance().findUserByID(resultSet.getInt("USER_ID")));
             }
             resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -82,18 +71,14 @@ public class UserRoleRepository {
     public List<MyRole> findRolesByUserId(int userId) {
         List<MyRole> userRoles = new ArrayList<>();
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID = ?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setInt(1, userId);
-
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 userRoles.add(RoleRepository.getInstance().findUserRoleByType(resultSet.getString("ROLE_TYPE")));
             }
             resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -106,14 +91,11 @@ public class UserRoleRepository {
 
     public boolean deleteUserRole(MyUser user, MyRole role) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =? AND USER_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, role.getRoleType());
             statement.setInt(2, user.getId());
             statement.executeUpdate();
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
@@ -123,13 +105,10 @@ public class UserRoleRepository {
 
     public boolean deleteUserAllRoles(MyUser user) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, user.getId());
             statement.executeUpdate();
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());

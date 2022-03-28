@@ -13,18 +13,15 @@ public class PermissionRepository {
     private static PermissionRepository instance = null;
     private static final String TABLE_NAME = "MY_PERMISSIONS";
 
-    private PermissionRepository() {
-        createTable();
-    }
+    private PermissionRepository() {}
 
     private void createTable(){
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
                 "PERMISSION_ID INTEGER AUTO_INCREMENT,"+
                 "VALUE varchar(200) NOT NULL, "+
                 "PRIMARY KEY (PERMISSION_ID))";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
             statement.execute();
             logger.info("Table fetched successfully.");
         } catch (SQLException | NullPointerException e) {
@@ -35,14 +32,11 @@ public class PermissionRepository {
     public boolean save(MyPermission permission) {
         if (permission==null ) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+ " (VALUE) VALUES (?);";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement =connection.prepareStatement(saveQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement =connection.prepareStatement(saveQuery)){
             statement.setString(1, permission.getValue());
             int count = statement.executeUpdate();
             logger.info(count+" Permission saved successfully");
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException e) {
             logger.warn(e.getMessage());
@@ -53,10 +47,9 @@ public class PermissionRepository {
     public List<MyPermission> findAllPermissions(){
         List<MyPermission> permissions = new ArrayList<>();
         String findQuery = "SELECT * FROM " + TABLE_NAME;
-        try {
-            Connection connection = MyDatabase.getConnection();
+        try (Connection connection = MyDatabase.getConnection();
             PreparedStatement statement = connection.prepareStatement(findQuery);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery()){
             while (resultSet.next()) {
                 MyPermission permission = MyPermission.newBuilder()
                         .setId(resultSet.getInt("PERMISSION_ID"))
@@ -64,9 +57,6 @@ public class PermissionRepository {
                         .build();
                 permissions.add(permission);
             }
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -76,9 +66,8 @@ public class PermissionRepository {
     public MyPermission findPermissionById(Integer permissionId) {
         MyPermission permission = null;
         String findQuery = "SELECT * FROM " + TABLE_NAME + " WHERE PERMISSION_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setInt(1, permissionId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -88,8 +77,6 @@ public class PermissionRepository {
                         .build();
             }
             resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -98,14 +85,11 @@ public class PermissionRepository {
 
     public boolean updatePermission(MyPermission oldPermission, MyPermission newPermission) {
         String query = "UPDATE " + TABLE_NAME + " SET VALUE=? WHERE PERMISSION_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1, newPermission.getValue());
             statement.setInt(2, oldPermission.getId());
             statement.executeUpdate();
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException e) {
             logger.warn(e.getMessage());
@@ -115,13 +99,10 @@ public class PermissionRepository {
 
     public boolean deletePermission(MyPermission permission) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, permission.getId());
             int count = statement.executeUpdate();
-            statement.close();
-            connection.close();
             return (count == 1);
         } catch (SQLException e) {
             logger.warn(e.getMessage());

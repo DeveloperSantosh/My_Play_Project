@@ -1,8 +1,12 @@
 package repository;
 
+import liquibase.Liquibase;
+import liquibase.integration.spring.SpringLiquibase;
 import models.MyComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,9 +18,7 @@ public class CommentRepository {
     private static CommentRepository instance = null;
     private final String TABLE_NAME = "BLOG_COMMENTS";
 
-    private CommentRepository() {
-        createTable();
-    }
+    private CommentRepository() {}
 
     private void createTable(){
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
@@ -26,13 +28,12 @@ public class CommentRepository {
                 "BLOG_ID INTEGER, "+
                 "PRIMARY KEY (COMMENT_ID)," +
                 "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            SpringLiquibase liquibase = new SpringLiquibase();
+            liquibase.setChangeLog("conf/liquibase/changelog-master.xml");
             if (statement.execute())
                 logger.info("Table created successfully.");
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -41,15 +42,12 @@ public class CommentRepository {
     public boolean save(@NotNull MyComment comment) {
         if (validateComment(comment)) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+" (COMMENT, CREATION_TIME, BLOG_ID) VALUES(?,?,?);";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(saveQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(saveQuery)){
             statement.setString(1,comment.getComment());
             statement.setString(2, comment.getTimestamp());
             statement.setInt(3, comment.getBlog().getId());
             int count = statement.executeUpdate();
-            statement.close();
-            connection.close();
             logger.info(count+" Comment saved successfully.");
             return true;
         } catch (SQLException | NullPointerException e) {
@@ -61,9 +59,8 @@ public class CommentRepository {
     public List<MyComment> findCommentsByBlogId(Integer blogId) {
         List<MyComment> comments = new ArrayList<>();
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setInt(1, blogId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -75,8 +72,7 @@ public class CommentRepository {
 //                        .setBlog(BlogRepository.getInstance().findBlogById(resultSet.getInt("BLOG_ID")))
                         .build());
             }
-            statement.close();
-            connection.close();
+            resultSet.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -86,10 +82,9 @@ public class CommentRepository {
     public List<MyComment> findAllComments() {
         List<MyComment> comments = new ArrayList<>();
         String findQuery = "SELECT * FROM " + TABLE_NAME;
-        try {
-            Connection connection = MyDatabase.getConnection();
+        try (Connection connection = MyDatabase.getConnection();
             PreparedStatement statement = connection.prepareStatement(findQuery);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery()){
             while (resultSet.next()) {
                 MyComment comment = MyComment.newBuilder()
                         .setId(resultSet.getInt("COMMENT_ID"))
@@ -99,8 +94,6 @@ public class CommentRepository {
                         .build();
                 comments.add(comment);
             }
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -109,13 +102,10 @@ public class CommentRepository {
 
     public boolean deleteCommentByBlogTitle(Integer blogId){
         String query = "DELETE FROM "+ TABLE_NAME+" WHERE BLOG_ID=?;";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, blogId);
             statement.executeUpdate();
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
@@ -125,13 +115,10 @@ public class CommentRepository {
 
     public boolean deleteComment(MyComment comment){
         String query = "DELETE FROM "+ TABLE_NAME+" WHERE COMMENT_ID=?;";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, comment.getId());
             statement.executeUpdate();
-            statement.close();
-            connection.close();
             return true;
         } catch (SQLException |NullPointerException e) {
             logger.warn(e.getMessage());

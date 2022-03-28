@@ -1,6 +1,5 @@
 package dto;
 
-import models.Entities;
 import models.MyBlog;
 import repository.UserRepository;
 import java.time.LocalDateTime;

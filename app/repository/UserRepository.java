@@ -3,6 +3,8 @@ package repository;
 import models.MyUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,28 +12,25 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class UserRepository {
-
+    @Inject
+    private MyDatabase database;
     private final Logger logger = LoggerFactory.getLogger(UserRepository.class);
     private static UserRepository instance = null;
     private static final String TABLE_NAME = "MY_USER";
 
-    public UserRepository() {
-        createTable();
-    }
-    public void createTable(){
+    public UserRepository() {}
+
+    public void createTable() {
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
                 "USER_ID INTEGER AUTO_INCREMENT, "+
                 "USERNAME varchar(200) NOT NULL, "+
                 "PASSWORD varchar(200) NOT NULL, "+
                 "EMAIL varchar(200) UNIQUE, "+
                 "PRIMARY KEY (USER_ID))";
-        Connection connection = MyDatabase.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement(createTableQuery);
+        try(Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
             if (statement.execute())
                 logger.info("Table created successfully.");
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -40,18 +39,15 @@ public class UserRepository {
     public boolean save(@NotNull MyUser user) {
         if (!isValidUser(user)) return false;
         String insertQuery = "INSERT INTO "+TABLE_NAME+" (USERNAME, PASSWORD, EMAIL) VALUES ( ?, ?, ?)";
-        Connection conn = MyDatabase.getConnection();
-        try {
-            PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
+        try (Connection conn = MyDatabase.getConnection();
+             PreparedStatement insertStatement = conn.prepareStatement(insertQuery)) {
             insertStatement.setString(1, user.getUsername());
             insertStatement.setString(2, user.getPassword());
             insertStatement.setString(3, user.getEmail());
             insertStatement.executeUpdate();
-            insertStatement.close();
-            conn.close();
             logger.info("User saved successfully");
-            return UserRoleRepository.getInstance().save(user)  &&
-                   UserPermissionRepository.getInstance().save(user);
+            return UserRoleRepository.getInstance().save(user) &&
+                    UserPermissionRepository.getInstance().save(user);
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -61,9 +57,8 @@ public class UserRepository {
     public MyUser findUserByID(@NotNull Integer id) {
         MyUser user = null;
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
@@ -76,9 +71,6 @@ public class UserRepository {
                         .addAllPermission(UserPermissionRepository.getInstance().findAllPermissionsByUserId(id))
                         .build();
             }
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -88,9 +80,8 @@ public class UserRepository {
     public MyUser findUserByName(String name) {
         MyUser user = null;
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USERNAME=?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
@@ -105,8 +96,6 @@ public class UserRepository {
                         .build();
             }
             resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -116,9 +105,8 @@ public class UserRepository {
     public MyUser findUserByEmail(String email) {
         MyUser user = null;
         String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE EMAIL = ?";
-        try {
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(findQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if(resultSet.next()) {
@@ -133,8 +121,6 @@ public class UserRepository {
                         .build();
             }
             resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
             logger.warn(e.getMessage());
@@ -145,10 +131,9 @@ public class UserRepository {
     public List<MyUser> findAllUsers() {
         List<MyUser> users = new ArrayList<>();
         String selectAllQuery = "SELECT * FROM "+ TABLE_NAME;
-        Connection conn = MyDatabase.getConnection();
-        try {
+        try (Connection conn = MyDatabase.getConnection();
             PreparedStatement selectAllStatement = conn.prepareStatement(selectAllQuery);
-            ResultSet resultSet = selectAllStatement.executeQuery();
+            ResultSet resultSet = selectAllStatement.executeQuery()){
             while(resultSet.next()) {
                 int id = resultSet.getInt("USER_ID");
                 MyUser user = MyUser.newBuilder()
@@ -161,9 +146,6 @@ public class UserRepository {
                         .build();
                 users.add(user);
             }
-            resultSet.close();
-            selectAllStatement.close();
-            conn.close();
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -173,9 +155,8 @@ public class UserRepository {
     public boolean updateUser(MyUser oldUser, MyUser newUser) {
         if (!(isValidUser(newUser) && isValidUser(oldUser))) return false;
         String updateQuery = "UPDATE "+TABLE_NAME+" SET USERNAME=?, PASSWORD=?, EMAIL=? WHERE USER_ID=?";
-        Connection connection = MyDatabase.getConnection();
-        try {
-            PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery)){
             updateStatement.setString(1, newUser.getUsername());
             updateStatement.setString(2, newUser.getPassword());
             updateStatement.setString(3, newUser.getEmail());
@@ -195,9 +176,8 @@ public class UserRepository {
     public boolean delete(MyUser user) {
         if (!isValidUser(user)) return false;
         String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-        Connection connection = MyDatabase.getConnection();
-        try {
-            PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)){
             deleteStatement.setInt(1, user.getId());
             UserRoleRepository.getInstance().deleteUserAllRoles(user);
             UserPermissionRepository.getInstance().deleteUserAllPermission(user);
@@ -233,4 +213,5 @@ public class UserRepository {
         }
         return instance;
     }
+
 }

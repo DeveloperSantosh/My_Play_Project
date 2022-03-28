@@ -10,10 +10,11 @@ import play.data.FormFactory;
 import play.filters.csrf.CSRF;
 import play.libs.Files;
 import play.mvc.Http;
+import play.mvc.RangeResults;
 import play.mvc.Result;
 import repository.BlogRepository;
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ public class BlogService {
 
 //    Method to get blogs from database
     public Result getBlogs(){
-
         StringBuilder result = new StringBuilder();
         for(MyBlog blog: blogRepository.findAllBlogs()){
             result.append(blog.toString()).append("\n");
@@ -49,6 +49,7 @@ public class BlogService {
         MyBlog blog = blogRepository.findBlogByTitle(title);
         if (blog == null) return notFound("BLOG NOT FOUND WITH TITLE: "+title);
         return ok(blog.toString());
+//        return RangeResults.ofStream(request, new ByteArrayInputStream(blog.toByteArray()));
     }
 
 //    Method to save blog to database
