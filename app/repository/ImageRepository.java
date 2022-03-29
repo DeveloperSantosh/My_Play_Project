@@ -106,24 +106,32 @@ public class ImageRepository {
     }
 
     public boolean deleteAllImagePaths(MyBlog blog){
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=? AND IMAGE_PATH=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement smt = connection.prepareStatement(query)){
-            int count = 0;
-            boolean result = true;
-            for(String imagePath: blog.getImagePathList()){
-                smt.setInt(1, blog.getId());
-                smt.setString(2, imagePath);
-                count += smt.executeUpdate();
-                result = Files.deleteIfExists(Paths.get(imagePath));
-            }
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            PreparedStatement smt = connection.prepareStatement(query);
+            smt.setInt(1, blog.getId());
+            int count = smt.executeUpdate();
+            smt.close();
             logger.info("Total deleted image paths: "+count);
-            return result;
-        } catch (SQLException | IOException e) {
+            return count>0;
+        } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
         return false;
     }
+
+    public boolean deleteImageFiles(List<String> imagePaths){
+        try {
+            for (String imagePath: imagePaths){
+                if(!Files.deleteIfExists(Paths.get(imagePath)))
+                    return false;
+            }
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+        }
+        return true;
+    }
+
     public static ImageRepository getInstance(){
         if(instance == null){
             instance = new ImageRepository();

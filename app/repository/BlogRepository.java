@@ -1,6 +1,7 @@
 package repository;
 
 import models.MyBlog;
+import models.MyComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -43,24 +44,31 @@ public class BlogRepository {
     public boolean save(@NotNull MyBlog blog) {
         if (validateBlog(blog)) return false;
         String insertQuery = "INSERT INTO "+TABLE_NAME+" (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES (?,?,?,?)";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement insertStatement = connection.prepareStatement(insertQuery)){
-            insertStatement.setString(1, blog.getTitle());
-            insertStatement.setString(2, blog.getContent());
-            insertStatement.setString(3, blog.getTimestamp());
-            insertStatement.setInt(4, blog.getAuthor().getId());
-            insertStatement.executeUpdate();
-            logger.info("Blog saved successfully");
-            int savedBlogId = findBlogByTitle(blog.getTitle()).getId();
-            if (!ImageRepository.getInstance().save(blog, savedBlogId)) {
-                delete(blog.toBuilder().setId(savedBlogId).build());
-                return false;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)){
+                insertStatement.setString(1, blog.getTitle());
+                insertStatement.setString(2, blog.getContent());
+                insertStatement.setString(3, blog.getTimestamp());
+                insertStatement.setInt(4, blog.getAuthor().getId());
+                insertStatement.executeUpdate();
+                logger.info("Blog saved successfully");
+                int savedBlogId = findBlogByTitle(blog.getTitle()).getId();
+                if (ImageRepository.getInstance().save(blog, savedBlogId)) {
+                    connection.commit();
+                    return true;
+                }
+                else connection.rollback(savepoint);
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
-            return false;
         }
-        return true;
+        return false;
     }
 
     public MyBlog findBlogByTitle(@NotEmpty @NotNull String title) {
@@ -72,7 +80,7 @@ public class BlogRepository {
             ResultSet resultSet = stm.executeQuery();
             if(resultSet.next()) {
                 int blogId = resultSet.getInt("BLOG_ID");
-                blog =   MyBlog.newBuilder()
+                blog = MyBlog.newBuilder()
                         .setId(blogId)
                         .setTitle(resultSet.getString("BLOG_TITLE"))
                         .setContent(resultSet.getString("BLOG_CONTENT"))
@@ -140,30 +148,54 @@ public class BlogRepository {
 
     public boolean updateBlog(@NotNull MyBlog oldBlog, @NotNull MyBlog newBlog){
         if(!(validateBlog(newBlog) && validateBlog(oldBlog))) return false;
-        String query = "UPDATE " + TABLE_NAME + " SET BLOG_TITLE=?, BLOG_CONTENT=?, AUTHOR_ID=? WHERE BLOG_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.executeUpdate();
-            if (!ImageRepository.getInstance().updateImagePath(oldBlog, newBlog)) {
-                updateBlog(oldBlog, oldBlog);
-                return false;
+        String updateQuery = "UPDATE " + TABLE_NAME + " SET BLOG_TITLE=?, BLOG_CONTENT=?, AUTHOR_ID=? WHERE BLOG_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            Savepoint savepoint = connection.setSavepoint();
+            try (PreparedStatement statement = connection.prepareStatement(updateQuery);){
+                statement.executeUpdate();
+                if (ImageRepository.getInstance().updateImagePath(oldBlog, newBlog)) {
+                    connection.commit();
+                    return true;
+                }
+                else connection.rollback(savepoint);
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
-            return false;
         }
-        return true;
+        return false;
     }
 
     public boolean delete(@NotNull MyBlog blog){
         if (!validateBlog(blog)) return false;
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, blog.getId());
             statement.executeUpdate();
-            return ImageRepository.getInstance().deleteAllImagePaths(blog) &&
-                    CommentRepository.getInstance().deleteCommentByBlogTitle(blog.getId());
+            if (CommentRepository.getInstance().deleteCommentByBlogTitle(blog.getId())){
+                if (ImageRepository.getInstance().deleteAllImagePaths(blog)){
+                    ImageRepository.getInstance().deleteImageFiles(blog.getImagePathList());
+                    connection.commit();
+                    return true;
+                }
+                else {
+                    for (MyComment c: blog.getCommentsList())
+                        CommentRepository.getInstance().save(c);
+                }
+            }
+            connection.rollback(savepoint);
+            } catch (SQLException e) {
+                logger.warn(e.getMessage());
+                connection.rollback(savepoint);
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }

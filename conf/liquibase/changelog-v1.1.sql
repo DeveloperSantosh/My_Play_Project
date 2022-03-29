@@ -57,3 +57,7 @@ CREATE TABLE IF NOT EXISTS MY_USER_ROLE(
                 FOREIGN KEY (ROLE_TYPE) REFERENCES MY_ROLE(ROLE_TYPE),
                 FOREIGN KEY (USER_ID) REFERENCES MY_USER(USER_ID),
                 PRIMARY KEY (ROLE_TYPE, USER_ID));
+
+--changeset santosh:add-user
+--comment: Added user
+INSERT INTO MY_USER (USERNAME, PASSWORD, EMAIL) VALUES("ANYONE","ANYTHING","anyone@anything.com");
