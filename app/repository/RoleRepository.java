@@ -3,10 +3,8 @@ package repository;
 import models.MyRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +33,21 @@ public class RoleRepository {
     public boolean save(MyRole role) {
         if (!isValidRole(role)) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+ " VALUES(?,?)";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(saveQuery)){
-            statement.setString(1, role.getRoleType());
-            statement.setString(2, role.getDescription());
-            int count = statement.executeUpdate();
-            logger.info(count+" Role saved successfully");
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)){
+                statement.setString(1, role.getRoleType());
+                statement.setString(2, role.getDescription());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Role saved successfully");
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -91,13 +97,21 @@ public class RoleRepository {
     public boolean updateUserRoles(MyRole oldRole, MyRole newRole) {
         if (!(isValidRole(newRole) && isValidRole(oldRole))) return false;
         String query = "UPDATE "+ TABLE_NAME+ "SET ROLE_TYPE=?, ROLE_DESCRIPTION=? WHERE ROLE_TYPE=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1, newRole.getRoleType());
-            statement.setString(2, newRole.getDescription());
-            statement.setString(3, oldRole.getRoleType());
-            int count = statement.executeUpdate();
-            return (count == 1);
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, newRole.getRoleType());
+                statement.setString(2, newRole.getDescription());
+                statement.setString(3, oldRole.getRoleType());
+                statement.executeUpdate();
+                connection.commit();
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -107,11 +121,20 @@ public class RoleRepository {
     public boolean delete(MyRole role) {
         if (!isValidRole(role)) return false;
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1, role.getRoleType());
-            int count = statement.executeUpdate();
-            return (count == 1);
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, role.getRoleType());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Role deleted successfully");
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }

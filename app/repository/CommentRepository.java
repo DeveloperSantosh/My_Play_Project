@@ -1,12 +1,10 @@
 package repository;
 
-import liquibase.Liquibase;
 import liquibase.integration.spring.SpringLiquibase;
 import models.MyComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -42,14 +40,22 @@ public class CommentRepository {
     public boolean save(@NotNull MyComment comment) {
         if (validateComment(comment)) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+" (COMMENT, CREATION_TIME, BLOG_ID) VALUES(?,?,?);";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(saveQuery)){
-            statement.setString(1,comment.getComment());
-            statement.setString(2, comment.getTimestamp());
-            statement.setInt(3, comment.getBlog().getId());
-            int count = statement.executeUpdate();
-            logger.info(count+" Comment saved successfully.");
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+                statement.setString(1, comment.getComment());
+                statement.setString(2, comment.getTimestamp());
+                statement.setInt(3, comment.getBlog().getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Comment saved successfully.");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -100,13 +106,22 @@ public class CommentRepository {
         return comments;
     }
 
-    public boolean deleteCommentByBlogTitle(Integer blogId){
+    public boolean deleteAllCommentByBlogTitle(Integer blogId){
         String query = "DELETE FROM "+ TABLE_NAME+" WHERE BLOG_ID=?;";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, blogId);
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, blogId);
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Comment deleted successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -115,11 +130,20 @@ public class CommentRepository {
 
     public boolean deleteComment(MyComment comment){
         String query = "DELETE FROM "+ TABLE_NAME+" WHERE COMMENT_ID=?;";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, comment.getId());
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, comment.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Comment deleted successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException |NullPointerException e) {
             logger.warn(e.getMessage());
         }

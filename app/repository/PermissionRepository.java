@@ -32,12 +32,20 @@ public class PermissionRepository {
     public boolean save(MyPermission permission) {
         if (permission==null ) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+ " (VALUE) VALUES (?);";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement =connection.prepareStatement(saveQuery)){
-            statement.setString(1, permission.getValue());
-            int count = statement.executeUpdate();
-            logger.info(count+" Permission saved successfully");
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+                statement.setString(1, permission.getValue());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Permission saved successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -85,12 +93,21 @@ public class PermissionRepository {
 
     public boolean updatePermission(MyPermission oldPermission, MyPermission newPermission) {
         String query = "UPDATE " + TABLE_NAME + " SET VALUE=? WHERE PERMISSION_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1, newPermission.getValue());
-            statement.setInt(2, oldPermission.getId());
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, newPermission.getValue());
+                statement.setInt(2, oldPermission.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.warn("Permission updated successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -99,11 +116,19 @@ public class PermissionRepository {
 
     public boolean deletePermission(MyPermission permission) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, permission.getId());
-            int count = statement.executeUpdate();
-            return (count == 1);
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, permission.getId());
+                statement.executeUpdate();
+                connection.commit();
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }

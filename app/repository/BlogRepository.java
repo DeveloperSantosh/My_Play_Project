@@ -180,7 +180,7 @@ public class BlogRepository {
             try(PreparedStatement statement = connection.prepareStatement(query)){
             statement.setInt(1, blog.getId());
             statement.executeUpdate();
-            if (CommentRepository.getInstance().deleteCommentByBlogTitle(blog.getId())){
+            if (CommentRepository.getInstance().deleteAllCommentByBlogTitle(blog.getId())){
                 if (ImageRepository.getInstance().deleteAllImagePaths(blog)){
                     ImageRepository.getInstance().deleteImageFiles(blog.getImagePathList());
                     connection.commit();

@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class UserRepository {
-    @Inject
-    private MyDatabase database;
+
     private final Logger logger = LoggerFactory.getLogger(UserRepository.class);
     private static UserRepository instance = null;
     private static final String TABLE_NAME = "MY_USER";
@@ -39,15 +38,27 @@ public class UserRepository {
     public boolean save(@NotNull MyUser user) {
         if (!isValidUser(user)) return false;
         String insertQuery = "INSERT INTO "+TABLE_NAME+" (USERNAME, PASSWORD, EMAIL) VALUES ( ?, ?, ?)";
-        try (Connection conn = MyDatabase.getConnection();
-             PreparedStatement insertStatement = conn.prepareStatement(insertQuery)) {
-            insertStatement.setString(1, user.getUsername());
-            insertStatement.setString(2, user.getPassword());
-            insertStatement.setString(3, user.getEmail());
-            insertStatement.executeUpdate();
-            logger.info("User saved successfully");
-            return UserRoleRepository.getInstance().save(user) &&
-                    UserPermissionRepository.getInstance().save(user);
+        try (Connection conn = MyDatabase.getConnection()){
+            conn.setAutoCommit(false);
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = conn.setSavepoint();
+            try(PreparedStatement insertStatement = conn.prepareStatement(insertQuery)) {
+                insertStatement.setString(1, user.getUsername());
+                insertStatement.setString(2, user.getPassword());
+                insertStatement.setString(3, user.getEmail());
+                if (UserRoleRepository.getInstance().save(user)){
+                    if (UserPermissionRepository.getInstance().save(user)){
+                        insertStatement.executeUpdate();
+                        conn.commit();
+                        logger.info("User saved successfully");
+                        return  true;
+                    }
+                    else UserRoleRepository.getInstance().deleteUserAllRoles(user);
+                }
+            } catch (SQLException e) {
+                conn.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -155,18 +166,28 @@ public class UserRepository {
     public boolean updateUser(MyUser oldUser, MyUser newUser) {
         if (!(isValidUser(newUser) && isValidUser(oldUser))) return false;
         String updateQuery = "UPDATE "+TABLE_NAME+" SET USERNAME=?, PASSWORD=?, EMAIL=? WHERE USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement updateStatement = connection.prepareStatement(updateQuery)){
-            updateStatement.setString(1, newUser.getUsername());
-            updateStatement.setString(2, newUser.getPassword());
-            updateStatement.setString(3, newUser.getEmail());
-            updateStatement.setInt(4, oldUser.getId());
-            int count = updateStatement.executeUpdate();
-            updateStatement.close();
-            connection.close();
-            logger.info("TOTAL USER UPDATED: "+count);
-            return UserPermissionRepository.getInstance().save(newUser) &&
-                    UserRoleRepository.getInstance().save(newUser);
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                updateStatement.setString(1, newUser.getUsername());
+                updateStatement.setString(2, newUser.getPassword());
+                updateStatement.setString(3, newUser.getEmail());
+                updateStatement.setInt(4, oldUser.getId());
+                if (UserPermissionRepository.getInstance().save(newUser)){
+                    if (UserRoleRepository.getInstance().save(newUser)){
+                        updateStatement.executeUpdate();
+                        connection.commit();
+                        logger.info(newUser.getEmail()+" User updated successfully");
+                        return  true;
+                    }
+                    else UserPermissionRepository.getInstance().deleteUserAllPermission(newUser);
+                }
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -176,16 +197,27 @@ public class UserRepository {
     public boolean delete(MyUser user) {
         if (!isValidUser(user)) return false;
         String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)){
-            deleteStatement.setInt(1, user.getId());
-            UserRoleRepository.getInstance().deleteUserAllRoles(user);
-            UserPermissionRepository.getInstance().deleteUserAllPermission(user);
-            int count = deleteStatement.executeUpdate();
-            deleteStatement.close();
-            connection.close();
-            logger.info("TOTAL USER DELETED: "+count);
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+                deleteStatement.setInt(1, user.getId());
+                if (UserRoleRepository.getInstance().deleteUserAllRoles(user)) {
+                    if (UserPermissionRepository.getInstance().deleteUserAllPermission(user)) {
+                        deleteStatement.executeUpdate();
+                        connection.commit();
+                        logger.info(user.getEmail() + " USER DELETED SUCCESSFULLY");
+                        return true;
+                    }
+                    else {
+                        UserRoleRepository.getInstance().save(user);
+                    }
+                }
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }

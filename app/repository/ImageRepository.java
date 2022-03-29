@@ -36,16 +36,22 @@ public class ImageRepository {
 
     public boolean save(MyBlog blog, Integer savedBlogId) {
         String saveQuery = "INSERT INTO "+TABLE_NAME + " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement smt = connection.prepareStatement(saveQuery)){
-            int count = 0;
-            for (String imagePath : blog.getImagePathList()) {
-                smt.setString(1, imagePath);
-                smt.setInt(2, savedBlogId);
-                count += smt.executeUpdate();
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement smt = connection.prepareStatement(saveQuery)) {
+                int count = 0;
+                for (String imagePath : blog.getImagePathList()) {
+                    smt.setString(1, imagePath);
+                    smt.setInt(2, savedBlogId);
+                    count += smt.executeUpdate();
+                }
+                logger.info(count + " Image paths saved Successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
-            logger.info(count + " Image paths saved Successfully");
-            return true;
         }catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -72,17 +78,24 @@ public class ImageRepository {
 
     public boolean updateImagePath(MyBlog oldBlog, MyBlog newBlog){
         String query = "UPDATE "+ TABLE_NAME+ "SET IMAGE_PATH=? BLOG_ID=? WHERE BLOG_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement smt = connection.prepareStatement(query)){
-            int count = 0;
-            for(String newPath: newBlog.getImagePathList()) {
-                smt.setString(1, newPath);
-                smt.setInt(2, newBlog.getId());
-                smt.setInt(3, oldBlog.getId());
-                count += smt.executeUpdate();
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement smt = connection.prepareStatement(query)) {
+                int count = 0;
+                for (String newPath : newBlog.getImagePathList()) {
+                    smt.setString(1, newPath);
+                    smt.setInt(2, newBlog.getId());
+                    smt.setInt(3, oldBlog.getId());
+                    count += smt.executeUpdate();
+                }
+                logger.info("Total update image path: " + count);
+                connection.commit();
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
-            logger.info("Total update image path: "+count);
-            return true;
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -92,14 +105,21 @@ public class ImageRepository {
     public boolean deleteImagePath(MyBlog blog, String imagePath){
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=? AND IMAGE_PATH=?";
         try (
-            Connection connection = MyDatabase.getConnection();
-            PreparedStatement smt = connection.prepareStatement(query)){
-            smt.setInt(1, blog.getId());
-            smt.setString(2, imagePath);
-            int count = smt.executeUpdate();
-            logger.info("Deleted image path: "+imagePath);
-            return (count == 1 && Files.deleteIfExists(Paths.get(imagePath)));
-        } catch (SQLException | IOException e) {
+            Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement smt = connection.prepareStatement(query)) {
+                smt.setInt(1, blog.getId());
+                smt.setString(2, imagePath);
+                smt.executeUpdate();
+                logger.info("Deleted image path: " + imagePath);
+                connection.commit();
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
         return false;
@@ -108,12 +128,18 @@ public class ImageRepository {
     public boolean deleteAllImagePaths(MyBlog blog){
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
-            PreparedStatement smt = connection.prepareStatement(query);
-            smt.setInt(1, blog.getId());
-            int count = smt.executeUpdate();
-            smt.close();
-            logger.info("Total deleted image paths: "+count);
-            return count>0;
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try (PreparedStatement smt = connection.prepareStatement(query)) {
+                smt.setInt(1, blog.getId());
+                int count = smt.executeUpdate();
+                connection.commit();
+                logger.info("Total deleted image paths: " + count);
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }

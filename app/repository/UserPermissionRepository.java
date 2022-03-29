@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class UserPermissionRepository {
 
@@ -36,16 +37,36 @@ public class UserPermissionRepository {
 
     public boolean save(@NotNull MyUser user) {
         String saveQuery = "INSERT INTO "+ TABLE_NAME+ "VALUES(?,?)";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(saveQuery)){
-            for(MyPermission p: user.getPermissionList()){
-                statement.setInt(1, user.getId());
-                statement.setInt(2, p.getId());
-                if(!PermissionRepository.getInstance().findAllPermissions().contains(p))
-                    PermissionRepository.getInstance().save(p);
-                statement.executeUpdate();
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+                List<MyPermission> savedPermissions = PermissionRepository.getInstance().findAllPermissions();
+                if (!savedPermissions.containsAll(user.getPermissionList())){
+                    Stack<MyPermission> newPermissions = new Stack<>();
+                    for (MyPermission p : user.getPermissionList()) {
+                        if (!savedPermissions.contains(p)) {
+                            if (!PermissionRepository.getInstance().save(p)) {
+                                while (!newPermissions.empty())
+                                    PermissionRepository.getInstance().deletePermission(newPermissions.pop());
+                                return false;
+                            }
+                            newPermissions.push(p);
+                        }
+                    }
+                }
+                for (MyPermission p: user.getPermissionList()){
+                    statement.setInt(1, user.getId());
+                    statement.setInt(2, p.getId());
+                    statement.executeUpdate();
+                }
+                connection.commit();
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
-            return true;
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -72,13 +93,21 @@ public class UserPermissionRepository {
 
     public boolean deleteUserPermission(MyUser user, MyPermission permission) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=? AND USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, permission.getId());
-            statement.setInt(1, user.getId());
-            int count = statement.executeUpdate();
-            logger.info(permission.getValue()+" Permissions deleted for user id: "+user.getId());
-            return (count == 1);
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, permission.getId());
+                statement.setInt(1, user.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info(permission.getValue() + " Permissions deleted for user id: " + user.getId());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -87,11 +116,20 @@ public class UserPermissionRepository {
 
     public boolean deleteUserAllPermission(MyUser user) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, user.getId());
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setInt(1, user.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("All Permissions deleted for user id: " + user.getId());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }

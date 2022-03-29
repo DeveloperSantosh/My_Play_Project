@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class UserRoleRepository {
 
@@ -34,17 +35,37 @@ public class UserRoleRepository {
 
     public boolean save(MyUser user) {
         String query = "INSERT INTO "+TABLE_NAME+" VALUES(?,?)";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            for(MyRole role: user.getRoleList()) {
-                statement.setString(1, role.getRoleType());
-                statement.setInt(2, user.getId());
-                if(!RoleRepository.getInstance().findAllRoles().contains(role))
-                    RoleRepository.getInstance().save(role);
-                statement.executeUpdate();
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                List<MyRole> savedRoles = RoleRepository.getInstance().findAllRoles();
+                if (!savedRoles.containsAll(user.getRoleList())) {
+                    Stack<MyRole> newRoles = new Stack<>();
+                    for (MyRole role : user.getRoleList()) {
+                        if (!savedRoles.contains(role)){
+                            if (!RoleRepository.getInstance().save(role)){
+                                while (newRoles.empty())
+                                    RoleRepository.getInstance().delete(newRoles.pop());
+                                return false;
+                            }
+                            newRoles.push(role);
+                        }
+                    }
+                }
+                for (MyRole role: user.getRoleList()){
+                    statement.setString(1, role.getRoleType());
+                    statement.setInt(2, user.getId());
+                    statement.executeUpdate();
+                }
+                connection.commit();
+                logger.info("User saved successfully");
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
             }
-            logger.info("User saved successfully");
-            return true;
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -91,12 +112,21 @@ public class UserRoleRepository {
 
     public boolean deleteUserRole(MyUser user, MyRole role) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =? AND USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1, role.getRoleType());
-            statement.setInt(2, user.getId());
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, role.getRoleType());
+                statement.setInt(2, user.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info(role.getRoleType()+" role deleted successfully for "+user.getEmail());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
@@ -105,11 +135,20 @@ public class UserRoleRepository {
 
     public boolean deleteUserAllRoles(MyUser user) {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setInt(1, user.getId());
-            statement.executeUpdate();
-            return true;
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, user.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("All roles deleted successfully for "+user.getEmail());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException | NullPointerException e) {
             logger.warn(e.getMessage());
         }
