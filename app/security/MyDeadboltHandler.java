@@ -2,6 +2,7 @@ package security;
 
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import be.objectify.deadbolt.java.ConstraintPoint;
+import be.objectify.deadbolt.java.DynamicResourceHandler;
 import be.objectify.deadbolt.java.models.Subject;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
@@ -42,4 +43,8 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
         return CompletableFuture.completedFuture(forbidden("You cannot access"));
     }
 
+    @Override
+    public CompletionStage<Optional<DynamicResourceHandler>> getDynamicResourceHandler(Http.RequestHeader requestHeader) {
+        return CompletableFuture.completedFuture(Optional.of(new MyDynamicResourceHandler()));
+    }
 }

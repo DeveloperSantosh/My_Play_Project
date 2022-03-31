@@ -1,13 +1,11 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
-import be.objectify.deadbolt.java.actions.SubjectPresent;
-import be.objectify.deadbolt.java.actions.Unrestricted;
+import be.objectify.deadbolt.java.actions.*;
 import exception.UserNotFoundException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import security.HandlerKeys;
 import service.UserService;
 import javax.inject.Inject;
 

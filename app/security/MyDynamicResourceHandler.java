@@ -46,17 +46,15 @@ public class MyDynamicResourceHandler implements DynamicResourceHandler
                          }
                      }));
         HANDLERS.put("viewProfile",
-                     Optional.of(new AbstractDynamicResourceHandler()
-                     {
+                     Optional.of(new AbstractDynamicResourceHandler() {
                          public CompletionStage<Boolean> isAllowed(final String name,
                                                              final Optional<String> meta,
                                                              final DeadboltHandler deadboltHandler,
-                                                             final Http.RequestHeader requestHeader)
-                         {
+                                                             final Http.RequestHeader requestHeader) {
                              return deadboltHandler.getSubject(requestHeader)
                                                    .thenApplyAsync(subjectOption -> {
                                                        final boolean[] allowed = {false};
-                                                       if (new DeadboltAnalyzer().hasRole(subjectOption, "admin"))
+                                                       if (new DeadboltAnalyzer().hasRole(subjectOption, "ADMIN"))
                                                        {
                                                            allowed[0] = true;
                                                        }
@@ -66,7 +64,7 @@ public class MyDynamicResourceHandler implements DynamicResourceHandler
                                                                // for the purpose of this example, we assume a call to view profile is probably
                                                                // a get request, so the query string is used to provide info
                                                                Map<String, String[]> queryStrings = requestHeader.queryString();
-                                                               String[] requestedNames = queryStrings.get("userName");
+                                                               String[] requestedNames = queryStrings.get("email");
                                                                allowed[0] = requestedNames != null
                                                                        && requestedNames.length == 1
                                                                        && requestedNames[0].equals(subject.getIdentifier());
@@ -75,6 +73,11 @@ public class MyDynamicResourceHandler implements DynamicResourceHandler
 
                                                        return allowed[0];
                                                    });
+                         }
+
+                         @Override
+                         public CompletionStage<Boolean> checkPermission(String permissionValue, Optional<String> meta, DeadboltHandler deadboltHandler, Http.RequestHeader requestHeader) {
+                             return CompletableFuture.completedFuture(false);
                          }
                      }));
     }

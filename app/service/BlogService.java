@@ -1,5 +1,6 @@
 package service;
 
+import exception.UserNotFoundException;
 import models.MyBlog;
 import dto.RequestBlog;
 import org.slf4j.Logger;
@@ -7,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
-import play.filters.csrf.CSRF;
 import play.libs.Files;
 import play.mvc.Http;
-import play.mvc.RangeResults;
 import play.mvc.Result;
 import repository.BlogRepository;
 import javax.inject.Inject;
@@ -19,6 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import static play.mvc.Results.*;
 
 @Service
@@ -35,7 +36,7 @@ public class BlogService {
     }
 
 //    Method to get blogs from database
-    public Result getBlogs(){
+    public Result showAllBlogs(){
         StringBuilder result = new StringBuilder();
         for(MyBlog blog: blogRepository.findAllBlogs()){
             result.append(blog.toString()).append("\n");
@@ -44,12 +45,37 @@ public class BlogService {
     }
 
 //    Method to retrieve blog from database with given title
-    public Result showBlog( String title){
+    public Result showBlogByTitle(String title){
         if (title.trim().isEmpty()) return badRequest("Blog title should not be Empty");
         MyBlog blog = blogRepository.findBlogByTitle(title);
         if (blog == null) return notFound("BLOG NOT FOUND WITH TITLE: "+title);
         return ok(blog.toString());
 //        return RangeResults.ofStream(request, new ByteArrayInputStream(blog.toByteArray()));
+    }
+
+    public Result showBlogByAuthorName(String authorName) {
+        StringBuilder result = new StringBuilder();
+        for (MyBlog blog: BlogRepository.getInstance().findAllBlogs()){
+            if (blog.getAuthor().getUsername().equals(authorName)){
+                result.append(blog).append("\n");
+            }
+        }
+        if (result.toString().isEmpty())
+            return notFound("Not Blog found with author name: "+authorName);
+        return ok(result.toString());
+    }
+
+    public Result showMyBlogs(Http.Request request) throws UserNotFoundException{
+        String email = request.session().get("email")
+                .orElseThrow(()->new UserNotFoundException("Sorry! user not found in session"));
+        List<MyBlog> myBlogs = BlogRepository.getInstance().findAllBlogs().stream()
+                        .filter(blog->blog.getAuthor().getEmail().equals(email))
+                        .collect(Collectors.toList());
+        StringBuilder result = new StringBuilder();
+        for (MyBlog blog: myBlogs){
+            result.append(blog).append("\n");
+        }
+        return ok(result.toString());
     }
 
 //    Method to save blog to database
@@ -70,10 +96,10 @@ public class BlogService {
         MyBlog newBlog = requestBlog.getMyBlog(authorId);
         if(blogRepository.save(newBlog))
             return ok("Blog saved Successfully\n"+blogRepository.findBlogByTitle(newBlog.getTitle()));
-        return internalServerError("Could not save blog.");
+        return internalServerError("Something went wrong.");
     }
 
-    public Result deleteBlog(Integer userId, String blogTitle) {
+    public Result deleteBlogByTitle(Integer userId, String blogTitle) {
         if (blogTitle.isBlank()) return badRequest("Enter Blog Title.");
         MyBlog blog = blogRepository.findBlogByTitle(blogTitle);
         if (blog!= null && blog.getAuthor().getId() == userId){
@@ -82,6 +108,29 @@ public class BlogService {
             else internalServerError("Something went wrong");
         }
         return badRequest("Only author can delete it.");
+    }
+
+    public Result updateBlog(Integer authorId, Http.Request request) {
+        Form<RequestBlog> requestBlogForm =  formFactory.form(RequestBlog.class).bindFromRequest(request);
+        if(requestBlogForm.hasErrors())
+            return badRequest("Error in form data.");
+        RequestBlog requestBlog = requestBlogForm.get();
+        String result = requestBlog.validate();
+        if (!result.equals("valid"))
+            return badRequest(result);
+        MyBlog oldBlog = blogRepository.findBlogByTitle(requestBlog.getTitle());
+        if( oldBlog== null)
+            return notFound("Blog Not Found with title: "+requestBlog.getTitle()+" to update");
+        if (oldBlog.getAuthor().getId() != authorId)
+            return forbidden("Only author can modify this blog");
+        List<String> imagePaths = saveImagesAndGetPath(request, requestBlog.getTitle());
+        if(imagePaths.isEmpty())
+            return badRequest("No Images found in blog.");
+        requestBlog.setImagePaths(imagePaths);
+        MyBlog newBlog = requestBlog.getMyBlog(authorId);
+        if(blogRepository.updateBlog(oldBlog, newBlog))
+            return ok("Blog Updated Successfully\n"+blogRepository.findBlogByTitle(newBlog.getTitle()));
+        return internalServerError("Could not save blog.");
     }
 
 //    Method to save picture in assets folder with package name as Blog Title

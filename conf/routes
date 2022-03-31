@@ -16,12 +16,16 @@ PUT     /:userId/update                     controllers.UserController.updateUse
 GET     /:userId/logout                     controllers.UserController.logout(request: Request, userId: Integer)
 
 # The controllers for Blogs
-GET     /:userId/blogs                      controllers.BlogController.getBlogs(userId: Integer)
-GET     /:userId/blogs/:title               controllers.BlogController.showBlog(title: String, userId: Integer)
+GET     /:userId/blogs                      controllers.BlogController.showAllBlogs(userId: Integer)
+GET     /:userId/blogs/:title               controllers.BlogController.showBlogByTitle(title: String, userId: Integer)
+GET     /:userId/blogs/:name                controllers.BlogController.showBlogByAuthorName(name: String, userId: Integer)
+GET     /blogs/myBlogs                      controllers.BlogController.showMyBlogs(request: Request)
 +nocsrf
-DELETE  /:userId/blogs/:title               controllers.BlogController.deleteBlog(userId: Integer, title: String)
+DELETE  /:userId/blogs/:title               controllers.BlogController.deleteBlogByTitle(userId: Integer, title: String)
 +nocsrf
 POST    /:userId/blogs/create               controllers.BlogController.saveBlog(userId: Integer, request: Request)
++nocsrf
+PUT     /:userId/blogs/update               controllers.BlogController.updateBlog(userId: Integer, request: Request)
 
 # The controllers for Comments
 GET     /:userId/blogs/:title/comment       controllers.CommentController.getComments(title: String, userId: Integer)

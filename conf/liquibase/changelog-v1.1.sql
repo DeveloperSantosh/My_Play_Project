@@ -1,6 +1,5 @@
 --liquibase formatted sql
 
-
 --changeset santosh:create-multiple-tables splitStatements:true endDelimiter:;
 --comment: Created all tables
 CREATE TABLE IF NOT EXISTS MY_BLOGS(

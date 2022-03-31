@@ -3,6 +3,7 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Pattern;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import exception.BlogNotFoundException;
+import exception.UserNotFoundException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -18,14 +19,31 @@ public class BlogController extends Controller {
 
     @Pattern("READ_STORAGE")
     @SubjectPresent
-    public Result getBlogs(Integer userId){ return blogService.getBlogs(); }
+    public Result showAllBlogs(Integer userId){ return blogService.showAllBlogs(); }
 
     @Pattern("READ_STORAGE")
     @SubjectPresent
-    public Result showBlog(String title, Integer userId){
+    public Result showBlogByTitle(String title, Integer userId){
         try {
-            return blogService.showBlog(title);
+            return blogService.showBlogByTitle(title);
         }catch (BlogNotFoundException e){
+            return notFound(e.getMessage());
+        }
+    }
+
+    @Pattern("READ_STORAGE")
+    @SubjectPresent
+    public Result showBlogByAuthorName(String authorName, Integer userId){
+        return blogService.showBlogByAuthorName(authorName);
+    }
+
+    @Pattern("READ_STORAGE")
+    @SubjectPresent
+    public Result showMyBlogs(Http.Request request){
+
+        try {
+            return blogService.showMyBlogs(request);
+        }catch (UserNotFoundException e){
             return notFound(e.getMessage());
         }
     }
@@ -36,9 +54,13 @@ public class BlogController extends Controller {
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
     @SubjectPresent
-    public Result deleteBlog(Integer userId, String blogTitle){
+    public Result updateBlog(Integer id, Http.Request request){ return blogService.updateBlog(id, request); }
+
+    @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
+    @SubjectPresent
+    public Result deleteBlogByTitle(Integer userId, String blogTitle){
         try {
-            return blogService.deleteBlog(userId, blogTitle);
+            return blogService.deleteBlogByTitle(userId, blogTitle);
         }catch (BlogNotFoundException e){
             return notFound(e.getMessage());
         }
