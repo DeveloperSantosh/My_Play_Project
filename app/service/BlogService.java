@@ -1,11 +1,13 @@
 package service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import exception.UserNotFoundException;
 import models.MyBlog;
 import dto.RequestBlog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import play.api.libs.json.Json;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Files;
@@ -52,8 +54,7 @@ public class BlogService {
         List<MyBlog> blogs = blogRepository.findAllBlogs().stream()
                 .filter(blog-> blog.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
                 blog.getAuthor().getUsername().toLowerCase().contains(keyword.toLowerCase()) ||
-                blog.getAuthor().getEmail().toLowerCase().contains(keyword.toLowerCase()) ||
-                blog.getContent().toLowerCase().contains(keyword.toLowerCase()))
+                blog.getAuthor().getEmail().toLowerCase().contains(keyword.toLowerCase()))
             .collect(Collectors.toList());
         StringBuilder result = new StringBuilder();
         blogs.forEach(blog->result.append(blog.toString()).append("\n"));
