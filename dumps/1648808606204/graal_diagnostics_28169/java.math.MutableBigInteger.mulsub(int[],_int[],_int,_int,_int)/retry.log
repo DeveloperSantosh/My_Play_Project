@@ -1,0 +1,18 @@
+Thread[JVMCI CompilerThread1,9,system]: Compilation of java.math.MutableBigInteger.mulsub(int[], int[], int, int, int) failed: java.lang.AssertionError: dependencies invalid Code installation failed: dependencies invalid
+Failed dependency of type leaf_type
+  context = java.math.MutableBigInteger
+  witness = java.math.SignedMutableBigInteger
+
+	at jdk.internal.vm.ci/jdk.vm.ci.hotspot.HotSpotCodeCacheProvider.installCode(HotSpotCodeCacheProvider.java:130)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.core.target.Backend.createInstalledCode(Backend.java:214)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.CompilationTask.installMethod(CompilationTask.java:370)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.CompilationTask$HotSpotCompilationWrapper.performCompilation(CompilationTask.java:191)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.CompilationTask$HotSpotCompilationWrapper.performCompilation(CompilationTask.java:98)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.core.CompilationWrapper.run(CompilationWrapper.java:169)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.CompilationTask.runCompilation(CompilationTask.java:330)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.HotSpotGraalCompiler.compileMethod(HotSpotGraalCompiler.java:144)
+	at jdk.internal.vm.compiler@11.0.14.1/org.graalvm.compiler.hotspot.HotSpotGraalCompiler.compileMethod(HotSpotGraalCompiler.java:111)
+	at jdk.internal.vm.ci/jdk.vm.ci.hotspot.HotSpotJVMCIRuntime.compileMethod(HotSpotJVMCIRuntime.java:524)
+To disable compilation failure notifications, set CompilationFailureAction to Silent (e.g., -Dgraal.CompilationFailureAction=Silent).
+To print a message for a compilation failure without retrying the compilation, set CompilationFailureAction to Print (e.g., -Dgraal.CompilationFailureAction=Print).
+Retrying compilation of java.math.MutableBigInteger.mulsub(int[], int[], int, int, int)
