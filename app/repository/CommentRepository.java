@@ -18,31 +18,11 @@ public class CommentRepository {
 
     private CommentRepository() {}
 
-    private void createTable(){
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-                "COMMENT_ID INTEGER AUTO_INCREMENT, "+
-                "COMMENT varchar(200) NOT NULL, "+
-                "CREATION_TIME varchar(200) NOT NULL, "+
-                "BLOG_ID INTEGER, "+
-                "PRIMARY KEY (COMMENT_ID)," +
-                "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
-            SpringLiquibase liquibase = new SpringLiquibase();
-            liquibase.setChangeLog("conf/liquibase/changelog-master.xml");
-            if (statement.execute())
-                logger.info("Table created successfully.");
-        } catch (SQLException | NullPointerException e) {
-            logger.warn(e.getMessage());
-        }
-    }
-
     public boolean save(@NotNull MyComment comment) {
-        if (validateComment(comment)) return false;
+        if (!validateComment(comment)) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+" (COMMENT, CREATION_TIME, BLOG_ID) VALUES(?,?,?);";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
                 statement.setString(1, comment.getComment());
@@ -158,6 +138,26 @@ public class CommentRepository {
     }
 
     public boolean validateComment(MyComment comment){
-        return !comment.getComment().isBlank() && comment.getComment().length() <= 100;
+        return !comment.getComment().isBlank() || comment.getComment().length() < 100;
     }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "COMMENT_ID INTEGER AUTO_INCREMENT, "+
+                "COMMENT varchar(200) NOT NULL, "+
+                "CREATION_TIME varchar(200) NOT NULL, "+
+                "BLOG_ID INTEGER, "+
+                "PRIMARY KEY (COMMENT_ID)," +
+                "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            SpringLiquibase liquibase = new SpringLiquibase();
+            liquibase.setChangeLog("conf/liquibase/changelog-master.xml");
+            if (statement.execute())
+                logger.info("Table created successfully.");
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
 }

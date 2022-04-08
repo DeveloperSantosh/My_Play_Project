@@ -3,7 +3,6 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Pattern;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import exception.BlogNotFoundException;
-import exception.UserNotFoundException;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -15,52 +14,35 @@ public class BlogController extends Controller {
     public final BlogService blogService;
 
     @Inject
-    public BlogController(BlogService blogService) { this.blogService = blogService; }
-
-    @Pattern("READ_STORAGE")
-    @SubjectPresent
-    public Result showAllBlogs(Integer userId){ return blogService.showAllBlogs(); }
-
-    @Pattern("READ_STORAGE")
-    @SubjectPresent
-    public Result showBlogByTitle(String title, Integer userId){
-        try {
-            return blogService.showBlogByTitle(title);
-        }catch (BlogNotFoundException e){
-            return notFound(e.getMessage());
-        }
+    public BlogController(BlogService blogService) {
+        this.blogService = blogService;
     }
 
     @Pattern("READ_STORAGE")
     @SubjectPresent
-    public Result showBlogByAuthorName(String authorName, Integer userId){
-        return blogService.showBlogByAuthorName(authorName);
+    public Result showAllBlogs(){
+        return blogService.showAllBlogs();
     }
 
     @Pattern("READ_STORAGE")
-    @SubjectPresent
+    public Result searchBlogByKeyword(String keyword){
+        return blogService.showBlogByKeyword(keyword);
+    }
+
     public Result showMyBlogs(Http.Request request){
-
-        try {
-            return blogService.showMyBlogs(request);
-        }catch (UserNotFoundException e){
-            return notFound(e.getMessage());
-        }
+        return blogService.showMyBlogs(request);
     }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @SubjectPresent
-    public Result saveBlog(Integer id, Http.Request request){ return blogService.saveBlog(id, request); }
+    public Result saveBlog(Http.Request request){ return blogService.saveBlog(request); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @SubjectPresent
-    public Result updateBlog(Integer id, Http.Request request){ return blogService.updateBlog(id, request); }
+    public Result updateBlog(Http.Request request){ return blogService.updateBlog(request); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    @SubjectPresent
-    public Result deleteBlogByTitle(Integer userId, String blogTitle){
+    public Result deleteBlogByTitle( String blogTitle, Http.Request request){
         try {
-            return blogService.deleteBlogByTitle(userId, blogTitle);
+            return blogService.deleteBlogByTitle(blogTitle, request);
         }catch (BlogNotFoundException e){
             return notFound(e.getMessage());
         }

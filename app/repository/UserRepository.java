@@ -3,8 +3,6 @@ package repository;
 import models.MyUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,48 +15,31 @@ public class UserRepository {
     private static UserRepository instance = null;
     private static final String TABLE_NAME = "MY_USER";
 
-    public UserRepository() {}
-
-    public void createTable() {
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-                "USER_ID INTEGER AUTO_INCREMENT, "+
-                "USERNAME varchar(200) NOT NULL, "+
-                "PASSWORD varchar(200) NOT NULL, "+
-                "EMAIL varchar(200) UNIQUE, "+
-                "PRIMARY KEY (USER_ID))";
-        try(Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
-            if (statement.execute())
-                logger.info("Table created successfully.");
-        } catch (SQLException e) {
-            logger.warn(e.getMessage());
-        }
-    }
+    private UserRepository() {}
 
     public boolean save(@NotNull MyUser user) {
         if (!isValidUser(user)) return false;
         String insertQuery = "INSERT INTO "+TABLE_NAME+" (USERNAME, PASSWORD, EMAIL) VALUES ( ?, ?, ?)";
         try (Connection conn = MyDatabase.getConnection()){
             conn.setAutoCommit(false);
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             Savepoint savepoint = conn.setSavepoint();
+            boolean roleSaved = UserRoleRepository.getInstance().save(user);
+            boolean permissionSaved = UserPermissionRepository.getInstance().save(user);
             try(PreparedStatement insertStatement = conn.prepareStatement(insertQuery)) {
                 insertStatement.setString(1, user.getUsername());
                 insertStatement.setString(2, user.getPassword());
                 insertStatement.setString(3, user.getEmail());
-                if (UserRoleRepository.getInstance().save(user)){
-                    if (UserPermissionRepository.getInstance().save(user)){
-                        insertStatement.executeUpdate();
-                        conn.commit();
-                        logger.info("User saved successfully");
-                        return  true;
-                    }
-                    else UserRoleRepository.getInstance().deleteUserAllRoles(user);
+                if (permissionSaved && roleSaved && insertStatement.executeUpdate()==1){
+                    conn.commit();
+                    logger.info("User saved successfully");
+                    return  true;
                 }
             } catch (SQLException e) {
-                conn.rollback(savepoint);
                 logger.warn(e.getMessage());
             }
+            conn.rollback(savepoint);
+            if (roleSaved) UserRoleRepository.getInstance().deleteUserAllRoles(user);
+            if (permissionSaved)   UserPermissionRepository.getInstance().deleteUserAllPermission(user);
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -168,26 +149,25 @@ public class UserRepository {
         String updateQuery = "UPDATE "+TABLE_NAME+" SET USERNAME=?, PASSWORD=?, EMAIL=? WHERE USER_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             Savepoint savepoint = connection.setSavepoint();
+            boolean permissionSaved = UserPermissionRepository.getInstance().save(newUser);
+            boolean roleSaved = UserRoleRepository.getInstance().save(newUser);
             try(PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
                 updateStatement.setString(1, newUser.getUsername());
                 updateStatement.setString(2, newUser.getPassword());
                 updateStatement.setString(3, newUser.getEmail());
                 updateStatement.setInt(4, oldUser.getId());
-                if (UserPermissionRepository.getInstance().save(newUser)){
-                    if (UserRoleRepository.getInstance().save(newUser)){
-                        updateStatement.executeUpdate();
-                        connection.commit();
-                        logger.info(newUser.getEmail()+" User updated successfully");
-                        return  true;
-                    }
-                    else UserPermissionRepository.getInstance().deleteUserAllPermission(newUser);
+                if (roleSaved && permissionSaved && updateStatement.executeUpdate()==1){
+                    connection.commit();
+                    logger.info(newUser.getEmail()+" User updated successfully");
+                    return  true;
                 }
             } catch (SQLException e) {
-                connection.rollback(savepoint);
                 logger.warn(e.getMessage());
             }
+            connection.rollback(savepoint);
+            if (roleSaved) UserRoleRepository.getInstance().deleteUserAllRoles(newUser);
+            if (permissionSaved) UserPermissionRepository.getInstance().deleteUserAllPermission(newUser);
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -199,25 +179,22 @@ public class UserRepository {
         String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             Savepoint savepoint = connection.setSavepoint();
+            boolean roleDeleted = UserRoleRepository.getInstance().deleteUserAllRoles(user);
+            boolean permissionDeleted = UserPermissionRepository.getInstance().deleteUserAllPermission(user);
             try(PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
                 deleteStatement.setInt(1, user.getId());
-                if (UserRoleRepository.getInstance().deleteUserAllRoles(user)) {
-                    if (UserPermissionRepository.getInstance().deleteUserAllPermission(user)) {
-                        deleteStatement.executeUpdate();
-                        connection.commit();
-                        logger.info(user.getEmail() + " USER DELETED SUCCESSFULLY");
-                        return true;
-                    }
-                    else {
-                        UserRoleRepository.getInstance().save(user);
-                    }
+                if (roleDeleted && permissionDeleted && deleteStatement.executeUpdate()==1) {
+                    connection.commit();
+                    logger.info(user.getEmail() + " USER DELETED SUCCESSFULLY");
+                    return true;
                 }
             } catch (SQLException e) {
-                connection.rollback(savepoint);
                 logger.warn(e.getMessage());
             }
+            connection.rollback(savepoint);
+            if (permissionDeleted)  UserPermissionRepository.getInstance().save(user);
+            if (roleDeleted)    UserRoleRepository.getInstance().save(user);
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -234,9 +211,7 @@ public class UserRepository {
             return false;
         else if(userBuilder.getPassword().isBlank())
             return false;
-        else if (userBuilder.getUsername().isBlank())
-            return false;
-        return true;
+        else return !userBuilder.getUsername().isBlank();
     }
 
     public static UserRepository getInstance(){
@@ -244,6 +219,22 @@ public class UserRepository {
             instance = new UserRepository();
         }
         return instance;
+    }
+
+    public void createTable() {
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "USER_ID INTEGER AUTO_INCREMENT, "+
+                "USERNAME varchar(200) NOT NULL, "+
+                "PASSWORD varchar(200) NOT NULL, "+
+                "EMAIL varchar(200) UNIQUE, "+
+                "PRIMARY KEY (USER_ID))";
+        try(Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(createTableQuery)) {
+            if (statement.execute())
+                logger.info("Table created successfully.");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
     }
 
 }

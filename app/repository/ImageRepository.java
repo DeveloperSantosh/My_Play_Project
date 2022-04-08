@@ -18,22 +18,6 @@ public class ImageRepository {
 
     private ImageRepository() {}
 
-    private void createTable(){
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-                "IMAGE_ID INTEGER AUTO_INCREMENT, "+
-                "IMAGE_PATH varchar(200) NOT NULL, "+
-                "BLOG_ID INTEGER NOT NULL, "+
-                "PRIMARY KEY (IMAGE_ID),"+
-                "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
-        try (Connection connection = MyDatabase.getConnection();
-            Statement stm = connection.createStatement()){
-            stm.execute(createTableQuery);
-            logger.info("Table fetched successfully");
-        } catch (SQLException e) {
-            logger.warn(e.getMessage());
-        }
-    }
-
     public boolean save(MyBlog blog, Integer savedBlogId) {
         String saveQuery = "INSERT INTO "+TABLE_NAME + " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
         try (Connection connection = MyDatabase.getConnection()){
@@ -164,4 +148,21 @@ public class ImageRepository {
         }
         return instance;
     }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "IMAGE_ID INTEGER AUTO_INCREMENT, "+
+                "IMAGE_PATH varchar(200) NOT NULL, "+
+                "BLOG_ID INTEGER NOT NULL, "+
+                "PRIMARY KEY (IMAGE_ID),"+
+                "FOREIGN KEY (BLOG_ID) REFERENCES MY_BLOGS(BLOG_ID))";
+        try (Connection connection = MyDatabase.getConnection();
+             Statement stm = connection.createStatement()){
+            stm.execute(createTableQuery);
+            logger.info("Table fetched successfully");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
 }

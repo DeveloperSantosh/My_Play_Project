@@ -8,8 +8,10 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.CommentRepository;
+
 import javax.inject.Inject;
 import java.util.List;
+
 import static play.mvc.Results.*;
 
 @Service
@@ -31,7 +33,8 @@ public class CommentService {
         StringBuilder result = new StringBuilder();
         for(MyComment c: allComments){
             if(c.getBlog().getTitle().equals(title)){
-                result.append(c).append("\n");
+                result.append("Comment: ").append(c.getComment()).append("\n")
+                        .append("Timestamp: ").append(c.getTimestamp()).append("\n");
             }
         }
         return ok(result.toString());

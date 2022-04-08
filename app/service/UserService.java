@@ -1,17 +1,20 @@
 package service;
 
-import exception.UserNotFoundException;
-import models.MyUser;
+import dto.RequestPermission;
+import dto.RequestRole;
 import dto.RequestUser;
+import exception.UserNotFoundException;
+import models.MyPermission;
+import models.MyRole;
+import models.MyUser;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
-import repository.BlogRepository;
-import repository.PermissionRepository;
-import repository.RoleRepository;
-import repository.UserRepository;
+import repository.*;
+
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +45,10 @@ public class UserService {
             return badRequest("Enter email");
         Optional<MyUser> user = Optional.ofNullable(userRepository.findUserByEmail(requestUser.getEmail()));
         MyUser myUser = user.orElseThrow(()-> new UserNotFoundException("User Not found with email: "+requestUser.getEmail()));
-        if (requestUser.getPassword().equals(myUser.getPassword()))
-            return ok("Login Successfully\n"+myUser).addingToSession(request, "email", myUser.getEmail());
+        if (BCrypt.checkpw(requestUser.getPassword(), myUser.getPassword())){
+            return ok("Login Successfully\n"+myUser)
+                    .addingToSession(request, "email", myUser.getEmail());
+        }
         return notFound("Sorry Username and password not matched");
     }
 
@@ -60,8 +65,8 @@ public class UserService {
             return badRequest("User Already exist with email: "+requestUser.getEmail());
         requestUser.setPermissions(PermissionRepository.getInstance().findAllPermissions());
         requestUser.addRole(RoleRepository.getInstance().findUserRoleByType("USER"));
+        requestUser.setPassword(BCrypt.hashpw(requestUser.getPassword(), BCrypt.gensalt()));
         MyUser user = requestUser.getMyUser();
-
         if(userRepository.save(user))
             return ok("User created successfully\n " + userRepository.findUserByEmail(user.getEmail()));
 
@@ -86,15 +91,11 @@ public class UserService {
         return ok(result.toString());
     }
 
-    public Result logout(Http.Request request, Integer userId){
-        MyUser user = userRepository.findUserByID(userId);
-        if (user!=null) {
-            if (request.session().get("email").isPresent()) {
-                return ok("Logout successfully.").removingFromSession(request, "email");
-            }
-            else return badRequest("User Session not found");
+    public Result logout(Http.Request request){
+        if (request.session().get("email").isPresent()) {
+            return ok("Logout successfully.").removingFromSession(request, "email").withNewSession();
         }
-        else return notFound("Could not find user");
+        else return badRequest("User Session not found");
     }
 
     public Result updateUser(Http.Request request, Integer userId) {
@@ -115,4 +116,35 @@ public class UserService {
         return internalServerError("Could not update user");
     }
 
+    public Result addRolesFor(Integer userId, Http.Request request) {
+        MyUser oldUser = UserRepository.getInstance().findUserByID(userId);
+        if (oldUser == null)    return notFound("User not found with id: "+userId);
+        Form<RequestRole> roleForm = formFactory.form(RequestRole.class).bindFromRequest(request);
+        if (roleForm.hasErrors())   return badRequest("Invalid form data");
+        RequestRole requestRole = roleForm.get();
+        if (!requestRole.validate().equals("valid")) return badRequest(requestRole.validate());
+        MyRole role = requestRole.getMyRole();
+        MyUser newUser = oldUser.toBuilder().addRole(role).build();
+        if (UserRoleRepository.getInstance().save(newUser))
+            return ok("Roles added successfully");
+        return internalServerError("Something went wrong");
+    }
+
+    public Result addPermissionFor(Integer userId, Http.Request request) {
+        MyUser savedUser = UserRepository.getInstance().findUserByID(userId);
+        if (savedUser == null)
+            return notFound("User not found with id: "+userId);
+        Form<RequestPermission> permissionForm = formFactory.form(RequestPermission.class).bindFromRequest(request);
+        if (permissionForm.hasErrors())
+            return badRequest("Invalid form data");
+        RequestPermission requestPermission = permissionForm.get();
+        if (!requestPermission.validate().equals("valid"))
+            return badRequest(requestPermission.validate());
+        MyPermission permission = requestPermission.toMyPermission();
+        PermissionRepository.getInstance().save(permission);
+        permission = PermissionRepository.getInstance().findPermissionByValue(permission.getValue());
+        if (UserPermissionRepository.getInstance().save(permission, savedUser))
+            return ok("Permissions added successfully");
+        return internalServerError("Something went wrong");
+    }
 }

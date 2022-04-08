@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="1" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_USER"/>
+            </not>
+        </preConditions>
+        <comment>Created MY_USER Table</comment>
+        <createTable tableName="MY_USER">
+            <column name="USER_ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USERNAME" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_ROLE"/>
+            </not>
+        </preConditions>
+        <comment>Created MY_ROLE Table</comment>
+        <createTable tableName="MY_ROLE">
+            <column name="ROLE_TYPE" type="VARCHAR(200)">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="ROLE_DESCRIPTION" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_PERMISSIONS"/>
+            </not>
+        </preConditions>
+        <comment>Created MY_PERMISSIONS TABLE</comment>
+        <createTable tableName="MY_PERMISSIONS">
+            <column name="PERMISSION_ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="VALUE" type="varchar(200)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="4" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_USER_ROLE"/>
+            </not>
+        </preConditions>
+        <comment>Created MY_USER_ROLE Table</comment>
+        <createTable tableName="MY_USER_ROLE">
+            <column name="USER_ID" type="int">
+                <constraints primaryKey="true" foreignKeyName="USER_ID" references="MY_USER(USER_ID)" nullable="false"/>
+            </column>
+            <column name="ROLE_TYPE" type="varchar(200)">
+                <constraints primaryKey="true" foreignKeyName="ROLE_TYPE" references="MY_ROLE(ROLE_TYPE)" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="5" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_USER_PERMISSIONS"/>
+            </not>
+        </preConditions>
+        <comment>created MY_USER_PERMISSIONS table</comment>
+        <createTable tableName="MY_USER_PERMISSIONS">
+            <column name="USER_ID" type="int">
+                <constraints primaryKey="true" foreignKeyName="USER_ID" references="MY_USER(USER_ID)" nullable="false"/>
+            </column>
+            <column name="PERMISSION_ID" type="int">
+                <constraints primaryKey="true" foreignKeyName="PERMISSIONS_ID" references="MY_PERMISSIONS(PERMISSION_ID)" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="6" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_BLOGS"/>
+            </not>
+        </preConditions>
+        <comment>created MY_BLOGS table</comment>
+        <createTable tableName="MY_BLOGS">
+            <column name="BLOG_ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="BLOG_TITLE" type="VARCHAR(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="BLOG_CONTENT" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATION_TIME" type="TIMESTAMP" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AUTHOR_ID" type="int">
+                <constraints references="MY_USER(USER_ID)" foreignKeyName="AUTHOR_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="7" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="MY_IMAGES"/>
+            </not>
+        </preConditions>
+        <comment>Created MY_IMAGES Table</comment>
+        <createTable tableName="MY_IMAGES">
+            <column name="IMAGE_ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"  nullable="false"/>
+            </column>
+            <column name="IMAGE_PATH" type="VARCHAR(200)">
+                <constraints  nullable="false" unique="true"/>
+            </column>
+            <column name="BLOG_ID" type="int">
+                <constraints references="MY_BLOGS(BLOG_ID)" foreignKeyName="BLOG_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="8" author="santosh">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="BLOG_COMMENTS"/>
+            </not>
+        </preConditions>
+        <comment>Created BLOG_COMMENTS Table</comment>
+        <createTable tableName="BLOG_COMMENTS">
+            <column name="COMMENT_ID" type="int" autoIncrement="true">
+                <constraints primaryKey="true"  nullable="false"/>
+            </column>
+            <column name="COMMENT" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATION_TIME" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOG_ID" type="int">
+                <constraints references="MY_BLOGS(BLOG_ID)" foreignKeyName="BLOG_ID" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

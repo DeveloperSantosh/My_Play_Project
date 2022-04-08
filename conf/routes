@@ -7,30 +7,33 @@
 +nocsrf
 POST    /login                              controllers.UserController.login(request: Request)
 +nocsrf
-DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
-+nocsrf
 POST    /register                           controllers.UserController.saveUser(request: Request)
-GET     /users/all                          controllers.UserController.getAllUsers()
+GET     /users                              controllers.UserController.getAllUsers()
 +nocsrf
-PUT     /:userId/update                     controllers.UserController.updateUser(request: Request, userId: Integer)
-GET     /:userId/logout                     controllers.UserController.logout(request: Request, userId: Integer)
+PUT     /:userId                            controllers.UserController.updateUser(request: Request, userId: Integer)
++nocsrf
+DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
+GET     /logout                             controllers.UserController.logout(request: Request)
++nocsrf
+POST    /:userId/role                       controllers.UserController.addRole(userId: Integer, request: Request)
++nocsrf
+POST    /:userId/permission                 controllers.UserController.addPermission(userId: Integer, request: Request)
 
 # The controllers for Blogs
-GET     /:userId/blogs                      controllers.BlogController.showAllBlogs(userId: Integer)
-GET     /:userId/blogs/:title               controllers.BlogController.showBlogByTitle(title: String, userId: Integer)
-GET     /:userId/blogs/:name                controllers.BlogController.showBlogByAuthorName(name: String, userId: Integer)
+GET     /blogs                              controllers.BlogController.showAllBlogs()
++nocsrf
+POST    /blogs                              controllers.BlogController.saveBlog(request: Request)
++nocsrf
+PUT     /blogs                              controllers.BlogController.updateBlog(request: Request)
++nocsrf
+DELETE  /blogs/:title                       controllers.BlogController.deleteBlogByTitle(title: String, request: Request)
 GET     /blogs/myBlogs                      controllers.BlogController.showMyBlogs(request: Request)
-+nocsrf
-DELETE  /:userId/blogs/:title               controllers.BlogController.deleteBlogByTitle(userId: Integer, title: String)
-+nocsrf
-POST    /:userId/blogs/create               controllers.BlogController.saveBlog(userId: Integer, request: Request)
-+nocsrf
-PUT     /:userId/blogs/update               controllers.BlogController.updateBlog(userId: Integer, request: Request)
+GET     /blogs/:keyword                     controllers.BlogController.searchBlogByKeyword(keyword: String)
 
 # The controllers for Comments
-GET     /:userId/blogs/:title/comment       controllers.CommentController.getComments(title: String, userId: Integer)
+GET     /blogs/:title/comments              controllers.CommentController.getComments(title: String)
 +nocsrf
-POST    /:userId/blogs/:title/comment/add   controllers.CommentController.saveComment(title: String, userId: Integer, request: Request)
+POST    /blogs/:title/comments              controllers.CommentController.saveComment(title: String, request: Request)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

@@ -16,20 +16,6 @@ public class RoleRepository {
 
     private RoleRepository() {}
 
-    private void createTable(){
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-                "ROLE_TYPE varchar(200), "+
-                "ROLE_DESCRIPTION varchar(200) NOT NULL, "+
-                "PRIMARY KEY (ROLE_TYPE))";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
-            statement.execute();
-            logger.info("Table fetched successfully.");
-        } catch (SQLException e) {
-            logger.warn(e.getMessage());
-        }
-    }
-
     public boolean save(MyRole role) {
         if (!isValidRole(role)) return false;
         String saveQuery = "INSERT INTO "+TABLE_NAME+ " VALUES(?,?)";
@@ -99,7 +85,6 @@ public class RoleRepository {
         String query = "UPDATE "+ TABLE_NAME+ "SET ROLE_TYPE=?, ROLE_DESCRIPTION=? WHERE ROLE_TYPE=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement statement = connection.prepareStatement(query)){
                 statement.setString(1, newRole.getRoleType());
@@ -123,7 +108,6 @@ public class RoleRepository {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement statement = connection.prepareStatement(query)){
                 statement.setString(1, role.getRoleType());
@@ -152,5 +136,19 @@ public class RoleRepository {
             instance = new RoleRepository();
         }
         return instance;
+    }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "ROLE_TYPE varchar(200), "+
+                "ROLE_DESCRIPTION varchar(200) NOT NULL, "+
+                "PRIMARY KEY (ROLE_TYPE))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            statement.execute();
+            logger.info("Table fetched successfully.");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
     }
 }

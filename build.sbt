@@ -26,3 +26,4 @@ libraryDependencies += "com.ticketfly" %% "play-liquibase" % "2.2"
 
 // For implementing protobuf
 //libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.19.4" % "protobuf"
+

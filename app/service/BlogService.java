@@ -12,6 +12,8 @@ import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.BlogRepository;
+import repository.UserRepository;
+
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.file.Path;
@@ -44,24 +46,17 @@ public class BlogService {
         return ok(result.toString());
     }
 
-//    Method to retrieve blog from database with given title
-    public Result showBlogByTitle(String title){
-        if (title.trim().isEmpty()) return badRequest("Blog title should not be Empty");
-        MyBlog blog = blogRepository.findBlogByTitle(title);
-        if (blog == null) return notFound("BLOG NOT FOUND WITH TITLE: "+title);
-        return ok(blog.toString());
-//        return RangeResults.ofStream(request, new ByteArrayInputStream(blog.toByteArray()));
-    }
-
-    public Result showBlogByAuthorName(String authorName) {
+//    Method to retrieve blog from database with given keyword
+    public Result showBlogByKeyword(String keyword) {
+        if (keyword.isBlank() || keyword.isEmpty()) return badRequest("Keyword cannot be empty");
+        List<MyBlog> blogs = blogRepository.findAllBlogs().stream()
+                .filter(blog-> blog.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                blog.getAuthor().getUsername().toLowerCase().contains(keyword.toLowerCase()) ||
+                blog.getAuthor().getEmail().toLowerCase().contains(keyword.toLowerCase()) ||
+                blog.getContent().toLowerCase().contains(keyword.toLowerCase()))
+            .collect(Collectors.toList());
         StringBuilder result = new StringBuilder();
-        for (MyBlog blog: BlogRepository.getInstance().findAllBlogs()){
-            if (blog.getAuthor().getUsername().equals(authorName)){
-                result.append(blog).append("\n");
-            }
-        }
-        if (result.toString().isEmpty())
-            return notFound("Not Blog found with author name: "+authorName);
+        blogs.forEach(blog->result.append(blog.toString()).append("\n"));
         return ok(result.toString());
     }
 
@@ -79,7 +74,7 @@ public class BlogService {
     }
 
 //    Method to save blog to database
-    public Result saveBlog(Integer authorId, Http.Request request){
+    public Result saveBlog(Http.Request request){
         Form<RequestBlog> requestBlogForm =  formFactory.form(RequestBlog.class).bindFromRequest(request);
         if(requestBlogForm.hasErrors())
             return badRequest("Error in form data.");
@@ -93,15 +88,22 @@ public class BlogService {
         if(imagePaths.isEmpty())
             return badRequest("Images not found");
         requestBlog.setImagePaths(imagePaths);
+        int authorId = UserRepository.getInstance().findUserByEmail(request.session().get("email")
+                .orElseThrow(()-> new UserNotFoundException("User session not found"))).getId();
         MyBlog newBlog = requestBlog.getMyBlog(authorId);
         if(blogRepository.save(newBlog))
             return ok("Blog saved Successfully\n"+blogRepository.findBlogByTitle(newBlog.getTitle()));
         return internalServerError("Something went wrong.");
     }
 
-    public Result deleteBlogByTitle(Integer userId, String blogTitle) {
+    public Result deleteBlogByTitle(String blogTitle, Http.Request request) {
         if (blogTitle.isBlank()) return badRequest("Enter Blog Title.");
         MyBlog blog = blogRepository.findBlogByTitle(blogTitle);
+        int userId;
+        if (request.session().get("email").isPresent()){
+            userId = UserRepository.getInstance().findUserByEmail(request.session().get("email").get()).getId();
+        }
+        else return unauthorized("No user session found");
         if (blog!= null && blog.getAuthor().getId() == userId){
             if (blogRepository.delete(blog))
                 return ok("Blog deleted successfully.\n"+blog);
@@ -110,7 +112,7 @@ public class BlogService {
         return badRequest("Only author can delete it.");
     }
 
-    public Result updateBlog(Integer authorId, Http.Request request) {
+    public Result updateBlog(Http.Request request) {
         Form<RequestBlog> requestBlogForm =  formFactory.form(RequestBlog.class).bindFromRequest(request);
         if(requestBlogForm.hasErrors())
             return badRequest("Error in form data.");
@@ -121,6 +123,8 @@ public class BlogService {
         MyBlog oldBlog = blogRepository.findBlogByTitle(requestBlog.getTitle());
         if( oldBlog== null)
             return notFound("Blog Not Found with title: "+requestBlog.getTitle()+" to update");
+        int authorId = UserRepository.getInstance().findUserByEmail(request.session().get("email")
+                .orElseThrow(()-> new UserNotFoundException("Sorry! User Session not Found."))).getId();
         if (oldBlog.getAuthor().getId() != authorId)
             return forbidden("Only author can modify this blog");
         List<String> imagePaths = saveImagesAndGetPath(request, requestBlog.getTitle());

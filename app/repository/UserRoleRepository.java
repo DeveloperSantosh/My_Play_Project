@@ -17,22 +17,6 @@ public class UserRoleRepository {
 
     private UserRoleRepository() {}
 
-    private void createTable(){
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-                "ROLE_TYPE varchar(200) NOT NULL, "+
-                "USER_ID INTEGER NOT NULL, "+
-                "FOREIGN KEY (ROLE_TYPE) REFERENCES MY_ROLE(ROLE_TYPE), "+
-                "FOREIGN KEY (USER_ID) REFERENCES MY_USER(USER_ID), "+
-                "PRIMARY KEY (ROLE_TYPE, USER_ID))";
-        try (Connection connection = MyDatabase.getConnection();
-            PreparedStatement statement = connection.prepareStatement(createTableQuery)){
-            statement.execute();
-            logger.info("Table fetched successfully.");
-        } catch (SQLException | NullPointerException e) {
-            logger.warn(e.getMessage());
-        }
-    }
-
     public boolean save(MyUser user) {
         String query = "INSERT INTO "+TABLE_NAME+" VALUES(?,?)";
         try (Connection connection = MyDatabase.getConnection()){
@@ -41,22 +25,11 @@ public class UserRoleRepository {
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement statement = connection.prepareStatement(query)) {
                 List<MyRole> savedRoles = RoleRepository.getInstance().findAllRoles();
-                if (!savedRoles.containsAll(user.getRoleList())) {
-                    Stack<MyRole> newRoles = new Stack<>();
-                    for (MyRole role : user.getRoleList()) {
-                        if (!savedRoles.contains(role)){
-                            if (!RoleRepository.getInstance().save(role)){
-                                while (newRoles.empty())
-                                    RoleRepository.getInstance().delete(newRoles.pop());
-                                return false;
-                            }
-                            newRoles.push(role);
-                        }
-                    }
-                }
+                user.getRoleList().stream().filter(role-> !savedRoles.contains(role))
+                        .forEach(RoleRepository.getInstance()::save);
+                statement.setInt(2, user.getId());
                 for (MyRole role: user.getRoleList()){
                     statement.setString(1, role.getRoleType());
-                    statement.setInt(2, user.getId());
                     statement.executeUpdate();
                 }
                 connection.commit();
@@ -161,4 +134,21 @@ public class UserRoleRepository {
         }
         return instance;
     }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "ROLE_TYPE varchar(200) NOT NULL, "+
+                "USER_ID INTEGER NOT NULL, "+
+                "FOREIGN KEY (ROLE_TYPE) REFERENCES MY_ROLE(ROLE_TYPE), "+
+                "FOREIGN KEY (USER_ID) REFERENCES MY_USER(USER_ID), "+
+                "PRIMARY KEY (ROLE_TYPE, USER_ID))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            statement.execute();
+            logger.info("Table fetched successfully.");
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
 }

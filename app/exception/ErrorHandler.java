@@ -19,4 +19,5 @@ public class ErrorHandler implements HttpErrorHandler {
         return CompletableFuture.completedFuture(
                 Results.internalServerError("A server error occurred: " + exception.getMessage()));
     }
+
 }

@@ -4,9 +4,12 @@ import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import be.objectify.deadbolt.java.ConstraintPoint;
 import be.objectify.deadbolt.java.DynamicResourceHandler;
 import be.objectify.deadbolt.java.models.Subject;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import models.MyUser;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.UserRepository;
@@ -29,7 +32,6 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
         // in a real application, the username would probably be in the session following a login process
         String email = requestHeader.session().get("email").orElse("empty");
-
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();
@@ -40,11 +42,7 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
         // you can return any result from here - forbidden, etc
-        return CompletableFuture.completedFuture(forbidden("You cannot access"));
+        return CompletableFuture.completedFuture(forbidden("Access Denied. Please login again."));
     }
 
-    @Override
-    public CompletionStage<Optional<DynamicResourceHandler>> getDynamicResourceHandler(Http.RequestHeader requestHeader) {
-        return CompletableFuture.completedFuture(Optional.of(new MyDynamicResourceHandler()));
-    }
 }

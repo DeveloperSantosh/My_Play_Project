@@ -2,8 +2,6 @@ package dto;
 
 import models.MyComment;
 import repository.BlogRepository;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

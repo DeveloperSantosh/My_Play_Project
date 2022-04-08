@@ -17,12 +17,12 @@ public class CommentController extends Controller {
     }
 
     @SubjectPresent
-    public Result getComments(String title, Integer userId){
+    public Result getComments(String title){
         return commentService.getCommentsForBlogTitle(title);
     }
 
     @SubjectPresent
-    public Result saveComment(String title, Integer userId, Http.Request request){
+    public Result saveComment(String title, Http.Request request){
         return commentService.addCommentsForBlog(title, request);
 
     }
