@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ImageRepository {
 
@@ -73,12 +74,17 @@ public class ImageRepository {
                  PreparedStatement insert = connection.prepareStatement(saveQuery)) {
                 delete.setInt(1, oldBlog.getId());
                 delete.executeUpdate();
+                insert.setInt(2, newBlog.getId());
                 for (String imagePath : newBlog.getImagePathList()) {
                     insert.setString(1, imagePath);
-                    insert.setInt(2, newBlog.getId());
                     insert.executeUpdate();
+
                 }
-                deleteImageFiles(oldBlog.getImagePathList());
+                List<String> imagesPaths = oldBlog.getImagePathList().stream()
+                        .filter(imagePath-> !newBlog.getImagePathList().contains(imagePath))
+                                .collect(Collectors.toList());
+                deleteImageFiles(imagesPaths);
+                connection.commit();
                 return true;
             } catch (SQLException e) {
                 logger.warn(e.getMessage());

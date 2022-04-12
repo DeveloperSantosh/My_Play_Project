@@ -9,11 +9,15 @@ import play.mvc.Http;
 import play.mvc.Result;
 import service.UserService;
 import javax.inject.Inject;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
 @SubjectPresent
 public class UserController  extends Controller {
 
     public final UserService userService;
+    public static final int TIMEOUT = 20;
 
     @Inject
     public UserController(UserService userService) {
@@ -21,28 +25,38 @@ public class UserController  extends Controller {
     }
 
     @Unrestricted
-    public Result login(Http.Request request) {
-        return userService.login(request);
+    public CompletionStage<Result> login(Http.Request request) {
+        return CompletableFuture
+                .supplyAsync(()->userService.login(request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Unrestricted
-    public Result saveUser(Http.Request request) {
-        return userService.saveUser(request);
+    public CompletionStage<Result> saveUser(Http.Request request) {
+        return CompletableFuture
+                .supplyAsync(()->userService.saveUser(request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result deleteUser(Integer userId) {
-        return userService.deleteUser(userId);
+    public CompletionStage<Result> deleteUser(Integer userId) {
+        return CompletableFuture
+                .supplyAsync(()->userService.deleteUser(userId))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result getAllUsers() {
-        return userService.getAllUsers();
+    public CompletionStage<Result> getAllUsers() {
+        return CompletableFuture
+                .supplyAsync(userService::getAllUsers)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @SubjectPresent
-    public Result updateUser(Http.Request request, Integer userId) {
-        return userService.updateUser(request, userId);
+    public CompletionStage<Result> updateUser(Http.Request request, Integer userId) {
+        return CompletableFuture
+                .supplyAsync(()->userService.updateUser(request, userId))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @SubjectPresent
@@ -51,13 +65,17 @@ public class UserController  extends Controller {
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result addRole(Integer userId, Http.Request request){
-        return userService.addRolesFor(userId, request);
+    public CompletionStage<Result> addRole(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.addRolesFor(userId, request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result addPermission(Integer userId, Http.Request request){
-        return userService.addPermissionFor(userId, request);
+    public CompletionStage<Result> addPermission(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.addPermissionFor(userId, request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
 }
