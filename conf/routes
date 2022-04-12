@@ -24,7 +24,7 @@ GET     /blogs                              controllers.BlogController.showAllBl
 +nocsrf
 POST    /blogs                              controllers.BlogController.saveBlog(request: Request)
 +nocsrf
-PUT     /blogs                              controllers.BlogController.updateBlog(request: Request)
+PUT     /blogs/:title                       controllers.BlogController.updateBlog(request: Request, title: String)
 +nocsrf
 DELETE  /blogs/:title                       controllers.BlogController.deleteBlogByTitle(title: String, request: Request)
 GET     /blogs/myBlogs                      controllers.BlogController.showMyBlogs(request: Request)

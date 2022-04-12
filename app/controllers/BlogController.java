@@ -37,7 +37,7 @@ public class BlogController extends Controller {
     public Result saveBlog(Http.Request request){ return blogService.saveBlog(request); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
-    public Result updateBlog(Http.Request request){ return blogService.updateBlog(request); }
+    public Result updateBlog(Http.Request request, String title){ return blogService.updateBlog(request, title); }
 
     @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
     public Result deleteBlogByTitle( String blogTitle, Http.Request request){

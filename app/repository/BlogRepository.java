@@ -126,15 +126,17 @@ public class BlogRepository {
         String updateQuery = "UPDATE " + TABLE_NAME + " SET BLOG_TITLE=?, BLOG_CONTENT=?, AUTHOR_ID=? WHERE BLOG_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             Savepoint savepoint = connection.setSavepoint();
             try (PreparedStatement statement = connection.prepareStatement(updateQuery)){
-                statement.executeUpdate();
+                statement.setString(1, newBlog.getTitle());
+                statement.setString(2, newBlog.getContent());
+                statement.setInt(3, newBlog.getAuthor().getId());
+                statement.setInt(4, oldBlog.getId());
                 if (ImageRepository.getInstance().updateImagePath(oldBlog, newBlog)) {
+                    statement.executeUpdate();
                     connection.commit();
                     return true;
                 }
-                else connection.rollback(savepoint);
             }catch (SQLException e){
                 connection.rollback(savepoint);
                 logger.warn(e.getMessage());
@@ -150,7 +152,6 @@ public class BlogRepository {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             Savepoint savepoint = connection.setSavepoint();
             boolean isCommentsDeleted = CommentRepository.getInstance().deleteAllCommentByBlogTitle(blog.getId());
             boolean isImagesDeleted = ImageRepository.getInstance().deleteAllImagePaths(blog);

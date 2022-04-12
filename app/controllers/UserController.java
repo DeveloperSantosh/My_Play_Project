@@ -4,12 +4,10 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import be.objectify.deadbolt.java.actions.Unrestricted;
-import org.springframework.context.annotation.Role;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import service.UserService;
-
 import javax.inject.Inject;
 
 @SubjectPresent

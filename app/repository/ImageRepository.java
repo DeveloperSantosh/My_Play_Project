@@ -3,8 +3,11 @@ package repository;
 import models.MyBlog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,7 +22,7 @@ public class ImageRepository {
     private ImageRepository() {}
 
     public boolean save(MyBlog blog, Integer savedBlogId) {
-        String saveQuery = "INSERT INTO "+TABLE_NAME + " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
+        String saveQuery = "INSERT INTO "+TABLE_NAME+ " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
             Savepoint savepoint = connection.setSavepoint();
@@ -61,24 +64,25 @@ public class ImageRepository {
     }
 
     public boolean updateImagePath(MyBlog oldBlog, MyBlog newBlog){
-        String query = "UPDATE "+ TABLE_NAME+ "SET IMAGE_PATH=? BLOG_ID=? WHERE BLOG_ID=?";
-        try (Connection connection = MyDatabase.getConnection()){
+        String deleteQuery = "DELETE FROM "+TABLE_NAME+" WHERE BLOG_ID =?";
+        String saveQuery = "INSERT INTO "+TABLE_NAME+ " (IMAGE_PATH, BLOG_ID) VALUES (?,?)";
+        try (Connection connection = MyDatabase.getConnection()) {
             connection.setAutoCommit(false);
             Savepoint savepoint = connection.setSavepoint();
-            try(PreparedStatement smt = connection.prepareStatement(query)) {
-                int count = 0;
-                for (String newPath : newBlog.getImagePathList()) {
-                    smt.setString(1, newPath);
-                    smt.setInt(2, newBlog.getId());
-                    smt.setInt(3, oldBlog.getId());
-                    count += smt.executeUpdate();
+            try (PreparedStatement delete = connection.prepareStatement(deleteQuery);
+                 PreparedStatement insert = connection.prepareStatement(saveQuery)) {
+                delete.setInt(1, oldBlog.getId());
+                delete.executeUpdate();
+                for (String imagePath : newBlog.getImagePathList()) {
+                    insert.setString(1, imagePath);
+                    insert.setInt(2, newBlog.getId());
+                    insert.executeUpdate();
                 }
-                logger.info("Total update image path: " + count);
-                connection.commit();
+                deleteImageFiles(oldBlog.getImagePathList());
                 return true;
-            }catch (SQLException e){
-                connection.rollback(savepoint);
+            } catch (SQLException e) {
                 logger.warn(e.getMessage());
+                connection.rollback(savepoint);
             }
         } catch (SQLException e) {
             logger.warn(e.getMessage());
@@ -88,8 +92,7 @@ public class ImageRepository {
 
     public boolean deleteImagePath(MyBlog blog, String imagePath){
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=? AND IMAGE_PATH=?";
-        try (
-            Connection connection = MyDatabase.getConnection()){
+        try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement smt = connection.prepareStatement(query)) {
@@ -125,6 +128,15 @@ public class ImageRepository {
                 logger.warn(e.getMessage());
             }
         } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean deleteAllImages(MyBlog blog){
+        try {
+            return Files.deleteIfExists(Path.of("assets/images/'" + blog.getTitle() + "'"));
+        } catch (IOException e) {
             logger.warn(e.getMessage());
         }
         return false;

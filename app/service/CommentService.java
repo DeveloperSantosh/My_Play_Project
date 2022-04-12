@@ -5,6 +5,7 @@ import models.MyComment;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import repository.CommentRepository;
@@ -31,12 +32,12 @@ public class CommentService {
         if (title.isBlank()) return badRequest("Blog Title should not be empty");
         List<MyComment> allComments = commentRepository.findAllComments();
         StringBuilder result = new StringBuilder();
-        for(MyComment c: allComments){
-            if(c.getBlog().getTitle().equals(title)){
-                result.append("Comment: ").append(c.getComment()).append("\n")
-                        .append("Timestamp: ").append(c.getTimestamp()).append("\n");
-            }
-        }
+        allComments.stream().filter(comment -> comment.getBlog().getTitle().equals(title))
+                .forEach(comment -> {
+                    result.append("{ id: ").append(comment.getId()).append(", ")
+                            .append("Comment: ").append(comment.getComment()).append(", ")
+                            .append("Timestamp: ").append(comment.getTimestamp()).append(" }\n");
+                });
         return ok(result.toString());
     }
 

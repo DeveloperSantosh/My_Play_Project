@@ -1,6 +1,7 @@
 package dto;
 
 import models.MyBlog;
+import models.MyUser;
 import repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,9 +10,19 @@ import java.util.List;
 
 public class RequestBlog {
 
+    private int id;
     private String title;
     private String content;
+    private MyUser author;
     private List<String> imagePaths = new ArrayList<>();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -27,6 +38,14 @@ public class RequestBlog {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public MyUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(MyUser author) {
+        this.author = author;
     }
 
     public List<String> getImagePaths() { return imagePaths; }
@@ -49,11 +68,12 @@ public class RequestBlog {
         else return  "valid";
     }
 
-    public MyBlog getMyBlog(int authorId){
+    public MyBlog getMyBlog(){
         return MyBlog.newBuilder()
+                .setId(id)
                 .setTitle(title)
                 .setContent(content)
-                .setAuthor(UserRepository.getInstance().findUserByID(authorId))
+                .setAuthor(author)
                 .setTimestamp(getCurrentTimeStamp())
                 .addAllImagePath(imagePaths)
                 .build();

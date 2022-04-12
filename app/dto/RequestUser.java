@@ -1,14 +1,8 @@
 package dto;
 
-import controllers.BlogController;
 import models.MyPermission;
 import models.MyRole;
 import models.MyUser;
-import org.mindrot.jbcrypt.BCrypt;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -49,15 +43,25 @@ public class RequestUser {
         this.username = username;
     }
 
-    public List<MyRole> getRoles() { return roles; }
+    public List<MyRole> getRoles() {
+        return roles;
+    }
 
-    public void setRoles(List<MyRole> roles) { this.roles = roles; }
+    public void setRoles(List<MyRole> roles) {
+        this.roles = roles;
+    }
 
-    public void addRole(MyRole role) { roles.add(role);}
+    public void addRole(MyRole role) {
+        roles.add(role);
+    }
 
-    public List<MyPermission> getPermissions() { return permissions; }
+    public List<MyPermission> getPermissions() {
+        return permissions;
+    }
 
-    public void setPermissions(List<MyPermission> permissions) { this.permissions = permissions; }
+    public void setPermissions(List<MyPermission> permissions) {
+        this.permissions = permissions;
+    }
 
     public String validate(){
         String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";

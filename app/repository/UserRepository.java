@@ -150,8 +150,14 @@ public class UserRepository {
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
             Savepoint savepoint = connection.setSavepoint();
-            boolean permissionSaved = UserPermissionRepository.getInstance().save(newUser);
-            boolean roleSaved = UserRoleRepository.getInstance().save(newUser);
+            boolean permissionSaved;
+            if (oldUser.getPermissionList().containsAll(newUser.getPermissionList()))
+                permissionSaved = true;
+            else permissionSaved = UserPermissionRepository.getInstance().save(newUser);
+            boolean roleSaved;
+            if (oldUser.getRoleList().containsAll(newUser.getRoleList()))
+                roleSaved  = true;
+            else roleSaved = UserRoleRepository.getInstance().save(newUser);
             try(PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
                 updateStatement.setString(1, newUser.getUsername());
                 updateStatement.setString(2, newUser.getPassword());
@@ -160,7 +166,7 @@ public class UserRepository {
                 if (roleSaved && permissionSaved && updateStatement.executeUpdate()==1){
                     connection.commit();
                     logger.info(newUser.getEmail()+" User updated successfully");
-                    return  true;
+                    return true;
                 }
             } catch (SQLException e) {
                 logger.warn(e.getMessage());

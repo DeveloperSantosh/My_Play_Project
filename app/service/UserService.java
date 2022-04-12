@@ -106,10 +106,11 @@ public class UserService {
         if (!requestUser.validate().equals("valid"))
             return badRequest(requestUser.validate());
         MyUser savedUser = userRepository.findUserByID(userId);
-        if(savedUser == null ) return notFound();
-//        requestUser.setRoles(savedUser.getRoleList());
+        if (savedUser == null ) return notFound();
+        requestUser.setRoles(savedUser.getRoleList());
         requestUser.setPermissions(savedUser.getPermissionList());
         requestUser.setId(savedUser.getId());
+        requestUser.setPassword((BCrypt.hashpw(requestUser.getPassword(), BCrypt.gensalt())));
         MyUser updatedUser = requestUser.getMyUser();
         if ( userRepository.updateUser(savedUser, updatedUser) )
             return ok("User Updated Successfully.\n"+updatedUser);
@@ -124,6 +125,8 @@ public class UserService {
         RequestRole requestRole = roleForm.get();
         if (!requestRole.validate().equals("valid")) return badRequest(requestRole.validate());
         MyRole role = requestRole.getMyRole();
+        if (oldUser.getRoleList().contains(role))
+            return badRequest("Role already provided to user with userId: "+userId);
         MyUser newUser = oldUser.toBuilder().addRole(role).build();
         if (UserRoleRepository.getInstance().save(newUser))
             return ok("Roles added successfully");
@@ -141,6 +144,11 @@ public class UserService {
         if (!requestPermission.validate().equals("valid"))
             return badRequest(requestPermission.validate());
         MyPermission permission = requestPermission.toMyPermission();
+        MyPermission finalPermission = permission;
+        boolean isPermissionPresent = savedUser.getPermissionList().stream()
+                .anyMatch(myPermission-> myPermission.getValue().equals(finalPermission.getValue()));
+        if (isPermissionPresent)
+            return badRequest("Permission already exist for user with userId: "+userId);
         PermissionRepository.getInstance().save(permission);
         permission = PermissionRepository.getInstance().findPermissionByValue(permission.getValue());
         if (UserPermissionRepository.getInstance().save(permission, savedUser))
