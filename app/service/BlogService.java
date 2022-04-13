@@ -12,6 +12,7 @@ import play.data.FormFactory;
 import play.libs.Files;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import repository.BlogRepository;
 import repository.UserRepository;
 import javax.inject.Inject;
@@ -38,21 +39,7 @@ public class BlogService {
 
 //    Method to get blogs from database
     public Result showAllBlogs(){
-        StringBuilder result = new StringBuilder("{");
-//        blogRepository.findAllBlogs().forEach(blog->{
-//            result.append("Id: ").append(blog.getId()).append(", ")
-//                    .append("Title: ").append(blog.getTitle()).append(", ")
-//                    .append("Content: ").append(blog.getContent()).append(", ")
-//                    .append("Author: ").append(blog.getAuthor().getEmail()).append(", ")
-//                    .append("Comments: {");
-//            blog.getCommentsList().forEach(comment -> {
-//                result.append(" [Id: ").append(comment.getId()).append(", ")
-//                        .append("Comment: ").append(comment.getComment()).append(", ")
-//                        .append("Timestamp: ").append(comment.getTimestamp()).append("] ");
-//            });
-//            result.append("}\n");
-//        });
-//        result.append("}");
+        StringBuilder result = new StringBuilder();
         for(MyBlog blog: blogRepository.findAllBlogs()){
             result.append(blog.toString()).append("\n");
         }
@@ -67,6 +54,7 @@ public class BlogService {
                 blog.getAuthor().getUsername().toLowerCase().contains(keyword.toLowerCase()) ||
                 blog.getAuthor().getEmail().toLowerCase().contains(keyword.toLowerCase()))
             .collect(Collectors.toList());
+        if (blogs.isEmpty()) return Results.noContent();
         StringBuilder result = new StringBuilder();
         blogs.forEach(blog->result.append(blog.toString()).append("\n"));
         return ok(result.toString());
@@ -78,6 +66,7 @@ public class BlogService {
         List<MyBlog> myBlogs = BlogRepository.getInstance().findAllBlogs().stream()
                         .filter(blog->blog.getAuthor().getEmail().equals(email))
                         .collect(Collectors.toList());
+        if (myBlogs.isEmpty()) return Results.noContent();
         StringBuilder result = new StringBuilder();
         for (MyBlog blog: myBlogs){
             result.append(blog).append("\n");

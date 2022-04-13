@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class BlogController extends Controller {
 
     public final BlogService blogService;
-    public static final int TIMEOUT = 10;
+    public static final int TIMEOUT = 120;
 
     @Inject
     public BlogController(BlogService blogService) {

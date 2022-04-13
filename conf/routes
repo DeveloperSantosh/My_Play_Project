@@ -14,10 +14,16 @@ PUT     /:userId                            controllers.UserController.updateUse
 +nocsrf
 DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
 GET     /logout                             controllers.UserController.logout(request: Request)
+
+# The controllers for user permissions and roles
 +nocsrf
 POST    /:userId/role                       controllers.UserController.addRole(userId: Integer, request: Request)
 +nocsrf
+DELETE  /:userId/role                       controllers.UserController.dismissRole(userId: Integer, request: Request)
++nocsrf
 POST    /:userId/permission                 controllers.UserController.addPermission(userId: Integer, request: Request)
++nocsrf
+DELETE  /:userId/permission                 controllers.UserController.revokePermission(userId: Integer, request: Request)
 
 # The controllers for Blogs
 GET     /blogs                              controllers.BlogController.showAllBlogs()

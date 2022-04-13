@@ -13,6 +13,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import repository.*;
 
 import javax.inject.Inject;
@@ -129,7 +130,7 @@ public class UserService {
             return badRequest("Role already provided to user with userId: "+userId);
         MyUser newUser = oldUser.toBuilder().addRole(role).build();
         if (UserRoleRepository.getInstance().save(newUser))
-            return ok("Roles added successfully");
+            return ok(role.getRoleType()+" role added successfully for userId: "+userId);
         return internalServerError("Something went wrong");
     }
 
@@ -152,7 +153,41 @@ public class UserService {
         PermissionRepository.getInstance().save(permission);
         permission = PermissionRepository.getInstance().findPermissionByValue(permission.getValue());
         if (UserPermissionRepository.getInstance().save(permission, savedUser))
-            return ok("Permissions added successfully");
+            return ok(permission.getValue()+" permission added successfully for userId: "+userId);
+        return internalServerError("Something went wrong");
+    }
+
+    public Result removePermissionFor(Integer userId, Http.Request request) {
+        MyUser savedUser = UserRepository.getInstance().findUserByID(userId);
+        if (savedUser == null)
+            return notFound("User not found with id: "+userId);
+        Form<RequestPermission> permissionForm = formFactory.form(RequestPermission.class).bindFromRequest(request);
+        if (permissionForm.hasErrors())
+            return badRequest("Invalid form data");
+        RequestPermission requestPermission = permissionForm.get();
+        if (!requestPermission.validate().equals("valid"))
+            return badRequest(requestPermission.validate());
+        MyPermission permission = PermissionRepository.getInstance().findPermissionByValue(requestPermission.getValue());
+        boolean isPermissionGranted = savedUser.getPermissionList().contains(permission);
+        if (!isPermissionGranted)
+            return notFound(permission.getValue()+" permission not found for userId: "+userId);
+        if (UserPermissionRepository.getInstance().deleteUserPermission(savedUser, permission))
+            return ok(permission.getValue()+ " permission revoked successfully for userId: "+userId);
+        return internalServerError("Something went wrong");
+    }
+
+    public Result removeRoleFor(Integer userId, Http.Request request) {
+        MyUser savedUser = UserRepository.getInstance().findUserByID(userId);
+        if (savedUser == null)    return notFound("User not found with id: "+userId);
+        Form<RequestRole> roleForm = formFactory.form(RequestRole.class).bindFromRequest(request);
+        if (roleForm.hasErrors())   return Results.notAcceptable("Invalid form data");
+        RequestRole requestRole = roleForm.get();
+        if (!requestRole.validate().equals("valid")) return badRequest(requestRole.validate());
+        MyRole role = requestRole.getMyRole();
+        if (!savedUser.getRoleList().contains(role))
+            return notFound(role.getRoleType()+ " role not found for userId: "+userId);
+        if (UserRoleRepository.getInstance().deleteUserRole(savedUser, role))
+            return ok(role.getRoleType()+" role removed successfully for userId: "+userId);
         return internalServerError("Something went wrong");
     }
 }

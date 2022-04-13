@@ -78,17 +78,15 @@ public class UserPermissionRepository {
     }
 
     public boolean deleteUserPermission(MyUser user, MyPermission permission) {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=? AND USER_ID=?";
+        String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=? AND USER_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             Savepoint savepoint = connection.setSavepoint();
-            try(PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setInt(1, permission.getId());
-                statement.setInt(1, user.getId());
-                statement.executeUpdate();
-                connection.commit();
-                logger.info(permission.getValue() + " Permissions deleted for user id: " + user.getId());
+            try(PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+                deleteStatement.setInt(1, permission.getId());
+                deleteStatement.setInt(1, user.getId());
+                deleteStatement.executeUpdate();
+                logger.info(permission.getValue() + " Permissions revoke for user id: " + user.getId());
                 return true;
             } catch (SQLException e) {
                 connection.rollback(savepoint);

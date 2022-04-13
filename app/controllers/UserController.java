@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class UserController  extends Controller {
 
     public final UserService userService;
-    public static final int TIMEOUT = 20;
+    public static final int TIMEOUT = 120;
 
     @Inject
     public UserController(UserService userService) {
@@ -52,14 +52,12 @@ public class UserController  extends Controller {
                 .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @SubjectPresent
     public CompletionStage<Result> updateUser(Http.Request request, Integer userId) {
         return CompletableFuture
                 .supplyAsync(()->userService.updateUser(request, userId))
                 .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @SubjectPresent
     public Result logout(Http.Request request){
         return userService.logout(request);
     }
@@ -78,4 +76,17 @@ public class UserController  extends Controller {
                 .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> revokePermission(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.removePermissionFor(userId, request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> dismissRole(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()-> userService.removeRoleFor(userId, request))
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
 }

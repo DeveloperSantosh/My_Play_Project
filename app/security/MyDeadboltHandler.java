@@ -12,6 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import models.MyUser;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import repository.UserRepository;
 import java.sql.SQLException;
 import java.util.Date;
@@ -41,7 +42,6 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
-        // you can return any result from here - forbidden, etc
         return CompletableFuture.completedFuture(forbidden("Access Denied. Please login again."));
     }
 

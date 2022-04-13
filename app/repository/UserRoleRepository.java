@@ -87,7 +87,6 @@ public class UserRoleRepository {
         String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =? AND USER_ID=?";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             Savepoint savepoint = connection.setSavepoint();
             try(PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, role.getRoleType());

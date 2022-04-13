@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class CommentController extends Controller {
 
     public final CommentService commentService;
-    public static final int TIMEOUT = 10;
+    public static final int TIMEOUT = 120;
 
     @Inject
     public CommentController(CommentService commentService){
