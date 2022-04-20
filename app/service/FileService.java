@@ -192,7 +192,7 @@ public class FileService {
 
     public Map<String, Object[]> getHashmapFromUserList(List<MyUser> users){
         Map<String, Object[]> data = new TreeMap<>();
-        data.put("titles", new Object[]{"UserId", "Username", "Email", "Password"});
+        data.put("record", new Object[]{"UserId", "Username", "Email", "Password"});
         for(int i=0; i < users.size(); i++){
             MyUser user = users.get(i);
             data.put("record: "+(i+1), new Object[]{user.getId(), user.getUsername(), user.getEmail(), user.getPassword()});
