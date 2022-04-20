@@ -1,5 +1,6 @@
 package service;
 
+import com.google.inject.Inject;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.opencsv.CSVWriter;
@@ -34,13 +35,13 @@ public class FileService {
 
     private final MyExecutionContext context;
     private final Logger logger = LoggerFactory.getLogger(FileService.class);
-
+    @Inject
     public FileService(MyExecutionContext context) {
         this.context = context;
         createAllDirectory();
     }
 
-    public CompletionStage<Result> exportToCSV(){
+    public CompletionStage<Result> exportMyUserTableToCSV(){
         return CompletableFuture.supplyAsync(()->{
             String query = "SELECT * FROM MY_USER;";
             String fileName = "app/assets/CSV/UserList.pdf";
@@ -58,6 +59,26 @@ public class FileService {
             return play.mvc.Results.internalServerError("Something went wrong");
         }, context);
     }
+
+    public CompletionStage<Result> exportMyBlogTableToCSV(){
+        return CompletableFuture.supplyAsync(()->{
+            String query = "SELECT * FROM MY_BLOGS;";
+            String fileName = "app/assets/CSV/UserList.pdf";
+            try (Connection connection = MyDatabase.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(query)){
+                ResultSet resultSet = statement.executeQuery();
+                CSVWriter writer = new CSVWriter(new FileWriter(fileName));
+                writer.writeAll(resultSet, true);
+                writer.close();
+                resultSet.close();
+                return play.mvc.Results.ok("CSV File Created");
+            } catch (SQLException | IOException e) {
+                logger.warn(e.getMessage());
+            }
+            return play.mvc.Results.internalServerError("Something went wrong");
+        }, context);
+    }
+
     public CompletionStage<Result> exportToExcel(List<MyUser> users){
         return CompletableFuture.supplyAsync(()->{
             try (XSSFWorkbook workbook = new XSSFWorkbook()){

@@ -18,7 +18,7 @@ public class FileController extends Controller {
     }
 
     public CompletionStage<Result> getUserCsvFile(){
-        return fileService.exportToCSV();
+        return fileService.exportMyUserTableToCSV();
     }
 
     public CompletionStage<Result> getUserExcelFile(){
