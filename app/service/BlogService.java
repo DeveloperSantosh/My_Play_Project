@@ -6,6 +6,7 @@ import models.MyBlog;
 import models.MyUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import play.data.Form;
 import play.data.FormFactory;
@@ -150,7 +151,6 @@ public class BlogService {
             String dir = "app/assets/images/'" + blogTitle + "'/";
             Path filepath = Paths.get(dir);
             java.nio.file.Files.createDirectories(filepath);
-
             for (Http.MultipartFormData.FilePart<Files.TemporaryFile> picture : fileParts) {
                 String fileName = picture.getFilename();
                 Files.TemporaryFile file = picture.getRef();

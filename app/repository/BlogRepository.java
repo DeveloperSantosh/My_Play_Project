@@ -1,17 +1,27 @@
 package repository;
 
+import com.google.inject.Inject;
+import context.MyExecutionContext;
 import models.MyBlog;
 import models.MyComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import play.db.Database;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class BlogRepository {
 
+    @Inject
+    private Database db;
+    @Inject
+    private MyExecutionContext context;
     private final String TABLE_NAME = "MY_BLOGS";
     private static BlogRepository instance = null;
     private final Logger logger = LoggerFactory.getLogger(BlogRepository.class);
@@ -19,7 +29,6 @@ public class BlogRepository {
     private BlogRepository() {}
 
     public boolean save(@NotNull MyBlog blog) {
-        if (validateBlog(blog)) return false;
         String insertQuery = "INSERT INTO "+TABLE_NAME+" (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES (?,?,?,?)";
         try (Connection connection = MyDatabase.getConnection()){
             connection.setAutoCommit(false);

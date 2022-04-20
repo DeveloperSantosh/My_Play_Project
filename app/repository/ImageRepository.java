@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class ImageRepository {
@@ -148,16 +149,17 @@ public class ImageRepository {
         return false;
     }
 
-    public boolean deleteImageFiles(List<String> imagePaths){
-        try {
-            for (String imagePath: imagePaths){
-                if(!Files.deleteIfExists(Paths.get(imagePath)))
-                    return false;
+    public void deleteImageFiles(List<String> imagePaths){
+        Thread deleteThread = new Thread(() -> {
+            for (String imagePath : imagePaths) {
+                try {
+                    Files.deleteIfExists(Paths.get(imagePath));
+                } catch (IOException e) {
+                    logger.warn(e.getMessage());
+                }
             }
-        } catch (IOException e) {
-            logger.warn(e.getMessage());
-        }
-        return true;
+        });
+        deleteThread.start();
     }
 
     public static ImageRepository getInstance(){

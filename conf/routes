@@ -7,7 +7,7 @@
 +nocsrf
 POST    /login                              controllers.UserController.login(request: Request)
 +nocsrf
-POST    /register                           controllers.UserController.saveUser(request: Request)
+POST    /register                           controllers.UserController.register(request: Request)
 GET     /users                              controllers.UserController.getAllUsers()
 +nocsrf
 PUT     /:userId                            controllers.UserController.updateUser(request: Request, userId: Integer)
@@ -41,5 +41,11 @@ GET     /blogs/:title/comments              controllers.CommentController.getCom
 +nocsrf
 POST    /blogs/:title/comments              controllers.CommentController.saveComment(title: String, request: Request)
 
+# The controllers for File
+GET     /file/pdf                           controllers.FileController.getBlogPdfFile();
+GET     /file/excel                         controllers.FileController.getUserExcelFile();
+GET     /file/csv                           controllers.FileController.getUserCsvFile();
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+

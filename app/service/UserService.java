@@ -1,5 +1,6 @@
 package service;
 
+import com.google.inject.Inject;
 import dto.RequestPermission;
 import dto.RequestRole;
 import dto.RequestUser;
@@ -15,8 +16,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import repository.*;
-
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 

@@ -27,3 +27,17 @@ libraryDependencies += "com.ticketfly" %% "play-liquibase" % "2.2"
 // For implementing protobuf
 //libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.19.4" % "protobuf"
 
+// Akka dispatcher configuration
+//libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.6.19"
+
+// https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+libraryDependencies += "com.itextpdf" % "itextpdf" % "5.5.13.3"
+
+// https://mvnrepository.com/artifact/com.opencsv/opencsv
+libraryDependencies += "com.opencsv" % "opencsv" % "5.6"
+
+// https://mvnrepository.com/artifact/org.apache.poi/poi
+libraryDependencies += "org.apache.poi" % "poi" % "5.2.2"
+
+// https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+libraryDependencies += "org.apache.poi" % "poi-ooxml" % "5.2.2"
