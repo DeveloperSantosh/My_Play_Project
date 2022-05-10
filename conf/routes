@@ -3,26 +3,49 @@
 # ~~~~
 # An example controller showing a sample home page
 
-# A controller for Blog page
-GET     /                                  controllers.UserController.index()
+# The controllers for User
 +nocsrf
 POST    /login                              controllers.UserController.login(request: Request)
 +nocsrf
+POST    /register                           controllers.UserController.register(request: Request)
+GET     /users                              controllers.UserController.getAllUsers()
++nocsrf
+PUT     /:userId                            controllers.UserController.updateUser(request: Request, userId: Integer)
++nocsrf
 DELETE  /:userId                            controllers.UserController.deleteUser(userId: Integer)
-GET     /register                           controllers.UserController.register()
-+nocsrf
-POST    /register                           controllers.UserController.saveUser(request: Request)
+GET     /logout                             controllers.UserController.logout(request: Request)
 
-GET     /:userId/blogs                      controllers.BlogController.home(userId: Integer)
-GET     /:userId/blogs/create               controllers.BlogController.createBlog(userId: Integer)
-GET     /:userId/blogs/:title               controllers.BlogController.showBlog(title: String, userId: Integer)
+# The controllers for user permissions and roles
 +nocsrf
-POST    /:userId/blogs/create               controllers.BlogController.saveBlog(userId: Integer, request: Request)
+POST    /:userId/role                       controllers.UserController.addRole(userId: Integer, request: Request)
++nocsrf
+DELETE  /:userId/role                       controllers.UserController.dismissRole(userId: Integer, request: Request)
++nocsrf
+POST    /:userId/permission                 controllers.UserController.addPermission(userId: Integer, request: Request)
++nocsrf
+DELETE  /:userId/permission                 controllers.UserController.revokePermission(userId: Integer, request: Request)
 
-GET     /:userId/blogs/:blogId/comment      controllers.CommentController.showComment(blogId: Integer, userId: Integer)
-GET     /:userId/blogs/:blogId/comment/add  controllers.CommentController.addComment(blogId: Integer, userId: Integer, request: Request)
+# The controllers for Blogs
+GET     /blogs                              controllers.BlogController.showAllBlogs()
 +nocsrf
-POST    /:userId/blogs/:blogId/comment/add  controllers.CommentController.saveComment(blogId: Integer, userId: Integer, request: Request)
+POST    /blogs                              controllers.BlogController.saveBlog(request: Request)
++nocsrf
+PUT     /blogs/:title                       controllers.BlogController.updateBlog(request: Request, title: String)
++nocsrf
+DELETE  /blogs/:title                       controllers.BlogController.deleteBlogByTitle(title: String, request: Request)
+GET     /blogs/myBlogs                      controllers.BlogController.showMyBlogs(request: Request)
+GET     /blogs/:keyword                     controllers.BlogController.searchBlogByKeyword(keyword: String)
+
+# The controllers for Comments
+GET     /blogs/:title/comments              controllers.CommentController.getComments(title: String)
++nocsrf
+POST    /blogs/:title/comments              controllers.CommentController.saveComment(title: String, request: Request)
+
+# The controllers for File
+GET     /file/pdf                           controllers.FileController.getBlogPdfFile()
+GET     /file/excel                         controllers.FileController.getUserExcelFile()
+GET     /file/csv                           controllers.FileController.getUserCsvFile()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+

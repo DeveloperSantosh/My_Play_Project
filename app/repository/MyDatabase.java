@@ -1,33 +1,28 @@
 package repository;
 
-import com.typesafe.config.ConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import play.db.Database;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-@Singleton
-public class MyDatabase {
-    private Connection connection;
-    private static MyDatabase instance;
-
-    private MyDatabase() {
-        try {
-            String DB_URL = ConfigFactory.load().getString("db.default.url");
-            String USER = ConfigFactory.load().getString("db.default.username");
-            String PASS = ConfigFactory.load().getString("db.default.password");
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-            System.out.println("Connected.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+public class MyDatabase{
 
     public static Connection getConnection(){
-        if(instance == null) {
-            instance = new MyDatabase();
+        Connection connection = null;
+        Logger logger = LoggerFactory.getLogger(MyDatabase.class);
+        try {
+            String DB_URL = "jdbc:mysql://localhost:3306/NewDB";
+            String USER = "root";
+            String PASS = "root";
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            logger.info("Database Connected");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        return instance.connection;
+        return connection;
     }
 }

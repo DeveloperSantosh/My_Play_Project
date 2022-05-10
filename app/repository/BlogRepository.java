@@ -1,121 +1,189 @@
 package repository;
 
-import models.Blog;
-import models.User;
+import com.google.inject.Inject;
+import context.MyExecutionContext;
+import models.MyBlog;
+import models.MyComment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import play.db.Database;
+
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class BlogRepository {
-    String TABLE_NAME = "MY_BLOGS";
-    String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-            "BLOG_ID INTEGER AUTO_INCREMENT, "+
-            "BLOG_TITLE varchar(200) NOT NULL, "+
-            "BLOG_CONTENT text NOT NULL, "+
-            "CREATION_TIME varchar(200) NOT NULL, "+
-            "AUTHOR_ID INTEGER, "+
-            "PRIMARY KEY (BLOG_ID)," +
-            "FOREIGN KEY (AUTHOR_ID) REFERENCES MY_USER(USER_ID))";
-    Statement statement = null;
+
+    @Inject
+    private Database db;
+    @Inject
+    private MyExecutionContext context;
+    private final String TABLE_NAME = "MY_BLOGS";
     private static BlogRepository instance = null;
+    private final Logger logger = LoggerFactory.getLogger(BlogRepository.class);
 
-    private BlogRepository() {
-        Connection connection = MyDatabase.getConnection();
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(createTable);
-            System.out.println(createTable);
-            System.out.println("Table fetched successfully.");
+    private BlogRepository() {}
+
+    public boolean save(@NotNull MyBlog blog) {
+        String insertQuery = "INSERT INTO "+TABLE_NAME+" (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES (?,?,?,?)";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)){
+                insertStatement.setString(1, blog.getTitle());
+                insertStatement.setString(2, blog.getContent());
+                insertStatement.setString(3, blog.getTimestamp());
+                insertStatement.setInt(4, blog.getAuthor().getId());
+                if (insertStatement.executeUpdate()==1) {
+                    int savedBlogId = findBlogByTitle(blog.getTitle()).getId();
+                    if(ImageRepository.getInstance().save(blog, savedBlogId))
+                        connection.commit();
+                    logger.info("Blog saved successfully");
+                    return true;
+                }
+            }catch (SQLException e){
+                logger.warn(e.getMessage());
+            }
+            connection.rollback(savepoint);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
+        return false;
     }
 
-    public boolean save(@NotNull Blog blog) throws SQLException {
-        String saveQuery = "INSERT INTO "+TABLE_NAME+
-                " (BLOG_TITLE, BLOG_CONTENT, CREATION_TIME, AUTHOR_ID) VALUES ('"+
-                blog.getTitle()+"','"+
-                blog.getContent()+"','"+
-                blog.getTimestamp()+"',"+
-                blog.getAuthor().getId()+")";
-        System.out.println(saveQuery);
-        int count = statement.executeUpdate(saveQuery);
-
-        return (count == 1);
-    }
-
-    public Blog findBlogByTitle(String title) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_TITLE = '"+title+"'";
-        Blog blog = new Blog();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        if(resultSet.next()) {
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
-            return blog;
+    public MyBlog findBlogByTitle(@NotEmpty @NotNull String title) {
+        MyBlog blog = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_TITLE=?";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement stm = connection.prepareStatement(findQuery)){
+            stm.setString(1, title);
+            ResultSet resultSet = stm.executeQuery();
+            if(resultSet.next()) {
+                int blogId = resultSet.getInt("BLOG_ID");
+                blog = MyBlog.newBuilder()
+                        .setId(blogId)
+                        .setTitle(resultSet.getString("BLOG_TITLE"))
+                        .setContent(resultSet.getString("BLOG_CONTENT"))
+                        .setTimestamp(resultSet.getString("CREATION_TIME"))
+                        .addAllImagePath(ImageRepository.getInstance().findImagesPathByBlogId(blogId))
+                        .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                        .addAllComments(CommentRepository.getInstance().findCommentsByBlogId(blogId))
+                        .build();
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        return null;
+        return blog;
     }
 
-    public Blog findBlogById(Integer id) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID = "+id;
-        Blog blog = new Blog();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        if(resultSet.next()) {
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
-            return blog;
+    public MyBlog findBlogById(@NotNull Integer blogId) {
+        MyBlog blog = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE BLOG_ID = ?";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement smt = connection.prepareStatement(findQuery)){
+            smt.setInt(1, blogId);
+            ResultSet resultSet = smt.executeQuery();
+            if(resultSet.next()) {
+                blog = MyBlog.newBuilder()
+                        .setId(resultSet.getInt("BLOG_ID"))
+                        .setTitle(resultSet.getString("BLOG_TITLE"))
+                        .setContent(resultSet.getString("BLOG_CONTENT"))
+                        .setTimestamp(resultSet.getString("CREATION_TIME"))
+                        .addAllImagePath(ImageRepository.getInstance().findImagesPathByBlogId(blogId))
+                        .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                        .build();
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
-        return null;
+        return blog;
     }
 
-    public List<Blog> findAllBlogs() throws SQLException {
+    public List<MyBlog> findAllBlogs() {
+        List<MyBlog> blogs = new ArrayList<>();
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<Blog> blogs = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        while(resultSet.next()) {
-            Blog blog = new Blog();
-            blog.setBlogId(resultSet.getInt("BLOG_ID"));
-            blog.setTitle(resultSet.getString("BLOG_TITLE"));
-            blog.setContent(resultSet.getString("BLOG_CONTENT"));
-            blog.setTimestamp(resultSet.getString("CREATION_TIME"));
-            User author = UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID"));
-            blog.setAuthor(author);
-            blogs.add(blog);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement smt = connection.prepareStatement(findQuery);
+            ResultSet resultSet = smt.executeQuery()){
+            while(resultSet.next()) {
+                int blogId = resultSet.getInt("BLOG_ID");
+                MyBlog blog = MyBlog.newBuilder()
+                        .setId(blogId)
+                        .setTitle(resultSet.getString("BLOG_TITLE"))
+                        .setContent(resultSet.getString("BLOG_CONTENT"))
+                        .setTimestamp(resultSet.getString("CREATION_TIME"))
+                        .addAllImagePath(ImageRepository.getInstance().findImagesPathByBlogId(blogId))
+                        .setAuthor(UserRepository.getInstance().findUserByID(resultSet.getInt("AUTHOR_ID")))
+                        .addAllComments(CommentRepository.getInstance().findCommentsByBlogId(blogId))
+                        .build();
+                blogs.add(blog);
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
         }
         return blogs;
     }
 
-    public boolean updateBlog(@NotNull Blog oldBlog, @NotNull Blog newBlog) throws SQLException {
-        String query = "UPDATE "+TABLE_NAME+" SET "+
-                "BLOG_TITLE = '"+newBlog.getTitle()+"',"+
-                "BLOG_CONTENT = '"+newBlog.getContent()+"',"+
-                "AUTHOR_ID  = "+newBlog.getAuthor().getId()+"' " +
-                "WHERE BLOG_ID="+oldBlog.getBlogId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean updateBlog(@NotNull MyBlog oldBlog, @NotNull MyBlog newBlog){
+        if(!(validateBlog(newBlog) && validateBlog(oldBlog))) return false;
+        String updateQuery = "UPDATE " + TABLE_NAME + " SET BLOG_TITLE=?, BLOG_CONTENT=?, AUTHOR_ID=? WHERE BLOG_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try (PreparedStatement statement = connection.prepareStatement(updateQuery)){
+                statement.setString(1, newBlog.getTitle());
+                statement.setString(2, newBlog.getContent());
+                statement.setInt(3, newBlog.getAuthor().getId());
+                statement.setInt(4, oldBlog.getId());
+                if (ImageRepository.getInstance().updateImagePath(oldBlog, newBlog)) {
+                    statement.executeUpdate();
+                    connection.commit();
+                    return true;
+                }
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public boolean delete(@NotNull Blog blog) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID="+blog.getBlogId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean delete(@NotNull MyBlog blog){
+        if (!validateBlog(blog)) return false;
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE BLOG_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            boolean isCommentsDeleted = CommentRepository.getInstance().deleteAllCommentByBlogTitle(blog.getId());
+            boolean isImagesDeleted = ImageRepository.getInstance().deleteAllImagePaths(blog);
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setInt(1, blog.getId());
+                if (isImagesDeleted && isCommentsDeleted && statement.executeUpdate()==1){
+                    ImageRepository.getInstance().deleteImageFiles(blog.getImagePathList());
+                    connection.commit();
+                    return true;
+            }
+            } catch (SQLException e) {
+                logger.warn(e.getMessage());
+            }
+            connection.rollback(savepoint);
+            if (isCommentsDeleted)
+                for (MyComment c: blog.getCommentsList())
+                    CommentRepository.getInstance().save(c);
+            if (isImagesDeleted)
+                ImageRepository.getInstance().save(blog, blog.getId());
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
     public static BlogRepository getInstance(){
@@ -124,4 +192,35 @@ public class BlogRepository {
         }
         return instance;
     }
+
+    public boolean validateBlog(MyBlog blog){
+        if (blog.getTitle().isBlank() || blog.getTitle().length()>100 )
+            return false;
+        if (blog.getContent().isBlank() || blog.getContent().length() >500)
+            return false;
+        if (blog.getImagePathCount()<1)
+            return false;
+        return true;
+    }
+
+
+//    private void createTable(){
+//        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+//                "BLOG_ID INTEGER AUTO_INCREMENT, "+
+//                "BLOG_TITLE varchar(200) NOT NULL, "+
+//                "BLOG_CONTENT text NOT NULL, "+
+//                "CREATION_TIME varchar(200) NOT NULL, "+
+//                "AUTHOR_ID INTEGER NOT NULL, "+
+//                "PRIMARY KEY (BLOG_ID)," +
+//                "FOREIGN KEY (AUTHOR_ID) REFERENCES MY_USER(USER_ID))";
+//
+//        try (Connection connection = MyDatabase.getConnection();
+//            PreparedStatement createTableStatement = connection.prepareStatement(createTableQuery)){
+//            if (createTableStatement.execute())
+//                logger.info("Table Created Successfully");
+//        } catch (SQLException e) {
+//            logger.warn(e.getMessage());
+//        }
+//
+//    }
 }

@@ -1,71 +1,142 @@
 package repository;
 
-import models.UserPermission;
-import javax.validation.constraints.NotNull;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import models.MyPermission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionRepository {
-    private static final String TABLE_NAME = "MY_PERMISSIONS";
-    private static final String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-            "PERMISSION_ID INTEGER AUTO_INCREMENT,"+
-            "VALUE varchar(200) NOT NULL, "+
-            "PRIMARY KEY (PERMISSION_ID))";
-    Statement statement = null;
+
+    private final Logger logger = LoggerFactory.getLogger(PermissionRepository.class);
     private static PermissionRepository instance = null;
+    private static final String TABLE_NAME = "MY_PERMISSIONS";
 
-    private PermissionRepository() {
-        Connection connection = MyDatabase.getConnection();
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(createTable);
-            System.out.println(createTable);
-            System.out.println("Table fetched successfully.");
+    private PermissionRepository() {}
+
+    public boolean save(MyPermission permission) {
+        if (permission==null ) return false;
+        String saveQuery = "INSERT INTO "+TABLE_NAME+ " (VALUE) VALUES (?);";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+                statement.setString(1, permission.getValue());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Permission saved successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
+        return false;
     }
 
-    public boolean save(@NotNull UserPermission permission) throws SQLException {
-        String saveQuery = "INSERT INTO "+TABLE_NAME+
-                " (VALUE) VALUES ('"+ permission.getValue()+"');";
-        int count = statement.executeUpdate(saveQuery);
-        System.out.println(saveQuery);
-        return (count == 1);
-    }
-
-    public List<UserPermission> findAllPermissions() throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<UserPermission> permissions = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        while(resultSet.next()) {
-            UserPermission permission = new UserPermission();
-            permission.setId(resultSet.getInt("PERMISSION_ID"));
-            permission.setValue(resultSet.getString("VALUE"));
-            permissions.add(permission);
+    public List<MyPermission> findAllPermissions(){
+        List<MyPermission> permissions = new ArrayList<>();
+        String findQuery = "SELECT * FROM " + TABLE_NAME;
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            ResultSet resultSet = statement.executeQuery()){
+            while (resultSet.next()) {
+                MyPermission permission = MyPermission.newBuilder()
+                        .setId(resultSet.getInt("PERMISSION_ID"))
+                        .setValue(resultSet.getString("VALUE"))
+                        .build();
+                permissions.add(permission);
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
         }
         return permissions;
     }
 
-    public boolean updatePermission(UserPermission oldPermission, UserPermission newPermission) throws SQLException {
-        String query = "UPDATE "+TABLE_NAME+" SET "+
-                "VALUE = '"+newPermission.getValue()+"',"+
-                "WHERE PERMISSION_ID="+oldPermission.getId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public MyPermission findPermissionById(Integer permissionId) {
+        MyPermission permission = null;
+        String findQuery = "SELECT * FROM " + TABLE_NAME + " WHERE PERMISSION_ID=?";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
+            statement.setInt(1, permissionId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                permission = MyPermission.newBuilder()
+                        .setId(resultSet.getInt("PERMISSION_ID"))
+                        .setValue(resultSet.getString("VALUE"))
+                        .build();
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return permission;
     }
 
-    public boolean deletePermission(UserPermission permission) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID="+permission.getId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public MyPermission findPermissionByValue(String value) {
+        MyPermission permission = null;
+        String findQuery = "SELECT * FROM " + TABLE_NAME + " WHERE VALUE=?";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(findQuery)){
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                permission = MyPermission.newBuilder()
+                        .setId(resultSet.getInt("PERMISSION_ID"))
+                        .setValue(resultSet.getString("VALUE"))
+                        .build();
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return permission;
+    }
+
+    public boolean updatePermission(MyPermission oldPermission, MyPermission newPermission) {
+        String query = "UPDATE " + TABLE_NAME + " SET VALUE=? WHERE PERMISSION_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, newPermission.getValue());
+                statement.setInt(2, oldPermission.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.warn("Permission updated successfully");
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean deletePermission(MyPermission permission) {
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, permission.getId());
+                if (statement.executeUpdate() ==1) {
+                    connection.commit();
+                    return true;
+                }
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
     public static PermissionRepository getInstance(){
@@ -73,6 +144,20 @@ public class PermissionRepository {
             instance = new PermissionRepository();
         }
         return instance;
+    }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "PERMISSION_ID INTEGER AUTO_INCREMENT,"+
+                "VALUE varchar(200) NOT NULL, "+
+                "PRIMARY KEY (PERMISSION_ID))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            statement.execute();
+            logger.info("Table fetched successfully.");
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
     }
 
 }

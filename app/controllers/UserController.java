@@ -2,77 +2,94 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
-import com.mysql.cj.xdevapi.SessionFactory;
-import com.mysql.cj.xdevapi.SessionImpl;
-import models.User;
-import play.data.Form;
-import play.data.FormFactory;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+import be.objectify.deadbolt.java.actions.Unrestricted;
+import com.google.inject.Inject;
+import context.MyExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import repository.BlogRepository;
-import repository.UserRepository;
-import javax.inject.Inject;
-import java.sql.SQLException;
+import service.UserService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
-public class UserController  extends Controller {
+@SubjectPresent
+public class UserController extends Controller {
 
-    private final FormFactory formFactory;
-    UserRepository userRepository;
-    BlogRepository blogRepository;
+    public final UserService userService;
+    public final MyExecutionContext context;
+    public static final int TIMEOUT = 30;
 
     @Inject
-    public UserController(FormFactory formFactory){
-        this.formFactory = formFactory;
-        userRepository = UserRepository.getInstance();
-        blogRepository = BlogRepository.getInstance();
+    public UserController(UserService userService, MyExecutionContext context) {
+        this.userService = userService;
+        this.context = context;
     }
 
-    public Result index(){
-        Form<User> userForm = formFactory.form(User.class);
-        return ok(views.html.index.render(userForm));
+    @Unrestricted
+    public CompletionStage<Result> login(Http.Request request) {
+        return CompletableFuture
+                .supplyAsync(()->userService.login(request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    public Result register() {
-        Form<User> form = formFactory.form(User.class);
-        return ok(views.html.user.create.render(form));
-    }
-
-    public Result login(Http.Request request){
-        Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
-        User userRequest = userForm.get();
-        User user = null;
-        try {
-            user = userRepository.findUserByEmail(userRequest.getEmail());
-            if(user != null){
-                request.session().adding("email", user.getEmail());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return notFound();
-        }
-        if(!user.getPassword().equals(userRequest.getPassword())){
-            return redirect(routes.UserController.index());
-        }
-        return redirect(routes.BlogController.home(user.getId())).addingToSession(request,"email",user.getEmail());
-    }
-
-    public Result saveUser(Http.Request request) throws SQLException {
-        Form <User> userForm = formFactory.form(User.class).bindFromRequest(request);
-        User user = userForm.get();
-        if (userRepository.save(user))
-            redirect(routes.UserController.index());
-        return ok();
+    @Unrestricted
+    public CompletionStage<Result> register(Http.Request request) {
+        return CompletableFuture
+                .supplyAsync(()->userService.saveUser(request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Restrict(@Group("ADMIN"))
-    public Result deleteUser(Integer userId) throws SQLException {
-        User user = userRepository.findUserByID(userId);
-        if(user == null){
-            return notFound("Sorry User with id: "+userId+" not found");
-        }
-        return ok("User deleted Successfully");
+    public CompletionStage<Result> deleteUser(Integer userId) {
+        return CompletableFuture
+                .supplyAsync(()->userService.deleteUser(userId), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> getAllUsers() {
+        return CompletableFuture
+                .supplyAsync(userService::getAllUsers, context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
 
+    public CompletionStage<Result> updateUser(Http.Request request, Integer userId) {
+        return CompletableFuture
+                .supplyAsync(()->userService.updateUser(request, userId), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    public Result logout(Http.Request request){
+        return userService.logout(request);
+    }
+
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> addRole(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.addRolesFor(userId, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> addPermission(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.addPermissionFor(userId, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> revokePermission(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->userService.removePermissionFor(userId, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Restrict(@Group("ADMIN"))
+    public CompletionStage<Result> dismissRole(Integer userId, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()-> userService.removeRoleFor(userId, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
 }

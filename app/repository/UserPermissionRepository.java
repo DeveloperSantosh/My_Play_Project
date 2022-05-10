@@ -1,76 +1,123 @@
 package repository;
 
-import models.User;
-import models.UserPermission;
-
+import models.MyPermission;
+import models.MyUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserPermissionRepository {
-    private static final String TABLE_NAME = "MY_USER_PERMISSIONS";
-    private static final String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-            "PERMISSION_ID INTEGER NOT NULL,"+
-            "USER_ID INTEGER NOT NULL, "+
-            "PRIMARY KEY (PERMISSION_ID, USER_ID))";
-    Statement statement = null;
+
+    private final Logger logger = LoggerFactory.getLogger(UserPermissionRepository.class);
     private static UserPermissionRepository instance = null;
+    private final String TABLE_NAME = "MY_USER_PERMISSIONS";
 
-    private UserPermissionRepository() {
-        Connection connection = MyDatabase.getConnection();
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(createTable);
-            System.out.println(createTable);
-            System.out.println("Table fetched successfully.");
+    private UserPermissionRepository() {}
+
+    public boolean save(@NotNull MyUser user) {
+        String saveQuery = "INSERT INTO "+ TABLE_NAME+ "VALUES(?,?)";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+                List<MyPermission> savedPermissions = PermissionRepository.getInstance().findAllPermissions();
+                user.getPermissionList().stream()
+                        .filter(newPermission -> !savedPermissions.contains(newPermission))
+                        .forEach(PermissionRepository.getInstance()::save);
+                for (MyPermission p: user.getPermissionList()){
+                    int permissionId = PermissionRepository.getInstance().findPermissionByValue(p.getValue()).getId();
+                    statement.setInt(1, permissionId);
+                    statement.setInt(2, user.getId());
+                    statement.executeUpdate();
+                }
+                connection.commit();
+                return true;
+            }catch (SQLException e){
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean save(MyPermission permission, MyUser user) {
+        String saveQuery = "INSERT INTO " + TABLE_NAME + " (PERMISSION_ID, USER_ID) VALUES(?,?)";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(saveQuery)) {
+            statement.setInt(1, permission.getId());
+            statement.setInt(2, user.getId());
+            statement.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
+        return false;
     }
 
-    public boolean save(@NotNull User user) throws SQLException {
-        int count = 0;
-        for(UserPermission p: user.getPermissions()){
-            String saveQuery = "INSERT INTO "+TABLE_NAME+
-                    " (PERMISSION_ID, USER_ID) VALUES ("+ user.getId()+","+p.getId()+");";
-            boolean save = PermissionRepository.getInstance().save(p);
-            count = statement.executeUpdate(saveQuery);
-            System.out.println(saveQuery);
-        }
-        return (count >= 1);
-    }
-
-    public List<UserPermission> findAllPermissionsByUserId(int userId) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID="+userId;
-        List<UserPermission> permissions = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        while(resultSet.next()) {
-            UserPermission permission = new UserPermission();
-            permission.setId(resultSet.getInt("PERMISSION_ID"));
-            permission.setValue(resultSet.getString("VALUE"));
-            permissions.add(permission);
+    public List<MyPermission> findAllPermissionsByUserId(int userId) {
+        List<MyPermission> permissions = new ArrayList<>();
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE USER_ID=?";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                int permissionId = resultSet.getInt("PERMISSION_ID");
+                permissions.add(PermissionRepository.getInstance().findPermissionById(permissionId));
+            }
+            resultSet.close();
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
         }
         return permissions;
     }
 
-
-    public boolean deleteUserPermission(User user, UserPermission permission) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID="+permission.getId()+" AND USER_ID="+user.getId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean deleteUserPermission(MyUser user, MyPermission permission) {
+        String deleteQuery = "DELETE FROM "+ TABLE_NAME+ " WHERE PERMISSION_ID=? AND USER_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery)) {
+                deleteStatement.setInt(1, permission.getId());
+                deleteStatement.setInt(1, user.getId());
+                deleteStatement.executeUpdate();
+                logger.info(permission.getValue() + " Permissions revoke for user id: " + user.getId());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public boolean deleteUserAllPermission(User user) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID="+user.getId();
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean deleteUserAllPermission(MyUser user) {
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE USER_ID=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setInt(1, user.getId());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("All Permissions deleted for user id: " + user.getId());
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
     public static UserPermissionRepository getInstance(){
@@ -78,6 +125,22 @@ public class UserPermissionRepository {
             instance = new UserPermissionRepository();
         }
         return instance;
+    }
+
+    private void createTable(){
+        String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "PERMISSION_ID INTEGER NOT NULL,"+
+                "USER_ID INTEGER NOT NULL, "+
+                "FOREIGN KEY (PERMISSION_ID) REFERENCES MY_PERMISSIONS (PERMISSION_ID), "+
+                "FOREIGN KEY (USER_ID) REFERENCES MY_USER (USER_ID), "+
+                "PRIMARY KEY (PERMISSION_ID, USER_ID))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTable)){
+            statement.execute();
+            logger.info("Table fetched successfully.");
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
     }
 
 }

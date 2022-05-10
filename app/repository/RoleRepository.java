@@ -1,98 +1,154 @@
 package repository;
 
-import models.UserRole;
-import play.db.Database;
+import models.MyRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RoleRepository {
 
-    String TABLE_NAME = "MY_ROLE";
-    String createTable = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
-            "ROLE_TYPE varchar(200), "+
-            "ROLE_DESCRIPTION varchar(200) NOT NULL, "+
-            "PRIMARY KEY (ROLE_TYPE))";
-    Statement statement = null;
+    private final Logger logger = LoggerFactory.getLogger(RoleRepository.class);
+    private static RoleRepository instance = null;
+    private final String TABLE_NAME = "MY_ROLE";
 
-    private static RoleRepository instance;
+    private RoleRepository() {}
 
-    private RoleRepository() {
-        Connection connection = MyDatabase.getConnection();
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(createTable);
-            System.out.println(createTable);
-            System.out.println("Table fetched successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean save(MyRole role) {
+        if (!isValidRole(role)) return false;
+        String saveQuery = "INSERT INTO "+TABLE_NAME+ " VALUES(?,?)";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(saveQuery)){
+                statement.setString(1, role.getRoleType());
+                statement.setString(2, role.getDescription());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Role saved successfully");
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
         }
+        return false;
     }
 
-    public boolean save(@NotNull UserRole role) throws SQLException {
-        String saveQuery = "INSERT INTO "+TABLE_NAME+
-                " (ROLE_TYPE, ROLE_DESCRIPTION) VALUES ('"+
-                role.getRoleType()+"','"+
-                role.getDescription()+"');";
-        int count = statement.executeUpdate(saveQuery);
-        System.out.println(saveQuery);
-        return (count == 1);
-    }
-
-    public UserRole findUserRoleByType(String roleType) throws SQLException {
-        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE='"+roleType+"';";
-        UserRole role = new UserRole();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        if(resultSet.next()) {
-            role.setRoleType(resultSet.getString("ROLE_TYPE"));
-            role.setDescription(resultSet.getString("ROLE_DESCRIPTION"));
-            return role;
+    public MyRole findUserRoleByType(String roleType) {
+        if (roleType == null || roleType.isBlank()) return null;
+        MyRole role = null;
+        String findQuery = "SELECT * FROM "+ TABLE_NAME+" WHERE ROLE_TYPE=?";
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery)){
+            statement.setString(1, roleType);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                role = MyRole.newBuilder()
+                        .setRoleType(resultSet.getString("ROLE_TYPE"))
+                        .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
+                        .build();
+            }
+            resultSet.close();
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
         }
-        return null;
+        return role;
     }
 
-    public List<UserRole> findAllUserRoles() throws SQLException {
+    public List<MyRole> findAllRoles() {
+        List<MyRole> roles = new ArrayList<>();
         String findQuery = "SELECT * FROM "+ TABLE_NAME;
-        List<UserRole> userRoles = new ArrayList<>();
-        ResultSet resultSet = statement.executeQuery(findQuery);
-        System.out.println(findQuery);
-        while(resultSet.next()) {
-            UserRole role = new UserRole();
-            role.setRoleType(resultSet.getString("ROLE_TYPE"));
-            role.setDescription(resultSet.getString("ROLE_DESCRIPTION"));
-            userRoles.add(role);
+        try (Connection connection = MyDatabase.getConnection();
+            PreparedStatement statement = connection.prepareStatement(findQuery);
+            ResultSet resultSet = statement.executeQuery()){
+            while(resultSet.next()) {
+                MyRole role = MyRole.newBuilder()
+                        .setRoleType(resultSet.getString("ROLE_TYPE"))
+                        .setDescription(resultSet.getString("ROLE_DESCRIPTION"))
+                        .build();
+                roles.add(role);
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
         }
-        return userRoles;
+        return roles;
     }
 
-    public boolean updateUserRoles(UserRole oldRole, UserRole newRole) throws SQLException {
-        String query = "UPDATE "+TABLE_NAME+" SET "+
-                "ROLE_TYPE = '"+newRole.getRoleType()+"',"+
-                "ROLE_DESCRIPTION = '"+newRole.getDescription()+"' "+
-                "WHERE ROLE_TYPE= '"+oldRole.getRoleType()+"';";
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean updateUserRoles(MyRole oldRole, MyRole newRole) {
+        if (!(isValidRole(newRole) && isValidRole(oldRole))) return false;
+        String query = "UPDATE "+ TABLE_NAME+ "SET ROLE_TYPE=?, ROLE_DESCRIPTION=? WHERE ROLE_TYPE=?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, newRole.getRoleType());
+                statement.setString(2, newRole.getDescription());
+                statement.setString(3, oldRole.getRoleType());
+                statement.executeUpdate();
+                connection.commit();
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    public boolean delete(UserRole role) throws SQLException {
-        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE ='"+role.getRoleType()+"';";
-        int count = statement.executeUpdate(query);
-        System.out.println(query);
-        return (count == 1);
+    public boolean delete(MyRole role) {
+        if (!isValidRole(role)) return false;
+        String query = "DELETE FROM "+ TABLE_NAME+ " WHERE ROLE_TYPE =?";
+        try (Connection connection = MyDatabase.getConnection()){
+            connection.setAutoCommit(false);
+            Savepoint savepoint = connection.setSavepoint();
+            try(PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, role.getRoleType());
+                statement.executeUpdate();
+                connection.commit();
+                logger.info("Role deleted successfully");
+                return true;
+            } catch (SQLException e) {
+                connection.rollback(savepoint);
+                logger.warn(e.getMessage());
+            }
+        } catch (SQLException | NullPointerException e) {
+            logger.warn(e.getMessage());
+        }
+        return false;
     }
 
-    static RoleRepository getInstance(){
+    private boolean isValidRole(MyRole role){
+        return role != null &&
+                !role.getRoleType().isBlank() &&
+                !role.getDescription().isBlank();
+    }
+
+    public static RoleRepository getInstance(){
         if(instance == null){
             instance = new RoleRepository();
         }
         return instance;
+    }
+
+    private void createTable(){
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+ TABLE_NAME +" ("+
+                "ROLE_TYPE varchar(200), "+
+                "ROLE_DESCRIPTION varchar(200) NOT NULL, "+
+                "PRIMARY KEY (ROLE_TYPE))";
+        try (Connection connection = MyDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(createTableQuery)){
+            statement.execute();
+            logger.info("Table fetched successfully.");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
     }
 }

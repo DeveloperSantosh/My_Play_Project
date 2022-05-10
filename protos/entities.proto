@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+// Protobuf package name
+package models;
+
+message MyUser {
+  int32 id = 1;
+  string email = 2;
+  string password = 3;
+  string username = 4;
+  repeated MyRole role = 5;
+  repeated MyPermission permission = 6;
+}
+
+message MyBlog{
+  int32 id = 1;
+  string title = 2;
+  string content = 3;
+  string timestamp = 4;
+  repeated string imagePath = 5;
+  MyUser author = 6;
+  repeated MyComment comments = 7;
+}
+
+message MyComment{
+  int32 id = 1;
+  string comment = 2;
+  string timestamp = 3;
+  MyBlog blog = 4;
+}
+
+message MyPermission{
+  int32 id = 1;
+  string value = 2;
+}
+
+message MyRole{
+  string roleType = 1;
+  string description = 2;
+}
+

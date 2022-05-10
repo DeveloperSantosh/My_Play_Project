@@ -1,61 +1,40 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
-import models.Comment;
-import play.data.Form;
-import play.data.FormFactory;
-import play.i18n.MessagesApi;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+import context.MyExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import repository.BlogRepository;
-import repository.CommentRepository;
-
+import service.CommentService;
 import javax.inject.Inject;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
 public class CommentController extends Controller {
 
-    CommentRepository commentRepository;
+    public final CommentService commentService;
+    public static final int TIMEOUT = 30;
+    public final MyExecutionContext context;
     @Inject
-    FormFactory formFactory;
-
-    @Inject
-    MessagesApi messagesApi;
-
-    public CommentController(){
-        commentRepository = CommentRepository.getInstance();
+    public CommentController(CommentService commentService, MyExecutionContext context){
+        this.commentService = commentService;
+        this.context = context;
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result showComment(Integer blogId, Integer userId) throws SQLException {
-        List<Comment> blogComment = new ArrayList<>();
-        List<Comment> allComments = commentRepository.findAllComments();
-        for(Comment c:allComments){
-            if(c.getBlog().getBlogId() == blogId){
-                blogComment.add(c);
-            }
-        }
-        return ok(views.html.comment.show.render(blogId, userId, blogComment));
+    @SubjectPresent
+    public CompletionStage<Result> getComments(String title){
+        return CompletableFuture
+                .supplyAsync(()->commentService.getCommentsForBlogTitle(title), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result addComment(Integer blogId, Integer userId, Http.Request request){
-        Form<Comment> commentForm = formFactory.form(Comment.class);
-        return ok(views.html.comment.add.render(blogId, userId,commentForm, request, messagesApi.preferred(request)));
+    @SubjectPresent
+    public CompletionStage<Result> saveComment(String title, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->commentService.addCommentsForBlog(title, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result saveComment(Integer blogId, Integer userId, Http.Request request) throws SQLException {
-        Form<Comment> commentForm = formFactory.form(Comment.class).bindFromRequest(request);
-        Comment newComment = commentForm.get();
-        newComment.setBlog(BlogRepository.getInstance().findBlogById(blogId));
-        if(!commentRepository.save(newComment))
-            return internalServerError();
-        return redirect(routes.CommentController.showComment(blogId, userId));
-    }
 
 }

@@ -1,76 +1,68 @@
 package controllers;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import models.Blog;
-import models.User;
-import play.data.Form;
-import play.data.FormFactory;
+import be.objectify.deadbolt.java.actions.Pattern;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+import com.google.inject.Inject;
+import context.MyExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.With;
-import repository.BlogRepository;
-import repository.UserRepository;
-import security.MyDeadboltHandler;
-
-import javax.inject.Inject;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import service.BlogService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
 public class BlogController extends Controller {
-    private final FormFactory formFactory;
-    private final BlogRepository blogRepository;
-    List<Blog> blogs;
+
+    private final BlogService blogService;
+    private final MyExecutionContext context;
+    public static final int TIMEOUT = 30;
 
     @Inject
-    public BlogController(FormFactory formFactory) {
-        this.formFactory = formFactory;
-        blogRepository = BlogRepository.getInstance();
-        blogs = new ArrayList<>();
+    public BlogController(BlogService blogService, MyExecutionContext context) {
+        this.blogService = blogService;
+        this.context = context;
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result home(Integer userId) throws SQLException {
-        blogs = blogRepository.findAllBlogs();
-        return ok(views.html.blog.home.render(blogs, userId));
+    @Pattern("READ_STORAGE")
+    @SubjectPresent
+    public CompletionStage<Result> showAllBlogs(){
+        return CompletableFuture
+                .supplyAsync(blogService::showAllBlogs, context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result showBlog(String title, Integer userId){
-        try {
-            Blog blog = blogRepository.findBlogByTitle(title);
-            return ok(views.html.blog.show.render(blog, userId));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return notFound("Sorry! blog not found");
+    @Pattern("READ_STORAGE")
+    public CompletionStage<Result> searchBlogByKeyword(String keyword){
+        return CompletableFuture
+                .supplyAsync(()->blogService.showBlogByKeyword(keyword), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result createBlog(Integer userId){
-        Form<Blog> form = formFactory.form(Blog.class);
-        return ok(views.html.blog.create.render(form, userId));
+    public CompletionStage<Result> showMyBlogs(Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->blogService.showMyBlogs(request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
-    @Restrict(@Group({"USER"}))
-    public Result saveBlog(Integer userId, Http.Request request) {
-        Form<Blog> blogForm = formFactory.form(Blog.class).bindFromRequest(request);
-        Blog blog = blogForm.get();
-        try {
-            User user = UserRepository.getInstance().findUserByID(userId);
-            blog.setAuthor(user);
-            blogRepository.save(blog);
-            blogs = blogRepository.findAllBlogs();
-            return redirect(routes.BlogController.home(userId));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return notFound();
+    @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
+    public CompletionStage<Result> saveBlog(Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->blogService.saveBlog(request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
+    @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
+    public CompletionStage<Result> updateBlog(Http.Request request, String title){
+        return CompletableFuture
+                .supplyAsync(()->blogService.updateBlog(request, title), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
 
+    @Pattern({"WRITE_STORAGE", "READ_STORAGE"})
+    public CompletionStage<Result> deleteBlogByTitle( String blogTitle, Http.Request request){
+        return CompletableFuture
+                .supplyAsync(()->blogService.deleteBlogByTitle(blogTitle, request), context)
+                .orTimeout(TIMEOUT, TimeUnit.SECONDS);
+    }
 }

@@ -1,11 +1,21 @@
 package security;
 
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
+import be.objectify.deadbolt.java.ConstraintPoint;
+import be.objectify.deadbolt.java.DynamicResourceHandler;
 import be.objectify.deadbolt.java.models.Subject;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import models.MyUser;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import repository.UserRepository;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -21,24 +31,18 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 
     @Override
     public CompletionStage<Optional<? extends Subject>> getSubject(Http.RequestHeader requestHeader) {
-        // in a real application, the user name would probably be in the session following a login process
+        // in a real application, the username would probably be in the session following a login process
         String email = requestHeader.session().get("email").orElse("empty");
         return CompletableFuture.supplyAsync(() -> {
             if(email.equals("empty"))
                 return Optional.empty();
-            try {
-                return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return Optional.empty();
+            return Optional.ofNullable(UserRepository.getInstance().findUserByEmail(email));
         });
     }
 
     @Override
     public CompletionStage<Result> onAuthFailure(Http.RequestHeader requestHeader, Optional<String> content) {
-        // you can return any result from here - forbidden, etc
-        return CompletableFuture.completedFuture(ok(views.html.accessFailed.render()));
+        return CompletableFuture.completedFuture(forbidden("Access Denied. Please login again."));
     }
 
 }

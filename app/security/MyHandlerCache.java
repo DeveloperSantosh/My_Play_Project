@@ -11,7 +11,6 @@ import java.util.Map;
 public class MyHandlerCache implements HandlerCache {
 
     private final DeadboltHandler defaultHandler;
-    private final Map<String, DeadboltHandler> handlers = new HashMap<>();
 
     public MyHandlerCache() {
         defaultHandler = new MyDeadboltHandler();

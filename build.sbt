@@ -3,25 +3,41 @@ organization := "com.example"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava, ProtobufPlugin)
-scalaVersion := "2.13.7"
+lazy val root = (project in file(".")).enablePlugins(PlayJava)
+scalaVersion := "2.12.1"
 
 libraryDependencies += guice
 
+// For implementing mysql database with jdbc
 libraryDependencies ++= Seq(
   javaJdbc,
   "mysql" % "mysql-connector-java" % "8.0.28",
-  "be.objectify" %% "deadbolt-java" % "2.8.1",
-  // (optional) If you need scalapb/scalapb.proto or anything from google/protobuf/*.proto
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
-  "io.grpc" % "grpc-netty" % "1.44.1",
-  "io.grpc" % "grpc-stub" % "1.44.1",
-  "io.grpc" % "grpc-auth" % "1.44.1",
 )
 
-Compile / PB.targets := Seq(
-  PB.gens.java -> (Compile / sourceManaged).value ,
-  scalapb.gen(javaConversions=true) -> (Compile / sourceManaged).value
-)
+// For implementing role based security, permission and authentication
+libraryDependencies += "be.objectify" %% "deadbolt-java" % "2.8.1"
 
-////routesGenerator := InjectedRoutesGenerator
+// For enabling BCRYPT encryption
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
+
+// https://mvnrepository.com/artifact/com.ticketfly/play-liquibase
+libraryDependencies += "com.ticketfly" %% "play-liquibase" % "2.2"
+//libraryDependencies +="org.liquibase"% "liquibase-core"% "4.9.0"
+
+// For implementing protobuf
+//libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.19.4" % "protobuf"
+
+// Akka dispatcher configuration
+//libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.6.19"
+
+// https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+libraryDependencies += "com.itextpdf" % "itextpdf" % "5.5.13.3"
+
+// https://mvnrepository.com/artifact/com.opencsv/opencsv
+libraryDependencies += "com.opencsv" % "opencsv" % "5.6"
+
+// https://mvnrepository.com/artifact/org.apache.poi/poi
+libraryDependencies += "org.apache.poi" % "poi" % "5.2.2"
+
+// https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+libraryDependencies += "org.apache.poi" % "poi-ooxml" % "5.2.2"
